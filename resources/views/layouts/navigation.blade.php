@@ -71,11 +71,59 @@
                 @endif
             @endauth
 
-            <li>
-                <a href="#" class="block py-2 px-3 hover:text-blue-500">
-                    Kategori
-                </a>
-            </li>
+        <li class="relative">
+            
+            <!-- BUTTON -->
+            <button id="dropdownKategoriButton"
+                data-dropdown-toggle="dropdownKategori"
+                data-dropdown-trigger="hover"
+                class="flex items-center gap-1 py-2 px-3 text-gray-700 hover:text-blue-600 font-medium">
+
+                Kategori
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path d="m19 9-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <!-- DROPDOWN -->
+            <div id="dropdownKategori"
+                class="z-50 hidden absolute mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg">
+
+                <ul class="p-2 text-sm text-gray-700">
+
+                    <li>
+                        <a href="{{ route('mobil.index') }}"
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        🚗 Mobil
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('motor.index') }}"
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        🏍️ Motor
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('rumah.index') }}"
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        🏠 Rumah
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ route('tanah.index') }}"
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        🌱 Tanah
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+
+        </li>
 
         </ul>
     </div>

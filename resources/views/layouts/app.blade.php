@@ -13,6 +13,16 @@
         <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
 
         <!-- Scripts -->
+        <style>
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        transition-all duration-300
+        </style>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
@@ -29,7 +39,7 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="pt-20">
+            <main class="pt-0">
                 @yield('content')
             </main>
         </div>
@@ -109,6 +119,8 @@
           </div>
       </div>
     </div>
+
+    
 </footer>
 
 </html>

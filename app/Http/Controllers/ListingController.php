@@ -131,10 +131,20 @@ class ListingController extends Controller
             'images',
             'propertyDetail',
             'carDetail',
-            'motorcycleDetail'
+            'motorcycleDetail',
+            'property',
+            'car',
+            'motorcycle'
         ])->findOrFail($id);
 
-        return view('listings.show', compact('listing'));
+        $similar = Listing::with('images')
+        ->where('category_id', $listing->category_id)
+        ->where('id', '!=', $listing->id)
+        ->latest()
+        ->take(6)
+        ->get();
+
+        return view('listings.show', compact('listing','similar'));
     }
 
     public function edit($id)

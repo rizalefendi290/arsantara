@@ -4,6 +4,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\CarouselController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RumahController;
+use App\Http\Controllers\MobilController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,5 +54,19 @@ Route::get('/', [ListingController::class, 'home'])->name('home');
 Route::get('/listing/{id}', [ListingController::class, 'show'])
     ->name('listing.show');
 Route::get('/', [ListingController::class, 'home'])->name('home');
+
+Route::get('/autoshow', [HomeController::class, 'autoshow'])->name('autoshow');
+Route::get('/autoshow/filter', [HomeController::class, 'autoshowFilter'])->name('autoshow.filter');
+
+Route::get('/properti', [HomeController::class, 'properti'])->name('properti');
+Route::get('/properti/filter', [HomeController::class, 'propertiFilter'])->name('properti.filter');
+
+//halaman kategori
+Route::get('/mobil', [HomeController::class, 'mobil'])->name('mobil.index');
+Route::get('/motor', [HomeController::class, 'motor'])->name('motor.index');
+Route::get('/rumah', [HomeController::class, 'rumah'])->name('rumah.index');
+Route::get('/tanah', [HomeController::class, 'tanah'])->name('tanah.index');
+
+Route::get('/rumah', [RumahController::class, 'index'])->name('rumah.index');
 
 require __DIR__.'/auth.php';
