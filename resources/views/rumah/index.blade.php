@@ -2,50 +2,106 @@
 
 @section('content')
 
-<div class="container mx-auto p-6">
+<div class="container mx-auto p-4 md:p-6">
 
-    <h1 class="text-2xl font-bold mb-6">Daftar Rumah</h1>
+    <!-- ================= FILTER ================= -->
+    <div class="bg-white p-4 rounded-xl shadow mb-6">
+        <form method="GET">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        @forelse($listings as $listing)
-        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+                <!-- HARGA -->
+                <div>
+                    <label class="text-sm font-semibold">Harga</label>
+                    <input type="number" name="min_price"
+                        value="{{ request('min_price') }}"
+                        placeholder="Min"
+                        class="w-full border rounded px-3 py-2 mt-1">
 
-            <img 
-                src="{{ $listing->images->count() 
-                        ? asset('storage/'.$listing->images->first()->image) 
-                        : 'https://via.placeholder.com/300x200' }}"
-                class="w-full h-48 object-cover">
+                    <input type="number" name="max_price"
+                        value="{{ request('max_price') }}"
+                        placeholder="Max"
+                        class="w-full border rounded px-3 py-2 mt-1">
+                </div>
 
-            <div class="p-4">
-                <h3 class="font-semibold text-gray-900 line-clamp-1">
-                    {{ $listing->title }}
-                </h3>
+                <!-- LOKASI -->
+                <div>
+                    <label class="text-sm font-semibold">Lokasi</label>
+                    <input type="text" name="location"
+                        value="{{ request('location') }}"
+                        class="w-full border rounded px-3 py-2 mt-1">
+                </div>
 
-                <p class="text-gray-500 text-sm">
-                    {{ $listing->location }}
-                </p>
+                <!-- KAMAR -->
+                <div>
+                    <label class="text-sm font-semibold">Kamar</label>
+                    <select name="bedrooms" class="w-full border rounded px-3 py-2 mt-1">
+                        <option value="">Semua</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                    </select>
+                </div>
 
-                <p class="text-blue-600 font-bold mt-1">
-                    Rp {{ number_format($listing->price) }}
-                </p>
+                <!-- SORT -->
+                <div>
+                    <label class="text-sm font-semibold">Urutkan</label>
+                    <select name="sort" class="w-full border rounded px-3 py-2 mt-1">
+                        <option value="">Terbaru</option>
+                        <option value="low">Harga Termurah</option>
+                        <option value="high">Harga Termahal</option>
+                    </select>
+                </div>
 
-                <a href="{{ route('listing.show',$listing->id) }}"
-                   class="block mt-3 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                   Detail
+            </div>
+
+            <div class="mt-4 flex gap-3">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded">
+                    Terapkan
+                </button>
+
+                <a href="{{ route('rumah.index') }}"
+                    class="bg-gray-400 text-white px-4 py-2 rounded">
+                    Reset
                 </a>
             </div>
 
-        </div>
-        @empty
-        <p class="text-gray-400">Belum ada data</p>
-        @endforelse
-
+        </form>
     </div>
 
-    <!-- ✅ PAGINATION -->
-    <div class="mt-8 flex justify-center">
-        {{ $listings->links() }}
+    <!-- ================= TITLE ================= -->
+    <h1 class="text-2xl font-bold mb-6">Daftar Rumah</h1>
+
+
+    <!-- ================= KPR ================= -->
+    <div class="mb-12">
+        <h2 class="text-xl font-bold mb-4">Rumah Bisa KPR</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            @forelse($kpr as $listing)
+                @include('components.card-listing', ['listing' => $listing])
+            @empty
+                <p class="text-gray-400">Belum ada rumah KPR</p>
+            @endforelse
+
+        </div>
+    </div>
+
+
+    <!-- ================= NON KPR ================= -->
+    <div>
+        <h2 class="text-xl font-bold mb-4">Rumah Non KPR</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            @forelse($nonKpr as $listing)
+                @include('components.card-listing', ['listing' => $listing])
+            @empty
+                <p class="text-gray-400">Belum ada rumah Non KPR</p>
+            @endforelse
+
+        </div>
     </div>
 
 </div>

@@ -22,6 +22,15 @@
             scrollbar-width: none;
         }
         transition-all duration-300
+
+        /* Hilangkan scrollbar tapi tetap bisa scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
         </style>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -82,10 +91,10 @@
                   <h2 class="mb-6 text-sm font-semibold text-heading uppercase">Legal</h2>
                   <ul class="text-body font-medium">
                       <li class="mb-4">
-                          <a href="#" class="hover:underline">Privacy Policy</a>
+                          <a href="{{ route('terms') }}" class="hover:underline">Syarat & Ketentuan</a>
                       </li>
                       <li>
-                          <a href="#" class="hover:underline">Terms &amp; Conditions</a>
+                          <a href="{{ route('privacy') }}" class="hover:underline">Kebijakan Privasi</a>
                       </li>
                   </ul>
               </div>

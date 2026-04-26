@@ -31,7 +31,7 @@
         <select name="category_id" id="category" class="w-full border p-2 rounded">
             <option value="">Pilih</option>
             @foreach($categories as $cat)
-                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
             @endforeach
         </select>
     </div>
@@ -57,7 +57,7 @@
 </div>
 
 {{-- ================= RUMAH ================= --}}
-<div id="rumah-fields" class="hidden mt-6">
+<div id="rumah-fields" class="mt-6 category-section {{ old('category_id') == 1 ? '' : 'hidden' }}" data-category="1">
 <h3 class="font-bold mb-3">Detail Rumah</h3>
 
 <div class="grid grid-cols-3 gap-4">
@@ -71,13 +71,21 @@
 </div>
 
 <div class="mt-3">
+    <label>Jenis Rumah</label>
+    <select name="is_kpr" class="w-full border p-2 rounded">
+        <option value="1" {{ old('is_kpr') == '1' ? 'selected' : '' }}>KPR</option>
+        <option value="0" {{ old('is_kpr') == '0' ? 'selected' : '' }}>Non KPR</option>
+    </select>
+</div>
+
+<div class="mt-3">
     <label>Fasilitas</label>
     <textarea name="facilities" class="w-full border p-2 rounded" placeholder="Isi manual..."></textarea>
 </div>
 </div>
 
 {{-- ================= TANAH ================= --}}
-<div id="tanah-fields" class="hidden mt-6">
+<div id="tanah-fields" class="mt-6 category-section {{ old('category_id') == 2 ? '' : 'hidden' }}" data-category="2">
 <h3 class="font-bold mb-3">Detail Tanah</h3>
 
 <div class="grid grid-cols-3 gap-4">
@@ -87,30 +95,72 @@
 </div>
 
 {{-- ================= MOBIL ================= --}}
-<div id="mobil-fields" class="hidden mt-6">
-<h3 class="font-bold mb-3">Detail Mobil</h3>
+<div id="mobil-fields" class="mt-6 category-section {{ old('category_id') == 3 ? '' : 'hidden' }}" data-category="3">
+    <h3 class="font-bold mb-3">Detail Mobil</h3>
 
-<div class="grid grid-cols-3 gap-4">
-    <input type="text" name="brand" placeholder="Merk" class="border p-2 rounded">
-    <input type="text" name="model" placeholder="Model" class="border p-2 rounded">
-    <input type="number" name="year" placeholder="Tahun" class="border p-2 rounded">
-    <input type="number" name="engine" placeholder="Mesin (cc)" class="border p-2 rounded">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
 
-    <select name="transmission" class="border p-2 rounded">
-        <option value="manual">Manual</option>
-        <option value="matic">Matic</option>
-    </select>
-</div>
+        <!-- BRAND -->
+        <input type="text" name="brand"
+            value="{{ old('brand') }}"
+            class="w-full border p-2 rounded"
+            placeholder="Merk Mobil">
+
+        <!-- MODEL -->
+        <input type="text" name="model"
+            value="{{ old('model') }}"
+            class="border p-2 rounded"
+            placeholder="Model">
+
+        <!-- YEAR -->
+        <input type="number" name="year"
+            value="{{ old('year') }}"
+            min="1901"
+            max="2155"
+            class="border p-2 rounded"
+            placeholder="Tahun">
+
+        <!-- ENGINE -->
+        <input type="number" name="engine"
+            value="{{ old('engine') }}"
+            class="border p-2 rounded"
+            placeholder="Mesin (cc)">
+
+        <!-- TRANSMISSION -->
+        <select name="transmission" class="border p-2 rounded">
+            <option value="">Pilih Transmisi</option>
+            <option value="manual" {{ old('transmission')=='manual'?'selected':'' }}>Manual</option>
+            <option value="matic" {{ old('transmission')=='matic'?'selected':'' }}>Matic</option>
+        </select>
+
+        <!-- FUEL -->
+        <select name="fuel_type" class="border p-2 rounded">
+            <option value="">Pilih Bahan Bakar</option>
+            <option value="bensin" {{ old('fuel_type')=='bensin'?'selected':'' }}>Bensin</option>
+            <option value="diesel" {{ old('fuel_type')=='diesel'?'selected':'' }}>Solar</option>
+        </select>
+
+        <!-- WARNA -->
+        <input type="text" name="color"
+            value="{{ old('color') }}"
+            class="border p-2 rounded"
+            placeholder="Warna Kendaraan">
+
+        <input type="number" name="kilometer"
+            value="{{ old('kilometer') }}"
+            class="border p-2 rounded"
+            placeholder="Kilometer (km)">
+    </div>
 </div>
 
 {{-- ================= MOTOR ================= --}}
-<div id="motor-fields" class="hidden mt-6">
+<div id="motor-fields" class="mt-6 category-section {{ old('category_id') == 4 ? '' : 'hidden' }}" data-category="4">
 <h3 class="font-bold mb-3">Detail Motor</h3>
 
 <div class="grid grid-cols-3 gap-4">
     <input type="text" name="brand" placeholder="Merk" class="border p-2 rounded">
     <input type="text" name="model" placeholder="Model" class="border p-2 rounded">
-    <input type="number" name="year" placeholder="Tahun" class="border p-2 rounded">
+    <input type="number" name="year" min="1901" max="2155" placeholder="Tahun" class="border p-2 rounded">
     <input type="number" name="engine" placeholder="Mesin (cc)" class="border p-2 rounded">
 
     <select name="transmission" class="border p-2 rounded">
@@ -150,20 +200,26 @@
 </div>
 
 <script>
+function toggleCategoryFields(value) {
+    ['rumah', 'tanah', 'mobil', 'motor'].forEach(function(section) {
+        let el = document.getElementById(section + '-fields');
+        if (!el) return;
+
+        let active = String(el.dataset.category) === String(value);
+        el.classList.toggle('hidden', !active);
+
+        el.querySelectorAll('input, select, textarea').forEach(function(field) {
+            field.disabled = !active;
+        });
+    });
+}
+
 document.getElementById('category').addEventListener('change', function(){
+    toggleCategoryFields(this.value);
+});
 
-    let val = this.value;
-
-    document.getElementById('rumah-fields').classList.add('hidden');
-    document.getElementById('tanah-fields').classList.add('hidden');
-    document.getElementById('mobil-fields').classList.add('hidden');
-    document.getElementById('motor-fields').classList.add('hidden');
-
-    if(val == 1) document.getElementById('rumah-fields').classList.remove('hidden');
-    if(val == 2) document.getElementById('tanah-fields').classList.remove('hidden');
-    if(val == 3) document.getElementById('mobil-fields').classList.remove('hidden');
-    if(val == 4) document.getElementById('motor-fields').classList.remove('hidden');
-
+document.addEventListener('DOMContentLoaded', function() {
+    toggleCategoryFields(document.getElementById('category').value);
 });
 
 function addImage(){

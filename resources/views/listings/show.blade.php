@@ -95,9 +95,14 @@
 
     <!-- ================= DETAIL ================= -->
     <div>
-
-        <h1 class="text-3xl font-bold text-gray-800">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
             {{ $listing->title }}
+
+            <div class="flex items-center gap-2 mt-2">
+                <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                    Tersedia
+                </span>
+            </div>
         </h1>
 
         <p class="text-gray-500 mt-2 flex items-center gap-2">
@@ -113,21 +118,55 @@
 
         <!-- RUMAH -->
         @if($listing->category_id == 1 && $listing->property)
-        <div class="grid grid-cols-2 gap-3 text-sm">
-            <p>🏠 Tipe: <b>{{ $listing->property->house_type ?? '-' }}</b></p>
-            <p>📐 LT: <b>{{ $listing->property->land_area ?? '-' }} m²</b></p>
-            <p>🏢 LB: <b>{{ $listing->property->building_area ?? '-' }} m²</b></p>
-            <p>🛏️ Kamar: <b>{{ $listing->property->bedrooms ?? '-' }}</b></p>
-            <p>🚿 Mandi: <b>{{ $listing->property->bathrooms ?? '-' }}</b></p>
-            <p>🏢 Lantai: <b>{{ $listing->property->floors ?? '-' }}</b></p>
-            <p>📄 Sertifikat: <b>{{ $listing->property->certificate ?? '-' }}</b></p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm mt-4">
+
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
+                🏠 <p class="font-semibold">{{ $listing->property->house_type ?? '-' }}</p>
+                <span class="text-xs text-gray-500">Tipe</span>
+            </div>
+
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
+                📐 <p class="font-semibold">{{ $listing->property->land_area ?? '-' }} m²</p>
+                <span class="text-xs text-gray-500">Luas Tanah</span>
+            </div>
+
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
+                🏢 <p class="font-semibold">{{ $listing->property->building_area ?? '-' }} m²</p>
+                <span class="text-xs text-gray-500">Luas Bangunan</span>
+            </div>
+
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
+                🛏️ <p class="font-semibold">{{ $listing->property->bedrooms ?? '-' }}</p>
+                <span class="text-xs text-gray-500">Kamar</span>
+            </div>
+
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
+                🚿 <p class="font-semibold">{{ $listing->property->bathrooms ?? '-' }}</p>
+                <span class="text-xs text-gray-500">Kamar Mandi</span>
+            </div>
+
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
+                📄 <p class="font-semibold">{{ $listing->property->certificate ?? '-' }}</p>
+                <span class="text-xs text-gray-500">Sertifikat</span>
+            </div>
+
         </div>
 
         <div class="mt-4">
             <h3 class="font-semibold">Fasilitas</h3>
-            <p class="text-gray-600">
-                {{ $listing->property->facilities ?? '-' }}
-            </p>
+            @php
+                $facilities = explode(',', $listing->property->facilities ?? '');
+            @endphp
+
+            <div class="flex flex-wrap gap-2 mt-2">
+                @forelse($facilities as $f)
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs">
+                        {{ trim($f) }}
+                    </span>
+                @empty
+                    <span class="text-gray-400">Tidak ada fasilitas</span>
+                @endforelse
+            </div>
         </div>
         @endif
 
@@ -147,6 +186,8 @@
             <p>📅 Tahun: <b>{{ $listing->car->year ?? '-' }}</b></p>
             <p>⚙️ Mesin: <b>{{ $listing->car->engine ?? '-' }} cc</b></p>
             <p>🔁 Transmisi: <b>{{ $listing->car->transmission ?? '-' }}</b></p>
+            <p>⛽ Bahan Bakar: <b>{{ $listing->car->fuel_type ?? '-' }}</b></p>
+            <p>🛣️ Kilometer: <b>{{ number_format($listing->car->kilometer ?? 0) }} km</b></p>
         </div>
         @endif
 
@@ -166,9 +207,14 @@
         <!-- DESKRIPSI -->
         <div class="border-t pt-4 mt-6">
             <h2 class="font-semibold mb-2 text-lg">Deskripsi</h2>
-            <p class="text-gray-700 leading-relaxed">
+            <p id="desc" class="text-gray-700 leading-relaxed line-clamp-4">
                 {{ $listing->description }}
             </p>
+
+            <button onclick="toggleDesc()" 
+                class="text-blue-600 text-sm mt-2">
+                Lihat Selengkapnya
+            </button>
         </div>
 
         <!-- TOMBOL -->
@@ -190,7 +236,7 @@
                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition">
                     ← Kembali
                 </a>
-
+                
                 <a href="https://wa.me/{{ $phone }}?text={{ $message }}" 
                     target="_blank"
                     class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 transition">
@@ -456,7 +502,15 @@ function closeModal(){
     resetZoom();
 }
 
+function toggleDesc(){
+    const desc = document.getElementById('desc');
 
+    if(desc.classList.contains('line-clamp-4')){
+        desc.classList.remove('line-clamp-4');
+    } else {
+        desc.classList.add('line-clamp-4');
+    }
+}
 
 </script>
 

@@ -6,11 +6,18 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Listing;
 use App\Models\Carousel;
+use App\Models\Post;
+use App\Models\Testimonial;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        $posts = Post::latest()->take(6)->get();
+        $testimonials = Testimonial::where('is_active', 1)
+            ->latest()
+            ->take(10)
+            ->get();
         // Ambil parameter filter kategori (optional)
         $categoryId = $request->category;
 
@@ -32,7 +39,9 @@ class HomeController extends Controller
         return view('user.home', compact(
             'categories',
             'listings',
-            'carousels'
+            'carousels',
+            'posts',
+            'testimonials'
         ));
     }
     
@@ -111,17 +120,34 @@ class HomeController extends Controller
 
     public function properti(Request $request)
     {
-        $query = Listing::with(['images','propertyDetail']);
+        // RUMAH KPR
+        $rumahKpr = Listing::with(['images','propertyDetail'])
+            ->where('category_id', 1)
+            ->whereHas('propertyDetail', function($q){
+                $q->where('is_kpr', true);
+            })
+            ->latest()
+            ->take(8)
+            ->get();
 
-        if ($request->category) {
-            $query->where('category_id', $request->category);
-        } else {
-            $query->whereIn('category_id', [1,2]); // rumah & tanah
-        }
+        // RUMAH NON KPR
+        $rumahNonKpr = Listing::with(['images','propertyDetail'])
+            ->where('category_id', 1)
+            ->whereHas('propertyDetail', function($q){
+                $q->where('is_kpr', false);
+            })
+            ->latest()
+            ->take(8)
+            ->get();
 
-        $listings = $query->latest()->paginate(8);
+        // TANAH
+        $tanah = Listing::with(['images','propertyDetail'])
+            ->where('category_id', 2)
+            ->latest()
+            ->take(8)
+            ->get();
 
-        return view('properti.index', compact('listings'));
+        return view('properti.index', compact('rumahKpr','rumahNonKpr','tanah'));
     }
 
     public function propertiFilter(Request $request)

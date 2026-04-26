@@ -12,7 +12,10 @@ class CarDetail extends Model
         'model',
         'year',
         'engine',
-        'transmission'
+        'transmission',
+        'fuel_type',
+        'color',
+        'kilometer'
     ];
 
     public function listing()

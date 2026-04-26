@@ -7,6 +7,8 @@ use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RumahController;
 use App\Http\Controllers\MobilController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\TestimonialController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,6 +33,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('admin/listings', ListingController::class);
 });
 
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('posts', PostController::class);
+});
+
+
+
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('/admin/listings', App\Http\Controllers\ListingController::class);
@@ -41,7 +50,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/update/{id}', [ListingController::class, 'update']);
     Route::delete('/admin/delete/{id}', [ListingController::class, 'destroy']);
     Route::get('/delete-image/{id}', [ListingController::class,'deleteImage'])->name('images.delete');
-
+    // Admin
+    Route::resource('admin/posts', PostController::class);
+    Route::delete('/admin/post-image/{id}', [PostController::class, 'deleteImage'])
+    ->name('post-image.delete');
 });
 //edit carousel
 Route::middleware(['auth','admin'])->group(function(){
@@ -50,10 +62,12 @@ Route::middleware(['auth','admin'])->group(function(){
     Route::delete('/admin/carousel/{id}',[CarouselController::class,'destroy'])->name('carousel.delete');
 });
 //beranda user
+
 Route::get('/', [ListingController::class, 'home'])->name('home');
 Route::get('/listing/{id}', [ListingController::class, 'show'])
     ->name('listing.show');
 Route::get('/', [ListingController::class, 'home'])->name('home');
+
 
 Route::get('/autoshow', [HomeController::class, 'autoshow'])->name('autoshow');
 Route::get('/autoshow/filter', [HomeController::class, 'autoshowFilter'])->name('autoshow.filter');
@@ -64,9 +78,53 @@ Route::get('/properti/filter', [HomeController::class, 'propertiFilter'])->name(
 //halaman kategori
 Route::get('/mobil', [HomeController::class, 'mobil'])->name('mobil.index');
 Route::get('/motor', [HomeController::class, 'motor'])->name('motor.index');
-Route::get('/rumah', [HomeController::class, 'rumah'])->name('rumah.index');
+Route::get('/rumah', [ListingController::class, 'rumah'])->name('rumah.index');
 Route::get('/tanah', [HomeController::class, 'tanah'])->name('tanah.index');
 
-Route::get('/rumah', [RumahController::class, 'index'])->name('rumah.index');
+// Remove conflicting route
+// Route::get('/rumah', [ListingController::class, 'index'])
+//     ->name('rumah.index');
 
+// Berita detail
+Route::get('/post/{id}', [PostController::class, 'show'])->name('post.show');
+
+//ulasan
+
+Route::prefix('testimoni')->name('testimoni.')->group(function () {
+    Route::get('/', [TestimonialController::class, 'index'])->name('index');
+    Route::get('/create', [TestimonialController::class, 'create'])->name('create');
+    Route::post('/', [TestimonialController::class, 'store'])->name('store');
+});
+
+Route::middleware(['auth','admin'])->group(function () {
+    Route::resource('admin/testimonials', TestimonialController::class)
+        ->except(['create','store','show']);
+});
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+
+    Route::get('/testimonials', [\App\Http\Controllers\Admin\TestimonialController::class, 'index'])
+        ->name('admin.testimonials.index');
+
+    Route::patch('/testimonials/{id}/toggle', [\App\Http\Controllers\Admin\TestimonialController::class, 'toggle'])
+        ->name('admin.testimonials.toggle');
+
+    Route::delete('/testimonials/{id}', [\App\Http\Controllers\Admin\TestimonialController::class, 'destroy'])
+        ->name('admin.testimonials.destroy');
+
+});
+
+Route::get('/about', function () {
+    $posts = \App\Models\Post::latest()->take(5)->get();
+
+    return view('about', compact('posts'));
+})->name('about');
+
+Route::view('/syarat', 'pages.terms')->name('terms');
+Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
+
+Route::prefix('kategori')->group(function () {
+    Route::get('/tanah', [ListingController::class, 'tanah'])->name('tanah.index');
+    Route::get('/mobil', [ListingController::class, 'mobil'])->name('mobil.index');
+});
 require __DIR__.'/auth.php';

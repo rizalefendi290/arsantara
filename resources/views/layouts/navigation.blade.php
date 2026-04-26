@@ -125,6 +125,16 @@
 
         </li>
 
+        <li>
+            <a href="{{ route('testimoni.index') }}" class="block py-2 px-3 hover:text-blue-500">
+                Ulasan
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('about') }}" class="block py-2 px-3 hover:text-blue-500">Tentang</a>
+        </li>
+
         </ul>
     </div>
 

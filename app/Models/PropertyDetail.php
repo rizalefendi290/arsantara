@@ -15,7 +15,12 @@ class PropertyDetail extends Model
         'bathrooms',
         'floors',
         'certificate',
-        'facilities'
+        'facilities',
+        'is_kpr',
+    ];
+
+    protected $casts = [
+        'is_kpr' => 'boolean',
     ];
 
     public function listing()

@@ -116,16 +116,45 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
                 @forelse($category->listings->take(4) as $listing)
-                <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+                <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+                    onclick="window.location='{{ route('listing.show',$listing->id) }}'">
 
-                    <img 
-                        src="{{ $listing->images->count() 
-                                ? asset('storage/'.$listing->images->first()->image) 
-                                : 'https://via.placeholder.com/300x200' }}"
-                        class="w-full h-48 object-cover">
+                    <!-- ================= CAROUSEL ================= -->
+                    <div class="relative">
 
+                        @php
+                            $images = $listing->images;
+                        @endphp
+
+                        <div class="relative h-48 overflow-hidden">
+
+                            @forelse($images as $index => $img)
+                            <img src="{{ asset('storage/'.$img->image) }}"
+                                class="card-slide absolute inset-0 w-full h-full object-cover transition duration-300 {{ $index == 0 ? '' : 'hidden' }}">
+                            @empty
+                            <img src="https://via.placeholder.com/300x200"
+                                class="w-full h-full object-cover">
+                            @endforelse
+
+                        </div>
+
+                        <!-- BUTTON -->
+                        <button onclick="event.stopPropagation(); prevSlide(this)"
+                            class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
+                            ❮
+                        </button>
+
+                        <button onclick="event.stopPropagation(); nextSlide(this)"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
+                            ❯
+                        </button>
+
+                    </div>
+
+                    <!-- ================= CONTENT ================= -->
                     <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 line-clamp-1">
+
+                        <h3 class="font-semibold line-clamp-1">
                             {{ $listing->title }}
                         </h3>
 
@@ -137,10 +166,19 @@
                             Rp {{ number_format($listing->price) }}
                         </p>
 
-                        <a href="{{ route('listing.show',$listing->id) }}"
-                        class="block mt-3 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                        Detail
+                        <!-- WA BUTTON -->
+                        @php
+                            $phone = "62895347042844";
+                            $message = urlencode("Halo, saya tertarik dengan ".$listing->title);
+                        @endphp
+
+                        <a href="https://wa.me/{{ $phone }}?text={{ $message }}"
+                            onclick="event.stopPropagation()"
+                            target="_blank"
+                            class="block mt-3 text-center bg-green-500 text-white py-2 rounded-lg">
+                            WhatsApp
                         </a>
+
                     </div>
 
                 </div>
@@ -227,6 +265,132 @@
     </div>
 </section>
 
+<section>
+    <div class="mt-16">
+        <h2 class="text-2xl font-bold mb-6">Berita Terbaru</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            @foreach($posts as $post)
+            <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+                onclick="window.location='{{ route('post.show',$post->id) }}'">
+
+                <img 
+                    src="{{ $post->images->count() 
+                        ? asset('storage/'.$post->images->first()->image) 
+                        : 'https://via.placeholder.com/300x200' }}"
+                    class="w-full h-48 object-cover"
+                >
+
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800 line-clamp-2">
+                        {{ $post->title }}
+                    </h3>
+
+                    <p class="text-gray-500 text-sm mt-2 line-clamp-2">
+                        {{ Str::limit(strip_tags($post->content), 80) }}
+                    </p>
+
+                    <p class="text-xs text-gray-400 mt-2">
+                        {{ $post->created_at->format('d M Y') }}
+                    </p>
+                </div>
+
+            </div>
+            @endforeach
+
+        </div>
+    </div>
+</section>
+
+<section class="mt-20">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800">
+            Testimoni Mereka Tentang Arsantara
+        </h2>
+
+        <a href="{{ route('testimoni.index') }}"
+            class="bg-black text-white px-5 py-2 rounded-full text-sm">
+            Lihat Semua
+        </a>
+    </div>
+
+    <div class="relative">
+
+        <!-- LEFT -->
+        <button onclick="scrollTesti(-1)"
+            class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
+            ←
+        </button>
+
+        <!-- SLIDER -->
+        <div id="testi-slider"
+            class="flex gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar">
+
+            @foreach($testimonials as $item)
+
+            @php
+                $initial = strtoupper(substr($item->name,0,1));
+            @endphp
+
+            <div class="min-w-[320px] max-w-[320px] bg-white rounded-2xl p-6 shadow hover:shadow-lg transition relative">
+
+                <!-- AVATAR BULAT -->
+                       <img 
+                            src="{{ $item->photo 
+                                ? asset('storage/'.$item->photo) 
+                                : 'https://ui-avatars.com/api/?name='.urlencode($item->name) }}"
+                            class="w-20 h-20 rounded-full object-cover">
+
+                <!-- QUOTE ICON -->
+                <div class="absolute top-4 right-4 bg-yellow-400 w-8 h-8 flex items-center justify-center rounded">
+                    "
+                </div>
+
+                <!-- CONTENT -->
+                <div class="mt-6">
+
+                    <h3 class="font-bold text-gray-800 uppercase">
+                        {{ $item->name }}
+                    </h3>
+
+                    <!-- ⭐ RATING -->
+                    <div class="text-yellow-400 mb-3">
+                        @for($i=1; $i<=5; $i++)
+                            @if($i <= $item->rating)
+                                ★
+                            @else
+                                ☆
+                            @endif
+                        @endfor
+                    </div>
+
+                    <!-- MESSAGE -->
+                    <p class="text-gray-600 text-sm leading-relaxed line-clamp-4">
+                        {{ $item->message }}
+                    </p>
+
+                    <p class="text-xs text-gray-400 mt-1">
+                        {{ $item->created_at->translatedFormat('d M Y') }} • {{ $item->created_at->diffForHumans() }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            @endforeach
+
+        </div>
+
+        <!-- RIGHT -->
+        <button onclick="scrollTesti(1)"
+            class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
+            →
+        </button>
+
+    </div>
+</section>
+
 </div>
 @endsection
 <script>
@@ -241,5 +405,47 @@ function toggleFAQ(id){
         content.classList.add('hidden');
         icon.innerHTML = '+';
     }
+}
+
+function scrollTesti(direction){
+    const container = document.getElementById('testi-slider');
+    container.scrollBy({
+        left: direction * 340,
+        behavior: 'smooth'
+    });
+}
+
+function nextSlide(btn){
+    const container = btn.closest('.relative');
+    const slides = container.querySelectorAll('.card-slide');
+
+    let activeIndex = 0;
+
+    slides.forEach((img, i) => {
+        if(!img.classList.contains('hidden')){
+            activeIndex = i;
+        }
+        img.classList.add('hidden');
+    });
+
+    let nextIndex = (activeIndex + 1) % slides.length;
+    slides[nextIndex].classList.remove('hidden');
+}
+
+function prevSlide(btn){
+    const container = btn.closest('.relative');
+    const slides = container.querySelectorAll('.card-slide');
+
+    let activeIndex = 0;
+
+    slides.forEach((img, i) => {
+        if(!img.classList.contains('hidden')){
+            activeIndex = i;
+        }
+        img.classList.add('hidden');
+    });
+
+    let prevIndex = (activeIndex - 1 + slides.length) % slides.length;
+    slides[prevIndex].classList.remove('hidden');
 }
 </script>
