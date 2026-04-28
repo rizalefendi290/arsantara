@@ -9,6 +9,7 @@ use App\Http\Controllers\RumahController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\Auth\GoogleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -138,4 +139,7 @@ Route::get('/tentang', function () {
 Route::get('/pinjaman-dana', function () {
     return view('pinjaman.index');
 })->name('pinjaman.index');
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 require __DIR__.'/auth.php';
