@@ -127,4 +127,15 @@ Route::prefix('kategori')->group(function () {
     Route::get('/tanah', [ListingController::class, 'tanah'])->name('tanah.index');
     Route::get('/mobil', [ListingController::class, 'mobil'])->name('mobil.index');
 });
+
+Route::get('/search', [ListingController::class, 'search'])->name('search');
+
+Route::get('/tentang', function () {
+    return view('tentang.index');
+})->name('tentang');
+
+//pinjam dana
+Route::get('/pinjaman-dana', function () {
+    return view('pinjaman.index');
+})->name('pinjaman.index');
 require __DIR__.'/auth.php';

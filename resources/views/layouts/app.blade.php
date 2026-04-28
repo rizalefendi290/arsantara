@@ -13,7 +13,12 @@
         <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
 
         <!-- Scripts -->
+        <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
         <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
@@ -31,11 +36,32 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+                /* Skeleton loading */
+        .skeleton {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(90deg, #eee, #f5f5f5, #eee);
+            background-size: 200% 100%;
+        }
+
+        @keyframes pulse {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95);}
+            to { opacity: 1; transform: scale(1);}
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease;
+        }
         </style>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <body class="font-sans antialiased bg-gradient-to-b from-white via-blue-50 to-blue-100 relative overflow-x-hidden">
+        <div class="min-h-screen bg-white">
+            
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -56,15 +82,15 @@
     </body>
     
 <footer class="bg-neutral-primary-soft">
-    <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
-        <div class="md:flex md:justify-between">
+    <div data-aos="fade-up" class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
+        <div data-aos="fade-up" class="md:flex md:justify-between">
           <div class="mb-6 md:mb-0">
               <a href="https://flowbite.com/" class="flex items-center">
                   <img src="https://flowbite.com/docs/images/logo.svg" class="h-7 me-3" alt="FlowBite Logo" />
                   <span class="text-heading self-center text-2xl font-semibold whitespace-nowrap">Flowbite</span>
               </a>
           </div>
-          <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
+          <div data-aos="fade-up" class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
               <div>
                   <h2 class="mb-6 text-sm font-semibold text-heading uppercase">Resources</h2>
                   <ul class="text-body font-medium">
@@ -131,5 +157,12 @@
 
     
 </footer>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
+<script>
+AOS.init({
+    duration: 800,
+    once: true
+});
+</script>
 </html>

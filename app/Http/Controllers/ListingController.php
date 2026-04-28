@@ -360,4 +360,32 @@ class ListingController extends Controller
 
         return view('mobil.index', compact('listings'));
     }
+
+    public function search(Request $request)
+    {
+        $query = Listing::with(['images','propertyDetail']);
+
+        if ($request->category_id) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->keyword) {
+            $query->where(function($q) use ($request){
+                $q->where('title','like','%'.$request->keyword.'%')
+                ->orWhere('location','like','%'.$request->keyword.'%');
+            });
+        }
+
+        if ($request->min_price) {
+            $query->where('price','>=',$request->min_price);
+        }
+
+        if ($request->max_price) {
+            $query->where('price','<=',$request->max_price);
+        }
+
+        $listings = $query->latest()->paginate(12);
+
+        return view('search.index', compact('listings'));
+    }
 }

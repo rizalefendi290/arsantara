@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('floors')->nullable();
             $table->string('certificate')->nullable();
             $table->text('facilities')->nullable();
+            $table->boolean('is_kpr')->default(false);
 
             $table->timestamps();
         });

@@ -1,83 +1,210 @@
 @extends('layouts.app')
 
 @section('content')
-
 <!-- HERO -->
-<section class="bg-center bg-no-repeat bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/conference.jpg')] ">
-    <div class="px-4 mx-auto max-w-screen-xl text-center py-24 lg:py-40">
-        <h1 class="mb-6 text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
-            Solusi Terbaik untuk Kebutuhan Anda
-        </h1>
-        <p class="mb-8 text-lg text-gray-300 md:text-xl sm:px-16 lg:px-48">
-            Arsantara menyediakan layanan otomotif, pinjaman dana, dan properti dengan proses cepat dan terpercaya.
-        </p>
+<section data-aos="fade-up"
+    class="relative min-h-screen flex items-center justify-center bg-cover bg-center"
+    style="background-image:url('{{asset('images/hero.png')}}');">
 
+    <!-- Overlay Gradient -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+
+    <!-- CONTENT -->
+    <div class="relative px-6 py-24 max-w-6xl z-10 w-full mx-auto text-center text-white">
+        
+        <h1 data-aos="zoom-in"
+            class="text-4xl md:text-6xl font-extrabold leading-tight mb-6 tracking-tight">
+            Temukan Properti Impian Anda
+        </h1>
+
+        <p data-aos="zoom-in"
+            class="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Rumah, tanah, mobil hingga kebutuhan lainnya dalam satu platform terpercaya.
+        </p>
 
     </div>
 </section>
 
-<div class="container mx-auto p-6">
+<!-- SEARCH BOX FLOAT -->
+<div class="relative -mt-20 z-20 px-6 flex justify-center">
+    
+    <form data-aos="zoom-in"
+        method="GET"
+        action="{{ route('search') }}"
+        class="w-full max-w-4xl bg-blue backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-2xl">
 
-    <!-- FITUR -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 -mt-20 relative z-10">
+        <!-- TAB -->
+        <div class="flex justify-center gap-3 mb-6">
+            
+            <button type="button" onclick="setCategory(1)"
+                class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
+                bg-blue-600 text-white shadow-md hover:bg-blue-700">
+                Rumah
+            </button>
 
-        <!-- CARD -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+            <button type="button" onclick="setCategory(2)"
+                class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
+                bg-blue-100 text-blue-700 hover:bg-blue-200">
+                Tanah
+            </button>
+
+            <button type="button" onclick="setCategory(3)"
+                class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
+                bg-blue-100 text-blue-700 hover:bg-blue-200">
+                Mobil
+            </button>
+
+        </div>
+
+        <!-- INPUT -->
+        <div class="flex flex-col md:flex-row gap-3">
+
+            <input type="text" name="keyword"
+                placeholder="Cari properti atau kendaraan..."
+                class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none">
+
+            <button type="submit"
+                class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold 
+                hover:bg-blue-700 transition shadow-md">
+                Cari
+            </button>
+
+        </div>
+
+        <input type="hidden" name="category" id="category">
+
+    </form>
+</div>
+
+<div class="relative mt-10 py-20 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
+
+    <!-- WAVE ATAS (LEBIH HALUS) -->
+<div class="absolute top-0 left-0 w-full overflow-hidden leading-none z-0">
+    <svg class="relative block w-full h-[140px]" viewBox="0 0 1440 320">
+        <path fill="#e0f2fe"
+            d="M0,160C240,80,480,80,720,160C960,240,1200,240,1440,160L1440,0L0,0Z">
+        </path>
+    </svg>
+</div>
+
+    <!-- GRADIENT BULAT HALUS -->
+    <div class="absolute top-20 left-[-100px] w-[400px] h-[400px] bg-blue-200 opacity-30 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-[-120px] w-[450px] h-[450px] bg-blue-300 opacity-20 rounded-full blur-3xl"></div>
+
+    <!-- DOT PATTERN (LEBIH HALUS) -->
+    <div class="absolute top-24 right-16 grid grid-cols-6 gap-2 opacity-10">
+        @for ($i = 0; $i < 24; $i++)
+            <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+        @endfor
+    </div>
+
+    <!-- CIRCLE LINE -->
+    <div class="absolute bottom-16 left-16 w-48 h-48 border border-blue-200 rounded-full opacity-20"></div>
+
+    <!-- CONTENT -->
+    <div data-aos="fade-up"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10 px-6 max-w-6xl mx-auto -mt-24">
+
+        <!-- CARD 1 -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
             <img class="w-full h-48 object-cover" src="{{ asset('images/logo.png') }}" alt="">
             <div class="p-6">
                 <h5 class="mb-2 text-xl font-bold text-gray-900">Arsantara Autoshow</h5>
                 <p class="mb-4 text-gray-600">
                     Miliki beragam pilihan Mobil dan Motor, baik Baru maupun Bekas melalui pengajuan kredit.
                 </p>
-                <a href="{{ route('autoshow') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+                <a href="{{ route('autoshow') }}"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
                     Lihat Selengkapnya →
                 </a>
             </div>
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+        <!-- CARD 2 -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
             <img class="w-full h-48 object-cover" src="{{ asset('images/logo.png') }}" alt="">
             <div class="p-6">
-                <h5 class="mb-2 text-xl font-bold text-gray-900">Arsantara Pinjam Dana</h5>
+                <h5 class="mb-2 text-xl font-bold text-gray-900">
+                    Arsantara Pinjam Dana
+                </h5>
+
                 <p class="mb-4 text-gray-600">
                     Ajukan pinjaman dana dengan jaminan BPKB secara cepat dan mudah.
                 </p>
-                <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+
+                <button onclick="openModal()"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
                     Ajukan →
-                </a>
+                </button>
             </div>
         </div>
 
-        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
+        <!-- CARD 3 -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
             <img class="w-full h-48 object-cover" src="{{ asset('images/logo.png') }}" alt="">
             <div class="p-6">
                 <h5 class="mb-2 text-xl font-bold text-gray-900">Arsantara Properti</h5>
                 <p class="mb-4 text-gray-600">
                     Temukan rumah dan tanah terbaik dengan harga terjangkau.
                 </p>
-                <a href="{{ route('properti') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
+                <a href="{{ route('properti') }}"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
                     Lihat Selengkapnya →
                 </a>
             </div>
         </div>
 
     </div>
+</div>
 
+<div data-aos="fade-up" class="container -mt-20 mx-auto p-6">
     <!-- CAROUSEL -->
     @if($carousels->count())
-    <div id="indicators-carousel" class="relative w-full my-10" data-carousel="slide">
-        <div class="relative h-56 overflow-hidden rounded-xl md:h-96 shadow">
-            @foreach($carousels as $index => $item)
-            <div class="{{ $index == 0 ? '' : 'hidden' }}" data-carousel-item>
-                <img src="{{ asset('storage/'.$item->image) }}" class="w-full h-full object-cover">
-            </div>
-            @endforeach
+<div data-aos="fade-up" id="default-carousel" class="relative w-full my-10" data-carousel="slide">
+    <!-- WRAPPER -->
+    <div class="relative h-[400px] bg-black flex items-center justify-center overflow-hidden rounded-xl">
+        @foreach($carousels as $index => $item)
+        <div class="{{ $index == 0 ? '' : 'hidden' }} duration-700 ease-in-out"
+            data-carousel-item>
+            <img src="{{ asset('storage/'.$item->image) }}"
+                class="max-h-full max-w-full absolute block w-full h-full object-cover object-center" alt="...">
         </div>
+        @endforeach
     </div>
-    @endif
+
+    <!-- INDICATOR -->
+    <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3">
+        @foreach($carousels as $index => $item)
+        <button type="button"
+            class="w-3 h-3 rounded-full bg-white/50"
+            aria-current="{{ $index == 0 ? 'true' : 'false' }}"
+            data-carousel-slide-to="{{ $index }}">
+        </button>
+        @endforeach
+    </div>
+
+    <!-- PREV BUTTON -->
+    <button type="button"
+        class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group"
+        data-carousel-prev>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50">
+            ❮
+        </span>
+    </button>
+
+    <!-- NEXT BUTTON -->
+    <button type="button"
+        class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group"
+        data-carousel-next>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50">
+            ❯
+        </span>
+    </button>
+</div>
+@endif
 
     <!-- MARKETPLACE -->
-    <h1 class="text-3xl font-bold mb-8 text-white">
+    <h1 data-aos="fade-up" class="text-3xl font-bold mb-8 text-gray-800">
         Marketplace 
     </h1>
 
@@ -98,7 +225,7 @@
             }
         @endphp
 
-        <div class="mb-10">
+        <div data-aos="fade-up" class="mb-10">
 
             <!-- HEADER -->
             <div class="flex justify-between items-center mb-4">
@@ -106,17 +233,20 @@
                     {{ $category->name }}
                 </h2>
 
-                <a href="{{ route($route) }}"
-                class="text-blue-600 text-sm hover:underline">
-                Lihat Semua →
-                </a>
+                <div>
+                <button type="button" class="text-white bg-brand box-border border border-blue hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"><a href="{{ route($route) }}"
+                        class="text-blue-600 text-sm hover:underline">
+                        Lihat Semua →
+                    </a>
+                </button>
+                </div>
             </div>
 
             <!-- LISTING -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div data-aos="fade-up" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
                 @forelse($category->listings->take(4) as $listing)
-                <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+                <div data-aos="fade-up" class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
                     onclick="window.location='{{ route('listing.show',$listing->id) }}'">
 
                     <!-- ================= CAROUSEL ================= -->
@@ -194,7 +324,7 @@
 
     <!-- ================= FAQ ================= -->
 <section class="bg-gray-50 py-12 mt-10">
-    <div class="container mx-auto px-6 max-w-4xl">
+    <div data-aos="fade-up" class="container mx-auto px-6 max-w-4xl">
 
         <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">
             Pertanyaan Umum (FAQ)
@@ -248,7 +378,7 @@
             @endphp
 
             @foreach($faqs as $i => $faq)
-            <div class="bg-white border rounded-xl shadow">
+            <div data-aos="fade-up" class="bg-white border rounded-xl shadow">
                 <button onclick="toggleFAQ({{ $i }})" 
                     class="w-full flex justify-between items-center p-4 text-left font-semibold text-gray-800">
                     {{ $faq['q'] }}
@@ -266,13 +396,13 @@
 </section>
 
 <section>
-    <div class="mt-16">
+    <div class="mt-16" data-aos="fade-up">
         <h2 class="text-2xl font-bold mb-6">Berita Terbaru</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div data-aos="fade-up" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
             @foreach($posts as $post)
-            <div class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+            <div data-aos="fade-up" class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
                 onclick="window.location='{{ route('post.show',$post->id) }}'">
 
                 <img 
@@ -304,7 +434,7 @@
 </section>
 
 <section class="mt-20">
-    <div class="flex justify-between items-center mb-8">
+    <div data-aos="fade-up" class="flex justify-between items-center mb-8">
         <h2 class="text-3xl font-bold text-gray-800">
             Testimoni Mereka Tentang Arsantara
         </h2>
@@ -315,7 +445,7 @@
         </a>
     </div>
 
-    <div class="relative">
+    <div class="relative" data-aos="fade-up">
 
         <!-- LEFT -->
         <button onclick="scrollTesti(-1)"
@@ -333,7 +463,7 @@
                 $initial = strtoupper(substr($item->name,0,1));
             @endphp
 
-            <div class="min-w-[320px] max-w-[320px] bg-white rounded-2xl p-6 shadow hover:shadow-lg transition relative">
+            <div data-aos="fade-up" class="min-w-[320px] max-w-[320px] bg-white rounded-2xl p-6 shadow hover:shadow-lg transition relative">
 
                 <!-- AVATAR BULAT -->
                        <img 
@@ -390,8 +520,66 @@
 
     </div>
 </section>
-
 </div>
+
+<!-- ================= MODAL PENGAJUAN DANA ================= -->
+<div id="pinjamModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 relative animate-fadeIn">
+
+            <!-- HEADER -->
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold">
+                    Syarat & Ketentuan Pinjaman Dana
+                </h3>
+
+                <button onclick="closeModal()"
+                    class="text-gray-400 hover:text-gray-700 text-xl">
+                    ✕
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="mt-4 space-y-3 text-sm text-gray-600 max-h-64 overflow-y-auto">
+
+                <p>1. Pengajuan pinjaman menggunakan jaminan BPKB kendaraan.</p>
+                <p>2. Kendaraan wajib atas nama sendiri atau keluarga.</p>
+                <p>3. Unit kendaraan minimal tahun 2010.</p>
+                <p>4. Dokumen wajib lengkap (STNK, BPKB, KTP).</p>
+                <p>5. Proses persetujuan tergantung hasil survey.</p>
+                <p>6. Data harus valid dan dapat dipertanggungjawabkan.</p>
+
+            </div>
+
+            <!-- CHECKBOX -->
+            <div class="mt-4 flex items-start gap-2">
+                <input type="checkbox" id="agreeCheckbox" onchange="toggleWA()" class="mt-1">
+
+                <label for="agreeCheckbox" class="text-sm text-gray-700">
+                    Saya telah membaca dan menyetujui syarat & ketentuan
+                </label>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="mt-5 flex justify-end gap-3">
+
+                <button onclick="closeModal()"
+                    class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
+                    Batal
+                </button>
+
+                <a id="waButton"
+                    href="#"
+                    target="_blank"
+                    class="px-4 py-2 bg-green-500 text-white rounded-lg opacity-50 pointer-events-none transition">
+                    Ajukan via WhatsApp
+                </a>
+
+            </div>
+
+        </div>
+    </div>
 @endsection
 <script>
 function toggleFAQ(id){
@@ -448,4 +636,69 @@ function prevSlide(btn){
     let prevIndex = (activeIndex - 1 + slides.length) % slides.length;
     slides[prevIndex].classList.remove('hidden');
 }
+
+function openModal() {
+    document.getElementById('pinjamModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('pinjamModal').classList.add('hidden');
+}
+
+function toggleWA() {
+    let checkbox = document.getElementById('agreeCheckbox');
+    let btn = document.getElementById('waButton');
+
+    if (checkbox.checked) {
+        let phone = "62895347042844";
+        let message = encodeURIComponent("Halo, saya ingin mengajukan pinjaman dana dengan jaminan BPKB");
+
+        btn.href = `https://wa.me/${phone}?text=${message}`;
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+    } else {
+        btn.href = "#";
+        btn.classList.add('opacity-50', 'pointer-events-none');
+    }
+}
+
+// klik luar modal = close
+window.onclick = function(e) {
+    let modal = document.getElementById('pinjamModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+}
+
+function openModal() {
+    document.getElementById('pinjamModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('pinjamModal').classList.add('hidden');
+}
+
+function toggleWA() {
+    let checkbox = document.getElementById('agreeCheckbox');
+    let btn = document.getElementById('waButton');
+
+    if (checkbox.checked) {
+        let phone = "62895347042844";
+        let message = encodeURIComponent("Halo, saya ingin mengajukan pinjaman dana dengan jaminan BPKB");
+
+        btn.href = `https://wa.me/${phone}?text=${message}`;
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+    } else {
+        btn.href = "#";
+        btn.classList.add('opacity-50', 'pointer-events-none');
+    }
+}
+
+// klik luar modal = close
+window.onclick = function(e) {
+    let modal = document.getElementById('pinjamModal');
+    if (e.target === modal) {
+        closeModal();
+    }
+}
 </script>
+

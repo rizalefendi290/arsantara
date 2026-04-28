@@ -1,14 +1,14 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav data-aos="fade-down" x-data="{ open: false }" class="bg-white border-b border-gray-100 dark:border-gray-700 text-white">
     <!-- Primary Navigation Menu -->
-     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+     <div data-aos="fade-down" class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
 
     <!-- LOGO -->
     <a href="{{ route('home') }}" class="flex items-center space-x-3">
-        <span class="text-xl font-bold">Marketplace</span>
+        <span class="text-xl text-gray-900 font-bold">Arsantara Management</span>
     </a>
 
     <!-- RIGHT (SEARCH + USER) -->
-    <div class="flex items-center gap-3 md:order-2">
+    <div class="flex items-center text-gray-800 gap-3 md:order-2">
 
         <!-- SEARCH -->
         <div class="relative hidden md:block">
@@ -56,7 +56,7 @@
         <ul class="flex flex-col md:flex-row gap-4 mt-4 md:mt-0">
 
             <li>
-                <a href="{{ route('home') }}" class="block py-2 px-3 hover:text-blue-500">
+                <a href="{{ route('home') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">
                     Home
                 </a>
             </li>
@@ -64,7 +64,7 @@
             @auth
                 @if(auth()->user()->role === 'admin')
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="block py-2 px-3 hover:text-blue-500">
+                    <a href="{{ route('admin.dashboard') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">
                         Admin
                     </a>
                 </li>
@@ -77,7 +77,7 @@
             <button id="dropdownKategoriButton"
                 data-dropdown-toggle="dropdownKategori"
                 data-dropdown-trigger="hover"
-                class="flex items-center gap-1 py-2 px-3 text-gray-700 hover:text-blue-600 font-medium">
+                class="flex items-center gap-1 py-2 px-3 text-gray-800 hover:text-blue-500 font-medium">
 
                 Kategori
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
@@ -90,32 +90,32 @@
             <div id="dropdownKategori"
                 class="z-50 hidden absolute mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg">
 
-                <ul class="p-2 text-sm text-gray-700">
+                <ul class="p-2 text-sm text-gray-800">
 
                     <li>
                         <a href="{{ route('mobil.index') }}"
-                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
                         🚗 Mobil
                         </a>
                     </li>
 
                     <li>
                         <a href="{{ route('motor.index') }}"
-                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
                         🏍️ Motor
                         </a>
                     </li>
 
                     <li>
                         <a href="{{ route('rumah.index') }}"
-                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
                         🏠 Rumah
                         </a>
                     </li>
 
                     <li>
                         <a href="{{ route('tanah.index') }}"
-                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition">
+                        class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
                         🌱 Tanah
                         </a>
                     </li>
@@ -126,13 +126,13 @@
         </li>
 
         <li>
-            <a href="{{ route('testimoni.index') }}" class="block py-2 px-3 hover:text-blue-500">
+            <a href="{{ route('testimoni.index') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">
                 Ulasan
             </a>
         </li>
 
         <li>
-            <a href="{{ route('about') }}" class="block py-2 px-3 hover:text-blue-500">Tentang</a>
+            <a href="{{ route('about') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">Tentang</a>
         </li>
 
         </ul>
