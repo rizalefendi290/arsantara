@@ -3,7 +3,7 @@
 @section('content')
 
 <!-- HERO -->
-<section class="bg-green-600 text-white py-16">
+<section data-aos="fade-up" class="bg-green-600 text-white py-16">
     <div class="max-w-7xl mx-auto px-6 text-center">
         <h1 class="text-4xl font-bold mb-4">
             Arsantara Properti
@@ -14,7 +14,7 @@
     </div>
 </section>
 
-<div class="container mx-auto p-6">
+<div data-aos="fade-up" class="container mx-auto p-6">
 
     <!-- ================= RUMAH KPR ================= -->
     <div class="mb-12">
@@ -68,7 +68,7 @@
     </div>
 
     <!-- ================= RUMAH NON KPR ================= -->
-    <div class="mb-12">
+    <div data-aos="fade-up" class="mb-12">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">Rumah Non KPR</h2>
             <a href="{{ route('rumah.index') }}"
@@ -119,7 +119,7 @@
     </div>
 
     <!-- ================= TANAH ================= -->
-    <div>
+    <div data-aos="fade-up">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">Tanah</h2>
             <a href="{{ route('tanah.index') }}"

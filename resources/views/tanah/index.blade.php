@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="container mx-auto p-6">
+<div data-aos="fade-up" class="container mx-auto p-6">
 
     <!-- ================= FILTER ================= -->
     <form method="GET" class="bg-white p-6 rounded-2xl shadow mb-8">
@@ -54,11 +54,11 @@
 
 
     <!-- ================= TITLE ================= -->
-    <h1 class="text-2xl font-bold mb-6">Daftar Tanah</h1>
+    <h1 data-aos="fade-up" class="text-2xl font-bold mb-6">Daftar Tanah</h1>
 
 
     <!-- ================= GRID ================= -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div data-aos="fade-up" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
         @forelse($listings as $listing)
         <div class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden cursor-pointer group"
@@ -145,7 +145,7 @@
 
 
     <!-- ================= PAGINATION ================= -->
-    <div class="mt-8">
+    <div data-aos="fade-up" class="mt-8">
         {{ $listings->links() }}
     </div>
 

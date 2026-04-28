@@ -102,59 +102,116 @@
     <div class="absolute bottom-16 left-16 w-48 h-48 border border-blue-200 rounded-full opacity-20"></div>
 
     <!-- CONTENT -->
-    <div data-aos="fade-up"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10 px-6 max-w-6xl mx-auto -mt-24">
+<div data-aos="fade-up" 
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10 px-6 max-w-6xl mx-auto -mt-24">
 
-        <!-- CARD 1 -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
-            <img class="w-full h-48 object-cover" src="{{ asset('images/logo.png') }}" alt="">
-            <div class="p-6">
-                <h5 class="mb-2 text-xl font-bold text-gray-900">Arsantara Autoshow</h5>
-                <p class="mb-4 text-gray-600">
-                    Miliki beragam pilihan Mobil dan Motor, baik Baru maupun Bekas melalui pengajuan kredit.
+    <!-- CARD 1 -->
+    <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px]">
+
+        <!-- IMAGE (TANPA BLUR) -->
+        <img src="{{ asset('images/thumbnail_properti.png') }}"
+            class="absolute inset-0 w-full h-full object-contain bg-blue-900">
+
+        <!-- OVERLAY TIPIS -->
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
+
+        <!-- CONTENT -->
+        <div class="relative z-10 p-6 flex flex-col h-full justify-between text-white">
+
+            <div>
+                <!-- BADGE -->
+                <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
+                    🏠 PROPERTI
+                </div>
+
+                <!-- TITLE -->
+                <h2 class="text-3xl font-bold leading-tight">
+                    Temukan Properti <br>
+                    <span class="text-blue-300">Impian Anda</span>
+                </h2>
+
+                <!-- DESC -->
+                <p class="mt-3 text-sm text-blue-100 max-w-xs">
+                    Pilihan rumah, apartemen, dan tanah lokasi strategis dengan harga terbaik.
                 </p>
-                <a href="{{ route('autoshow') }}"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
-                    Lihat Selengkapnya →
+
+                <!-- BUTTON -->
+                <a href="{{ route('properti') }}"
+                    class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
+                    Lihat Properti →
                 </a>
             </div>
         </div>
+    </div>
 
-        <!-- CARD 2 -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
-            <img class="w-full h-48 object-cover" src="{{ asset('images/logo.png') }}" alt="">
-            <div class="p-6">
-                <h5 class="mb-2 text-xl font-bold text-gray-900">
-                    Arsantara Pinjam Dana
-                </h5>
 
-                <p class="mb-4 text-gray-600">
-                    Ajukan pinjaman dana dengan jaminan BPKB secara cepat dan mudah.
+    <!-- CARD 2 -->
+    <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px]">
+
+        <img src="{{ asset('images/thumbnail_kendaraan.png') }}"
+            class="absolute inset-0 w-full h-full object-cover">
+
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
+
+        <div class="relative z-10 p-6 flex flex-col h-full justify-between text-white">
+
+            <div>
+                <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
+                    🚗 MOBIL BEKAS
+                </div>
+
+                <h2 class="text-3xl font-bold leading-tight">
+                    Mobil Bekas <br>
+                    <span class="text-blue-300">Berkualitas</span>
+                </h2>
+
+                <p class="mt-3 text-sm text-blue-100 max-w-xs">
+                    Unit terpilih, kondisi prima, dan harga bersaing dengan garansi.
+                </p>
+
+                <a href="{{ route('autoshow') }}"
+                    class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
+                    Lihat Mobil →
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- CARD 3 -->
+    <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px]">
+
+        <img src="{{ asset('images/thumbnail_pinjam_dana.png') }}"
+            class="absolute inset-0 w-full h-full object-cover">
+
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
+
+        <div class="relative z-10 p-6 flex flex-col h-full justify-between text-white">
+
+            <div>
+                <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
+                    💰 PEMBIAYAAN
+                </div>
+
+                <h2 class="text-3xl font-bold leading-tight">
+                    Pinjam Dana <br>
+                    <span class="text-blue-300">Jaminan BPKB</span><br>
+                    <span class="text-white">Motor & Mobil</span>
+                </h2>
+
+                <p class="mt-3 text-sm text-blue-100 max-w-xs">
+                    Cair cepat, bunga kompetitif, dan proses mudah & aman.
                 </p>
 
                 <button onclick="openModal()"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
-                    Ajukan →
+                    class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
+                    Ajukan Sekarang →
                 </button>
             </div>
         </div>
-
-        <!-- CARD 3 -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-xl hover:-translate-y-2 transition-all duration-300 overflow-hidden">
-            <img class="w-full h-48 object-cover" src="{{ asset('images/logo.png') }}" alt="">
-            <div class="p-6">
-                <h5 class="mb-2 text-xl font-bold text-gray-900">Arsantara Properti</h5>
-                <p class="mb-4 text-gray-600">
-                    Temukan rumah dan tanah terbaik dengan harga terjangkau.
-                </p>
-                <a href="{{ route('properti') }}"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
-                    Lihat Selengkapnya →
-                </a>
-            </div>
-        </div>
-
     </div>
+
+</div>
 </div>
 
 <div data-aos="fade-up" class="container -mt-20 mx-auto p-6">
@@ -234,11 +291,9 @@
                 </h2>
 
                 <div>
-                <button type="button" class="text-white bg-brand box-border border border-blue hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"><a href="{{ route($route) }}"
-                        class="text-blue-600 text-sm hover:underline">
-                        Lihat Semua →
-                    </a>
-                </button>
+                    <button type="button" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
+                        bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route($route) }}">Lihat Semua →</a>
+                    </button>
                 </div>
             </div>
 
@@ -438,11 +493,9 @@
         <h2 class="text-3xl font-bold text-gray-800">
             Testimoni Mereka Tentang Arsantara
         </h2>
-
-        <a href="{{ route('testimoni.index') }}"
-            class="bg-black text-white px-5 py-2 rounded-full text-sm">
-            Lihat Semua
-        </a>
+        <button type="button" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
+                bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route('testimoni.index') }}">Lihat Semua →</a>
+        </button>
     </div>
 
     <div class="relative" data-aos="fade-up">

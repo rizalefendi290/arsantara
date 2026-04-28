@@ -85,9 +85,9 @@
     <div data-aos="fade-up" class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div data-aos="fade-up" class="md:flex md:justify-between">
           <div class="mb-6 md:mb-0">
-              <a href="https://flowbite.com/" class="flex items-center">
+              <a href="#" class="flex items-center">
                   <img src="https://flowbite.com/docs/images/logo.svg" class="h-7 me-3" alt="FlowBite Logo" />
-                  <span class="text-heading self-center text-2xl font-semibold whitespace-nowrap">Flowbite</span>
+                  <span class="text-heading self-center text-2xl font-semibold whitespace-nowrap">Arsantara Management</span>
               </a>
           </div>
           <div data-aos="fade-up" class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">

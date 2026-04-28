@@ -2,13 +2,13 @@
 
 @section('content')
 
-<div class="container mx-auto p-6">
+<div data-aos="fade-up" class="container mx-auto p-6">
 
     <!-- TITLE -->
-    <h1 class="text-2xl font-bold mb-6">Daftar Motor</h1>
+    <h1 data-aos="fade-up" class="text-2xl font-bold mb-6">Daftar Motor</h1>
 
     <!-- GRID -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div data-aos="fade-up" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
         @forelse($listings as $listing)
         <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-lg transition overflow-hidden">
@@ -63,7 +63,7 @@
     </div>
 
     <!-- PAGINATION -->
-    <div class="mt-6">
+    <div data-aos="fade-up" class="mt-6">
         {{ $listings->links() }}
     </div>
 
