@@ -24,6 +24,7 @@ class TestimonialController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'job' => 'nullable|string|max:100',
             'message' => 'required',
             'rating' => 'required|integer|min:1|max:5',
             'photo' => 'nullable|image|max:2048'
@@ -37,6 +38,7 @@ class TestimonialController extends Controller
 
         Testimonial::create([
             'name' => $request->name,
+            'job' => $request->job,
             'message' => $request->message,
             'rating' => $request->rating,
             'photo' => $photo,

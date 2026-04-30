@@ -22,11 +22,14 @@ class HomeController extends Controller
         $categoryId = $request->category;
 
         // Ambil semua kategori + relasi listing + image
-        $categories = Category::with(['listings.images'])
+        $categories = Category::with([
+            'listings' => fn ($query) => $query->active()->with('images')
+        ])
             ->get();
 
         // Ambil listing (untuk filter halaman "lihat semua")
         $listings = Listing::with('images')
+            ->active()
             ->when($categoryId, function ($query) use ($categoryId) {
                 $query->where('category_id', $categoryId);
             })
@@ -47,12 +50,25 @@ class HomeController extends Controller
     
     public function autoshow(Request $request)
     {
-        $query = Listing::with('images')
+        $query = Listing::with(['images','category','carDetail','motorcycleDetail'])
+            ->active()
             ->whereIn('category_id', [3, 4]); // mobil & motor
 
         // 🔍 FILTER KEYWORD
         if ($request->keyword) {
-            $query->where('title', 'like', '%' . $request->keyword . '%');
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', '%' . $keyword . '%')
+                    ->orWhere('location', 'like', '%' . $keyword . '%')
+                    ->orWhereHas('carDetail', function ($car) use ($keyword) {
+                        $car->where('brand', 'like', '%' . $keyword . '%')
+                            ->orWhere('model', 'like', '%' . $keyword . '%');
+                    })
+                    ->orWhereHas('motorcycleDetail', function ($motorcycle) use ($keyword) {
+                        $motorcycle->where('brand', 'like', '%' . $keyword . '%')
+                            ->orWhere('model', 'like', '%' . $keyword . '%');
+                    });
+            });
         }
 
         // 🔍 FILTER HARGA
@@ -71,23 +87,44 @@ class HomeController extends Controller
 
         // 🔍 FILTER TRANSMISI (relasi)
         if ($request->transmission) {
-            $query->whereHas('carDetail', function ($q) use ($request) {
-                $q->where('transmission', $request->transmission);
+            $query->where(function ($q) use ($request) {
+                $q->whereHas('carDetail', function ($car) use ($request) {
+                    $car->where('transmission', $request->transmission);
+                })->orWhereHas('motorcycleDetail', function ($motorcycle) use ($request) {
+                    $motorcycle->where('transmission', $request->transmission);
+                });
             });
         }
 
-        $listings = $query->latest()->paginate(8);
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        $listings = $query->latest()->paginate(8)->appends($request->all());
 
         return view('autoshow.index', compact('listings'));
     }
 
     public function autoshowFilter(Request $request)
     {
-        $query = Listing::with(['images','carDetail','motorcycleDetail'])
+        $query = Listing::with(['images','category','carDetail','motorcycleDetail'])
+            ->active()
             ->whereIn('category_id', [3,4]);
 
         if ($request->keyword) {
-            $query->where('title','like','%'.$request->keyword.'%');
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title','like','%'.$keyword.'%')
+                    ->orWhere('location','like','%'.$keyword.'%')
+                    ->orWhereHas('carDetail', function ($car) use ($keyword) {
+                        $car->where('brand','like','%'.$keyword.'%')
+                            ->orWhere('model','like','%'.$keyword.'%');
+                    })
+                    ->orWhereHas('motorcycleDetail', function ($motorcycle) use ($keyword) {
+                        $motorcycle->where('brand','like','%'.$keyword.'%')
+                            ->orWhere('model','like','%'.$keyword.'%');
+                    });
+            });
         }
 
         if ($request->min_price) {
@@ -103,8 +140,12 @@ class HomeController extends Controller
         }
 
         if ($request->transmission) {
-            $query->whereHas('carDetail', function($q) use ($request){
-                $q->where('transmission',$request->transmission);
+            $query->where(function ($q) use ($request) {
+                $q->whereHas('carDetail', function($car) use ($request){
+                    $car->where('transmission',$request->transmission);
+                })->orWhereHas('motorcycleDetail', function($motorcycle) use ($request){
+                    $motorcycle->where('transmission',$request->transmission);
+                });
             });
         }
         if ($request->category) {
@@ -121,7 +162,8 @@ class HomeController extends Controller
     public function properti(Request $request)
     {
         // RUMAH KPR
-        $rumahKpr = Listing::with(['images','propertyDetail'])
+        $rumahKpr = Listing::with(['images','category','propertyDetail'])
+            ->active()
             ->where('category_id', 1)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', true);
@@ -131,7 +173,8 @@ class HomeController extends Controller
             ->get();
 
         // RUMAH NON KPR
-        $rumahNonKpr = Listing::with(['images','propertyDetail'])
+        $rumahNonKpr = Listing::with(['images','category','propertyDetail'])
+            ->active()
             ->where('category_id', 1)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', false);
@@ -141,18 +184,26 @@ class HomeController extends Controller
             ->get();
 
         // TANAH
-        $tanah = Listing::with(['images','propertyDetail'])
+        $tanah = Listing::with(['images','category','propertyDetail'])
+            ->active()
             ->where('category_id', 2)
             ->latest()
             ->take(8)
             ->get();
 
-        return view('properti.index', compact('rumahKpr','rumahNonKpr','tanah'));
+        $listings = Listing::with(['images','category','propertyDetail'])
+            ->active()
+            ->whereIn('category_id', [1, 2])
+            ->latest()
+            ->paginate(8);
+
+        return view('properti.index', compact('rumahKpr','rumahNonKpr','tanah','listings'));
     }
 
     public function propertiFilter(Request $request)
     {
-        $query = Listing::with(['images','propertyDetail']);
+        $query = Listing::with(['images','category','propertyDetail']);
+        $query->active();
 
         // kategori rumah / tanah
         if ($request->category) {
@@ -163,7 +214,15 @@ class HomeController extends Controller
 
         // keyword
         if ($request->keyword) {
-            $query->where('title','like','%'.$request->keyword.'%');
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title','like','%'.$keyword.'%')
+                    ->orWhere('location','like','%'.$keyword.'%')
+                    ->orWhereHas('propertyDetail', function($property) use ($keyword) {
+                        $property->where('house_type','like','%'.$keyword.'%')
+                            ->orWhere('certificate','like','%'.$keyword.'%');
+                    });
+            });
         }
 
         // harga
@@ -189,7 +248,7 @@ class HomeController extends Controller
 
     public function category($slug)
     {
-        $query = Listing::with(['images']);
+        $query = Listing::with(['images'])->active();
 
         // FILTER BERDASARKAN SLUG
         if ($slug == 'mobil') {
@@ -213,22 +272,98 @@ class HomeController extends Controller
         return view('category.index', compact('listings','title','slug'));
     }
 
-    public function mobil()
+    public function mobil(Request $request)
     {
-        $listings = Listing::with(['images','car'])
-            ->where('category_id', 3)
-            ->latest()
-            ->paginate(8);
+        $query = Listing::with(['images','category','carDetail'])
+            ->active()
+            ->where('category_id', 3);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('location', 'like', '%'.$search.'%')
+                    ->orWhereHas('carDetail', function ($car) use ($search) {
+                        $car->where('brand', 'like', '%'.$search.'%')
+                            ->orWhere('model', 'like', '%'.$search.'%');
+                    });
+            });
+        }
+
+        if ($request->filled('brand')) {
+            $query->whereHas('carDetail', fn ($car) => $car->where('brand', $request->brand));
+        }
+
+        if ($request->filled('transmission')) {
+            $query->whereHas('carDetail', fn ($car) => $car->where('transmission', $request->transmission));
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        $sort = $request->sort;
+        if ($sort === 'low') {
+            $query->orderBy('price');
+        } elseif ($sort === 'high') {
+            $query->orderByDesc('price');
+        } else {
+            $query->latest();
+        }
+
+        $listings = $query->paginate(12)->appends($request->query());
 
         return view('mobil.index', compact('listings'));
     }
 
-    public function motor()
+    public function motor(Request $request)
     {
-        $listings = Listing::with(['images','motorcycle'])
-            ->where('category_id', 4)
-            ->latest()
-            ->paginate(8);
+        $query = Listing::with(['images','category','motorcycleDetail'])
+            ->active()
+            ->where('category_id', 4);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('location', 'like', '%'.$search.'%')
+                    ->orWhereHas('motorcycleDetail', function ($motorcycle) use ($search) {
+                        $motorcycle->where('brand', 'like', '%'.$search.'%')
+                            ->orWhere('model', 'like', '%'.$search.'%');
+                    });
+            });
+        }
+
+        if ($request->filled('brand')) {
+            $query->whereHas('motorcycleDetail', fn ($motorcycle) => $motorcycle->where('brand', $request->brand));
+        }
+
+        if ($request->filled('transmission')) {
+            $query->whereHas('motorcycleDetail', fn ($motorcycle) => $motorcycle->where('transmission', $request->transmission));
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        $sort = $request->sort;
+        if ($sort === 'low') {
+            $query->orderBy('price');
+        } elseif ($sort === 'high') {
+            $query->orderByDesc('price');
+        } else {
+            $query->latest();
+        }
+
+        $listings = $query->paginate(12)->appends($request->query());
 
         return view('motor.index', compact('listings'));
     }
@@ -236,6 +371,7 @@ class HomeController extends Controller
     public function rumah()
     {
         $listings = Listing::with(['images','property'])
+            ->active()
             ->where('category_id', 1)
             ->latest()
             ->paginate(8);
@@ -243,12 +379,42 @@ class HomeController extends Controller
         return view('rumah.index', compact('listings'));
     }
 
-    public function tanah()
+    public function tanah(Request $request)
     {
-        $listings = Listing::with(['images','property'])
-            ->where('category_id', 2)
-            ->latest()
-            ->paginate(8);
+        $query = Listing::with(['images','category','propertyDetail'])
+            ->active()
+            ->where('category_id', 2);
+
+        if ($request->filled('location')) {
+            $query->where('location', 'like', '%'.$request->location.'%');
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        if ($request->filled('min_land')) {
+            $query->whereHas('propertyDetail', fn ($property) => $property->where('land_area', '>=', $request->min_land));
+        }
+
+        if ($request->filled('certificate')) {
+            $query->whereHas('propertyDetail', fn ($property) => $property->where('certificate', $request->certificate));
+        }
+
+        $sort = $request->sort;
+        if ($sort === 'low') {
+            $query->orderBy('price');
+        } elseif ($sort === 'high') {
+            $query->orderByDesc('price');
+        } else {
+            $query->latest();
+        }
+
+        $listings = $query->paginate(12)->appends($request->query());
 
         return view('tanah.index', compact('listings'));
     }

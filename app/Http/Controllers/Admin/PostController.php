@@ -99,16 +99,17 @@ class PostController extends Controller
 
     public function show($id)
     {
-        $post = \App\Models\Post::latest()->findOrFail($id);
+        $post = \App\Models\Post::with('images')->findOrFail($id);
 
         // ambil berita terkait (kategori sama kalau ada)
-        $related = \App\Models\Post::where('id', '!=', $id)
+        $related = \App\Models\Post::with('images')
+            ->where('id', '!=', $id)
             ->latest()
             ->take(4)
             ->get();
 
         // sidebar berita terbaru
-        $latest = \App\Models\Post::latest()->take(5)->get();
+        $latest = \App\Models\Post::with('images')->latest()->take(5)->get();
 
         return view('posts.show', compact('post','related','latest'));
     }

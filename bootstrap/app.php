@@ -11,8 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [
+            \App\Http\Middleware\TrackSiteVisit::class,
+        ]);
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'agent.owner' => \App\Http\Middleware\AgentOrOwnerMiddleware::class,
+            'approved' => \App\Http\Middleware\CheckApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

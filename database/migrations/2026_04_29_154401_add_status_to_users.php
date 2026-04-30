@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('property_details', function (Blueprint $table) {
-            $table->boolean('is_kpr')->default(false)->after('certificate');
-        });
+        if (!Schema::hasColumn('users', 'status')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('status')->default('normal'); // normal, pending, approved, rejected
+            });
+        }
     }
 
     /**
@@ -21,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('property_details', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }

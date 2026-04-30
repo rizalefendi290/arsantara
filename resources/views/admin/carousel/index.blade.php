@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('content')
-<div class="container mx-auto p-6">
+@section('admin_content')
+<div>
 
     <h1 class="text-2xl font-bold mb-6">Kelola Carousel</h1>
 
@@ -51,14 +51,5 @@
 
         </div>
     </div>
-
-    <!-- tombol kembali -->
-    <div class="mt-6">
-        <a href="{{ route('admin.dashboard') }}"
-            class="bg-gray-500 text-white px-4 py-2 rounded">
-            Kembali
-        </a>
-    </div>
-
 </div>
 @endsection

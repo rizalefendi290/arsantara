@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 <!-- HERO -->
@@ -260,6 +260,75 @@
 </div>
 @endif
 
+@if($recommendedListings->count())
+<section data-aos="fade-up" class="mb-14">
+    <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between mb-6">
+        <div>
+            <p class="text-sm font-semibold text-blue-600 uppercase">Pilihan Admin</p>
+            <h2 class="text-3xl font-bold text-gray-800">Produk Rekomendasi</h2>
+        </div>
+
+        <a href="{{ route('search') }}" class="text-blue-600 font-semibold hover:underline">
+            Lihat Semua
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        @foreach($recommendedListings as $listing)
+            <div data-aos="fade-up"
+                class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+                onclick="window.location='{{ route('listing.show',$listing->id) }}'">
+
+                <div class="relative">
+                    <div class="relative h-48 overflow-hidden">
+                        @forelse($listing->images as $index => $img)
+                            <img src="{{ asset('storage/'.$img->image) }}"
+                                class="card-slide absolute inset-0 w-full h-full object-cover transition duration-300 {{ $index == 0 ? '' : 'hidden' }}">
+                        @empty
+                            <img src="https://via.placeholder.com/300x200" class="w-full h-full object-cover">
+                        @endforelse
+                    </div>
+
+                    <span class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                        {{ $listing->category->name ?? 'Rekomendasi' }}
+                    </span>
+
+                    @if($listing->images->count() > 1)
+                        <button onclick="event.stopPropagation(); prevSlide(this)"
+                            class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
+                            ❮
+                        </button>
+
+                        <button onclick="event.stopPropagation(); nextSlide(this)"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
+                            ❯
+                        </button>
+                    @endif
+                </div>
+
+                <div class="p-4">
+                    <h3 class="font-semibold line-clamp-1">{{ $listing->title }}</h3>
+                    <p class="text-gray-500 text-sm line-clamp-1">{{ $listing->location }}</p>
+                    <div class="mt-1">
+                        <x-listing-price :listing="$listing" />
+                    </div>
+
+                    @php
+                        $phone = "62895347042844";
+                        $message = urlencode("Halo, saya tertarik dengan ".$listing->title);
+                    @endphp
+
+                    <a href="https://wa.me/{{ $phone }}?text={{ $message }}" onclick="event.stopPropagation()"
+                        target="_blank" class="block mt-3 text-center bg-green-500 text-white py-2 rounded-lg">
+                        WhatsApp
+                    </a>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</section>
+@endif
+
     <!-- MARKETPLACE -->
     <h1 data-aos="fade-up" class="text-3xl font-bold mb-8 text-gray-800">
         Marketplace 
@@ -376,79 +445,6 @@
         </div>
 
     @endforeach
-
-    <!-- ================= FAQ ================= -->
-<section class="bg-gray-50 py-12 mt-10">
-    <div data-aos="fade-up" class="container mx-auto px-6 max-w-4xl">
-
-        <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">
-            Pertanyaan Umum (FAQ)
-        </h2>
-
-        <div class="space-y-4">
-
-            @php
-            $faqs = [
-                [
-                    "q" => "Apa itu Arsantara?",
-                    "a" => "Arsantara adalah platform marketplace yang menyediakan layanan jual beli mobil, motor, properti, serta pengajuan pinjaman secara online."
-                ],
-                [
-                    "q" => "Bagaimana cara membeli produk di Arsantara?",
-                    "a" => "Pilih produk yang diinginkan, lalu klik tombol 'Hubungi Penjual' untuk melanjutkan komunikasi melalui WhatsApp."
-                ],
-                [
-                    "q" => "Apakah produk yang ditampilkan masih tersedia?",
-                    "a" => "Ketersediaan produk bisa berubah. Silakan hubungi admin atau penjual melalui WhatsApp untuk memastikan."
-                ],
-                [
-                    "q" => "Apakah Arsantara menyediakan sistem kredit?",
-                    "a" => "Ya, beberapa produk seperti mobil dan motor dapat diajukan melalui sistem kredit. Silakan hubungi admin untuk simulasi."
-                ],
-                [
-                    "q" => "Apakah aman bertransaksi di Arsantara?",
-                    "a" => "Kami membantu mempertemukan penjual dan pembeli secara transparan. Disarankan untuk melakukan pengecekan langsung sebelum transaksi."
-                ],
-                [
-                    "q" => "Bagaimana cara menjual produk di Arsantara?",
-                    "a" => "Silakan hubungi admin untuk mendaftarkan produk Anda agar dapat ditampilkan di marketplace Arsantara."
-                ],
-                [
-                    "q" => "Apa saja jenis properti yang tersedia?",
-                    "a" => "Kami menyediakan berbagai jenis properti seperti rumah dan tanah dengan berbagai pilihan harga dan lokasi."
-                ],
-                [
-                    "q" => "Apakah bisa mengajukan pinjaman dana?",
-                    "a" => "Ya, Anda bisa mengajukan pinjaman dengan agunan seperti BPKB kendaraan melalui fitur Arsantara Pinjam Dana."
-                ],
-                [
-                    "q" => "Bagaimana cara mengetahui legalitas properti?",
-                    "a" => "Setiap properti memiliki informasi sertifikat seperti SHM atau SHGB. Pastikan untuk mengecek langsung dokumen sebelum transaksi."
-                ],
-                [
-                    "q" => "Apakah ada biaya tambahan saat transaksi?",
-                    "a" => "Untuk informasi biaya atau administrasi, silakan hubungi admin karena dapat berbeda tergantung jenis produk dan layanan."
-                ],
-            ];
-            @endphp
-
-            @foreach($faqs as $i => $faq)
-            <div data-aos="fade-up" class="bg-white border rounded-xl shadow">
-                <button onclick="toggleFAQ({{ $i }})" 
-                    class="w-full flex justify-between items-center p-4 text-left font-semibold text-gray-800">
-                    {{ $faq['q'] }}
-                    <span id="icon-{{ $i }}">+</span>
-                </button>
-                <div id="faq-{{ $i }}" class="hidden px-4 pb-4 text-gray-600">
-                    {{ $faq['a'] }}
-                </div>
-            </div>
-            @endforeach
-
-        </div>
-
-    </div>
-</section>
 
 <section>
     <div class="mt-16" data-aos="fade-up">
@@ -635,19 +631,6 @@
     </div>
 @endsection
 <script>
-function toggleFAQ(id){
-    const content = document.getElementById('faq-' + id);
-    const icon = document.getElementById('icon-' + id);
-
-    if(content.classList.contains('hidden')){
-        content.classList.remove('hidden');
-        icon.innerHTML = '−';
-    } else {
-        content.classList.add('hidden');
-        icon.innerHTML = '+';
-    }
-}
-
 function scrollTesti(direction){
     const container = document.getElementById('testi-slider');
     container.scrollBy({
@@ -754,4 +737,5 @@ window.onclick = function(e) {
     }
 }
 </script>
+
 

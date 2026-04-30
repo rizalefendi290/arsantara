@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('content')
+@section('admin_content')
 
-<div class="container mx-auto p-6">
+<div>
 
     <h1 class="text-2xl font-bold mb-6">Manajemen Testimoni</h1>
 

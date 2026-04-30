@@ -52,9 +52,9 @@
                     {{ $listing->location }}
                 </p>
 
-                <p class="text-blue-600 font-bold mt-2">
-                    Rp {{ number_format($listing->price) }}
-                </p>
+                <div class="mt-2">
+                    <x-listing-price :listing="$listing" />
+                </div>
 
                 <!-- DETAIL SPESIFIK -->
                 <div class="text-sm text-gray-600 mt-2">

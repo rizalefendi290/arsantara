@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('content')
-<div class="container mx-auto p-6">
+@section('admin_content')
+<div>
 
     <h1 class="text-2xl font-bold mb-6">Edit Listing</h1>
 
@@ -34,9 +34,24 @@
 
             <div>
                 <label class="block font-medium mb-1">Harga</label>
-                <input type="number" name="price"
-                    value="{{ $listing->price }}"
-                    class="w-full border rounded p-2">
+                <input type="text"
+                    data-rupiah-input
+                    data-target="price"
+                    value="{{ old('price', $listing->price) ? 'Rp '.number_format((int) old('price', $listing->price), 0, ',', '.') : '' }}"
+                    class="w-full border rounded p-2"
+                    placeholder="Contoh: Rp 250.000.000">
+                <input type="hidden" name="price" id="price" value="{{ old('price', $listing->price) }}">
+            </div>
+
+            <div>
+                <label class="block font-medium mb-1">Harga Diskon</label>
+                <input type="text"
+                    data-rupiah-input
+                    data-target="discount_price"
+                    value="{{ old('discount_price', $listing->discount_price) ? 'Rp '.number_format((int) old('discount_price', $listing->discount_price), 0, ',', '.') : '' }}"
+                    class="w-full border rounded p-2"
+                    placeholder="Contoh: Rp 225.000.000">
+                <input type="hidden" name="discount_price" id="discount_price" value="{{ old('discount_price', $listing->discount_price) }}">
             </div>
 
             <div>
@@ -114,6 +129,31 @@
 </div>
 
 <script>
+function formatRupiah(value) {
+    let number = String(value).replace(/\D/g, '');
+
+    if (!number) {
+        return '';
+    }
+
+    return 'Rp ' + number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function bindRupiahInputs() {
+    document.querySelectorAll('[data-rupiah-input]').forEach(function(input) {
+        const target = document.getElementById(input.dataset.target);
+        if (!target) return;
+
+        input.addEventListener('input', function() {
+            const raw = this.value.replace(/\D/g, '');
+            target.value = raw;
+            this.value = formatRupiah(raw);
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', bindRupiahInputs);
+
 function addImage(){
     let wrapper = document.getElementById('image-wrapper');
 

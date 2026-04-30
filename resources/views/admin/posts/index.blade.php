@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('content')
-<div class="container mx-auto p-6">
+@section('admin_content')
+<div>
 
     <div class="flex justify-between mb-6">
         <h1 class="text-2xl font-bold">Data Berita</h1>

@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('property_details', function (Blueprint $table) {
-            $table->boolean('is_kpr')->default(false)->after('certificate');
-        });
+        if (!Schema::hasColumn('property_details', 'is_kpr')) {
+            Schema::table('property_details', function (Blueprint $table) {
+                $table->boolean('is_kpr')->default(false)->after('certificate');
+            });
+        }
     }
 
     /**

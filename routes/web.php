@@ -7,9 +7,12 @@ use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RumahController;
 use App\Http\Controllers\MobilController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Agent\AgentDashboardController;
+use App\Http\Controllers\Agent\AgentListingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/upgrade-role', [ProfileController::class, 'upgradeRole'])->name('upgrade.role');
+    Route::post('/submit-request', [ProfileController::class, 'submitRequest'])->name('submit.request');
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -49,12 +54,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/store', [ListingController::class, 'store']);
     Route::get('/admin/edit/{id}', [ListingController::class, 'edit']);
     Route::put('/admin/update/{id}', [ListingController::class, 'update']);
+    Route::patch('/admin/listings/{id}/approve', [ListingController::class, 'approve'])->name('admin.listings.approve');
+    Route::get('/admin/recommendations', [ListingController::class, 'recommendations'])->name('admin.recommendations.index');
+    Route::patch('/admin/recommendations/{id}/toggle', [ListingController::class, 'toggleRecommendation'])->name('admin.recommendations.toggle');
     Route::delete('/admin/delete/{id}', [ListingController::class, 'destroy']);
     Route::get('/delete-image/{id}', [ListingController::class,'deleteImage'])->name('images.delete');
     // Admin
     Route::resource('admin/posts', PostController::class);
-    Route::delete('/admin/post-image/{id}', [PostController::class, 'deleteImage'])
-    ->name('post-image.delete');
+    Route::delete('/admin/post-image/{id}', [PostController::class, 'deleteImage'])->name('post-image.delete');
+    Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+    Route::patch('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('/admin/approve/{id}', [AdminController::class, 'approve'])->name('admin.users.approve');
+    Route::post('/admin/reject/{id}', [AdminController::class, 'reject'])->name('admin.users.reject');
 });
 //edit carousel
 Route::middleware(['auth','admin'])->group(function(){
@@ -116,13 +128,14 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 });
 
 Route::get('/about', function () {
-    $posts = \App\Models\Post::latest()->take(5)->get();
+    $posts = \App\Models\Post::with('images')->latest()->take(5)->get();
 
     return view('about', compact('posts'));
 })->name('about');
 
 Route::view('/syarat', 'pages.terms')->name('terms');
 Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
+Route::view('/faq', 'pages.faq')->name('faq');
 
 Route::prefix('kategori')->group(function () {
     Route::get('/tanah', [ListingController::class, 'tanah'])->name('tanah.index');
@@ -141,5 +154,17 @@ Route::get('/pinjaman-dana', function () {
 })->name('pinjaman.index');
 
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
-Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+
+Route::middleware(['auth', 'approved', 'agent.owner'])->group(function () {
+    Route::get('/dashboard-agen', [AgentDashboardController::class, 'index'])->name('agent.dashboard');
+    Route::get('/dashboard-pemilik', [AgentDashboardController::class, 'index'])->name('owner.dashboard');
+    Route::get('/agen/listings/create', [AgentListingController::class, 'create'])->name('agent.listings.create');
+    Route::post('/agen/listings', [AgentListingController::class, 'store'])->name('agent.listings.store');
+    Route::get('/agen/listings/{listing}/edit', [AgentListingController::class, 'edit'])->name('agent.listings.edit');
+    Route::put('/agen/listings/{listing}', [AgentListingController::class, 'update'])->name('agent.listings.update');
+    Route::delete('/agen/listings/{listing}', [AgentListingController::class, 'destroy'])->name('agent.listings.destroy');
+    Route::patch('/agen/listings/{listing}/sold', [AgentListingController::class, 'markSold'])->name('agent.listings.sold');
+    Route::delete('/agen/listing-images/{image}', [AgentListingController::class, 'deleteImage'])->name('agent.listings.images.destroy');
+});
 require __DIR__.'/auth.php';

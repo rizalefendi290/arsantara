@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Carousel;
 use App\Models\Post;
 use App\Models\Testimonial;
+use App\Models\ListingView;
+use App\Services\ImageWatermarkService;
 
 class ListingController extends Controller
 {
@@ -21,19 +23,28 @@ class ListingController extends Controller
     {
         $listings = Listing::with(['category','images','user'])
                     ->latest()
-                    ->get();
+                    ->paginate(15);
 
-        return view('rumah.index', compact('listings'));
+        return view('admin.listings.index', compact('listings'));
     }
 
     public function home()
     {
-        $categories = Category::with(['listings.images'])->get();
+        $categories = Category::with([
+            'listings' => fn ($query) => $query->active()->with('images')
+        ])->get();
+        $recommendedListings = Listing::with(['images', 'category'])
+            ->active()
+            ->where('is_featured', true)
+            ->whereIn('category_id', [1, 2, 3, 4])
+            ->latest()
+            ->take(8)
+            ->get();
         $carousels = Carousel::all();
         $posts = Post::latest()->take(6)->get();
         $testimonials = Testimonial::where('is_active',1)->latest()->get();
 
-        return view('user.home', compact('categories','carousels','posts','testimonials'));
+        return view('user.home', compact('categories','recommendedListings','carousels','posts','testimonials'));
     }
 
     public function create()
@@ -42,12 +53,13 @@ class ListingController extends Controller
         return view('listings.create', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWatermarkService $watermarkService)
     {
         $request->validate([
             'title' => 'required',
             'category_id' => 'required|in:1,2,3,4',
             'price' => 'required|numeric',
+            'discount_price' => 'nullable|numeric|min:0|lt:price',
             'location' => 'required',
             'condition' => 'required|in:baru,bekas',
             'description' => 'nullable|string',
@@ -78,6 +90,7 @@ class ListingController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'price' => $request->price,
+            'discount_price' => $request->discount_price,
             'location' => $request->location,
             'condition' => $request->condition,
             'status' => 'aktif'
@@ -139,7 +152,7 @@ class ListingController extends Controller
         if($request->hasFile('images')){
             foreach($request->file('images') as $image){
 
-                $path = $image->store('listings','public');
+                $path = $watermarkService->storeListingImage($image);
 
                 ListingImage::create([
                     'listing_id' => $listing->id,
@@ -148,8 +161,13 @@ class ListingController extends Controller
             }
         }
 
+        $shareUrl = route('listing.show', $listing->id);
+
         return redirect()->route('admin.dashboard')
-            ->with('success','Data berhasil ditambahkan');
+            ->with('success','Data berhasil ditambahkan')
+            ->with('share_url', $shareUrl)
+            ->with('share_title', $listing->title)
+            ->with('share_text', 'Lihat listing terbaru di Arsantara: '.$listing->title);
     }
 
     public function show($id)
@@ -163,9 +181,19 @@ class ListingController extends Controller
             'property',
             'car',
             'motorcycle'
-        ])->findOrFail($id);
+        ])->active()->findOrFail($id);
+
+        ListingView::create([
+            'listing_id' => $listing->id,
+            'user_id' => optional(request()->user())->id,
+            'session_id' => optional(request()->session())->getId(),
+            'ip_address' => request()->ip(),
+            'user_agent' => substr((string) request()->userAgent(), 0, 1000),
+            'viewed_at' => now(),
+        ]);
 
         $similar = Listing::with('images')
+        ->active()
         ->where('category_id', $listing->category_id)
         ->where('id', '!=', $listing->id)
         ->latest()
@@ -177,17 +205,34 @@ class ListingController extends Controller
 
     public function edit($id)
     {
-        $listing = Listing::findOrFail($id);
+        $listing = Listing::with('images')->findOrFail($id);
         $categories = Category::all();
 
-        return view('listings.show', compact('listing','categories'));
+        return view('listings.edit', compact('listing','categories'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, ImageWatermarkService $watermarkService)
     {
         $listing = Listing::findOrFail($id);
 
-        $listing->update($request->all());
+        $request->validate([
+            'discount_price' => 'nullable|numeric|min:0|lt:price',
+        ]);
+
+        $listing->update($request->except('images'));
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                if (!$image) {
+                    continue;
+                }
+
+                ListingImage::create([
+                    'listing_id' => $listing->id,
+                    'image' => $watermarkService->storeListingImage($image),
+                ]);
+            }
+        }
 
         return redirect()->route('listings.index')
             ->with('success','Listing berhasil diupdate');
@@ -201,21 +246,82 @@ class ListingController extends Controller
         return back()->with('success','Listing dihapus');
     }
 
+    public function approve($id)
+    {
+        $listing = Listing::findOrFail($id);
+        $listing->update(['status' => 'aktif']);
+
+        return back()->with('success', 'Listing berhasil dipublikasikan');
+    }
+
+    public function recommendations(Request $request)
+    {
+        $query = Listing::with(['images', 'category', 'user'])
+            ->active()
+            ->whereIn('category_id', [1, 2, 3, 4]);
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('location', 'like', '%'.$search.'%');
+            });
+        }
+
+        $listings = $query->orderByDesc('is_featured')
+            ->latest()
+            ->paginate(15)
+            ->appends($request->query());
+
+        $categories = Category::all();
+        $totalRecommended = Listing::active()->where('is_featured', true)->count();
+
+        return view('admin.listings.recommendations', compact('listings', 'categories', 'totalRecommended'));
+    }
+
+    public function toggleRecommendation($id)
+    {
+        $listing = Listing::findOrFail($id);
+
+        $listing->update([
+            'is_featured' => !$listing->is_featured,
+        ]);
+
+        return back()->with('success', 'Status rekomendasi listing berhasil diperbarui');
+    }
+
+    public function deleteImage($id)
+    {
+        $image = ListingImage::findOrFail($id);
+
+        Storage::disk('public')->delete($image->image);
+        $image->delete();
+
+        return back()->with('success', 'Gambar berhasil dihapus');
+    }
+
     public function rumah(Request $request)
     {
         // Base query untuk semua rumah
-        $listingsQuery = Listing::with(['images','propertyDetail'])
+        $listingsQuery = Listing::with(['images','category','propertyDetail'])
+            ->active()
             ->where('category_id', 1);
 
         // rumah KPR query
-        $kprQuery = Listing::with(['images','propertyDetail'])
+        $kprQuery = Listing::with(['images','category','propertyDetail'])
+            ->active()
             ->where('category_id', 1)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', true);
             });
 
         // rumah NON KPR query
-        $nonKprQuery = Listing::with(['images','propertyDetail'])
+        $nonKprQuery = Listing::with(['images','category','propertyDetail'])
+            ->active()
             ->where('category_id', 1)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', false);
@@ -292,6 +398,7 @@ class ListingController extends Controller
     public function tanah(Request $request)
     {
         $listings = Listing::with(['images','propertyDetail'])
+            ->active()
             ->where('category_id', 2);
 
         // Apply filters
@@ -325,6 +432,7 @@ class ListingController extends Controller
     public function mobil(Request $request)
     {
         $listings = Listing::with(['images','car'])
+            ->active()
             ->where('category_id', 3);
 
         // Apply filters
@@ -363,29 +471,69 @@ class ListingController extends Controller
 
     public function search(Request $request)
     {
-        $query = Listing::with(['images','propertyDetail']);
+        $keyword = trim((string) $request->input('keyword', $request->input('search', '')));
+        $categoryId = $request->input('category', $request->input('category_id'));
 
-        if ($request->category_id) {
-            $query->where('category_id', $request->category_id);
+        $listingsQuery = Listing::with(['images', 'category', 'propertyDetail', 'carDetail', 'motorcycleDetail'])
+            ->active();
+
+        if ($categoryId) {
+            $listingsQuery->where('category_id', $categoryId);
         }
 
-        if ($request->keyword) {
-            $query->where(function($q) use ($request){
-                $q->where('title','like','%'.$request->keyword.'%')
-                ->orWhere('location','like','%'.$request->keyword.'%');
+        if ($keyword !== '') {
+            $listingsQuery->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', '%'.$keyword.'%')
+                    ->orWhere('location', 'like', '%'.$keyword.'%')
+                    ->orWhere('description', 'like', '%'.$keyword.'%')
+                    ->orWhereHas('category', function ($category) use ($keyword) {
+                        $category->where('name', 'like', '%'.$keyword.'%');
+                    })
+                    ->orWhereHas('user', function ($user) use ($keyword) {
+                        $user->where('name', 'like', '%'.$keyword.'%');
+                    })
+                    ->orWhereHas('propertyDetail', function ($property) use ($keyword) {
+                        $property->where('house_type', 'like', '%'.$keyword.'%')
+                            ->orWhere('certificate', 'like', '%'.$keyword.'%')
+                            ->orWhere('facilities', 'like', '%'.$keyword.'%');
+                    })
+                    ->orWhereHas('carDetail', function ($car) use ($keyword) {
+                        $car->where('brand', 'like', '%'.$keyword.'%')
+                            ->orWhere('model', 'like', '%'.$keyword.'%')
+                            ->orWhere('color', 'like', '%'.$keyword.'%')
+                            ->orWhere('fuel_type', 'like', '%'.$keyword.'%');
+                    })
+                    ->orWhereHas('motorcycleDetail', function ($motorcycle) use ($keyword) {
+                        $motorcycle->where('brand', 'like', '%'.$keyword.'%')
+                            ->orWhere('model', 'like', '%'.$keyword.'%');
+                    });
             });
         }
 
         if ($request->min_price) {
-            $query->where('price','>=',$request->min_price);
+            $listingsQuery->where('price', '>=', $request->min_price);
         }
 
         if ($request->max_price) {
-            $query->where('price','<=',$request->max_price);
+            $listingsQuery->where('price', '<=', $request->max_price);
         }
 
-        $listings = $query->latest()->paginate(12);
+        $listings = $listingsQuery->latest()->paginate(12, ['*'], 'listings_page')->appends($request->query());
 
-        return view('search.index', compact('listings'));
+        $posts = Post::with('images')
+            ->when($keyword !== '', function ($query) use ($keyword) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('title', 'like', '%'.$keyword.'%')
+                        ->orWhere('content', 'like', '%'.$keyword.'%')
+                        ->orWhere('source_name', 'like', '%'.$keyword.'%');
+                });
+            })
+            ->latest()
+            ->paginate(6, ['*'], 'posts_page')
+            ->appends($request->query());
+
+        $categories = Category::all();
+
+        return view('search.index', compact('listings', 'posts', 'categories', 'keyword', 'categoryId'));
     }
 }

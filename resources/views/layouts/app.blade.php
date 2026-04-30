@@ -6,6 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
+        @yield('meta')
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -63,6 +64,7 @@
         <div class="min-h-screen bg-white">
             
             @include('layouts.navigation')
+            @include('components.modal-upgrade')
 
             <!-- Page Heading -->
             @isset($header)
@@ -79,6 +81,7 @@
             </main>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </body>
     
 <footer class="bg-neutral-primary-soft">
@@ -122,6 +125,9 @@
                       <li>
                           <a href="{{ route('privacy') }}" class="hover:underline">Kebijakan Privasi</a>
                       </li>
+                      <li class="mt-4">
+                          <a href="{{ route('faq') }}" class="hover:underline">FAQ</a>
+                      </li>
                   </ul>
               </div>
           </div>
@@ -164,5 +170,6 @@ AOS.init({
     duration: 800,
     once: true
 });
+
 </script>
 </html>
