@@ -64,6 +64,7 @@
 
 <main class="bg-gradient-to-b from-blue-50 via-white to-white">
     <div class="mx-auto max-w-7xl px-6 py-12">
+        @if($rumahActive)
         <section data-aos="fade-up" class="mb-14">
             <div class="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <div>
@@ -104,7 +105,9 @@
                 @endforelse
             </div>
         </section>
+        @endif
 
+        @if($tanahActive)
         <section data-aos="fade-up">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-800">Tanah</h2>
@@ -118,6 +121,7 @@
                 @endforelse
             </div>
         </section>
+        @endif
     </div>
 </main>
 

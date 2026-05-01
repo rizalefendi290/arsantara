@@ -270,8 +270,9 @@
                                 placeholder="Password akun">
                             <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
                         </div>
-                        <button onclick="return confirm('Yakin ingin menghapus akun ini?')"
-                            class="rounded-xl bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700">
+                        <button class="rounded-xl bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700"
+                            data-swal-confirm="Yakin ingin menghapus akun ini?"
+                            data-swal-confirm-button="Ya, hapus akun">
                             Hapus Akun
                         </button>
                     </form>

@@ -16,7 +16,8 @@ class Listing extends Model
         'location',
         'condition',
         'status',
-        'is_featured'
+        'is_featured',
+        'product_code',
     ];
 
     protected $casts = [
@@ -28,6 +29,11 @@ class Listing extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'aktif');
+    }
+
+    public function scopeInActiveCategory($query)
+    {
+        return $query->whereHas('category', fn ($category) => $category->where('is_active', true));
     }
 
     public function hasDiscount(): bool
@@ -47,6 +53,37 @@ class Listing extends Model
         }
 
         return (int) round((($this->price - $this->discount_price) / $this->price) * 100);
+    }
+
+    public function productCodePrefix(): string
+    {
+        return match ((int) $this->category_id) {
+            1 => 'RMH',
+            2 => 'TNH',
+            3 => 'MBL',
+            4 => 'MTR',
+            default => 'PRD',
+        };
+    }
+
+    public function buildProductCode(): string
+    {
+        return $this->productCodePrefix().'-'.str_pad((string) $this->id, 6, '0', STR_PAD_LEFT);
+    }
+
+    public function assignProductCode(bool $force = false): void
+    {
+        if (!$this->id) {
+            return;
+        }
+
+        if (!$force && filled($this->product_code)) {
+            return;
+        }
+
+        $this->forceFill([
+            'product_code' => $this->buildProductCode(),
+        ])->save();
     }
 
     public function user()

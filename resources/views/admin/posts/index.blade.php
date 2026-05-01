@@ -46,8 +46,9 @@
                             @csrf 
                             @method('DELETE')
 
-                            <button onclick="return confirm('Hapus?')" 
-                                class="bg-red-500 text-white px-3 py-1 rounded">
+                            <button class="bg-red-500 text-white px-3 py-1 rounded"
+                                data-swal-confirm="Hapus berita ini?"
+                                data-swal-confirm-button="Ya, hapus">
                                 Hapus
                             </button>
                         </form>

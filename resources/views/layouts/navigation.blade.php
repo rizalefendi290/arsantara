@@ -1,15 +1,25 @@
 <nav data-aos="fade-down" x-data="{ open: false }"
     class="fixed top-0 left-0 w-full z-50 bg-white shadow border-b border-gray-100 dark:border-gray-700 text-white">
     <!-- Primary Navigation Menu -->
-    <div data-aos="fade-down" class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <div data-aos="fade-down" class="relative max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
 
         <!-- LOGO -->
-        <a href="{{ route('home') }}" class="flex items-center space-x-3">
-            <span class="text-xl text-gray-900 font-bold">Arsantara Management</span>
+        <a href="{{ route('home') }}" class="relative z-20 flex min-w-0 items-center gap-3">
+            <img src="{{ asset('images/logo fi.png') }}"
+                alt="Arsantara Management"
+                class="h-11 w-11 rounded-xl object-contain">
+            <span class="hidden text-lg font-bold leading-tight text-gray-900 md:block lg:text-xl">
+                Arsantara Management
+            </span>
+        </a>
+
+        <a href="{{ route('home') }}"
+            class="pointer-events-auto absolute inset-x-16 top-1/2 z-10 block -translate-y-1/2 truncate text-center text-sm font-extrabold leading-tight text-gray-950 sm:inset-x-20 sm:text-base md:hidden">
+            Arsantara Management
         </a>
 
         <!-- RIGHT (SEARCH + USER) -->
-        <div class="flex items-center text-gray-800 gap-3 md:order-2">
+        <div class="relative z-20 flex items-center text-gray-800 gap-3 md:order-2">
 
             <!-- SEARCH -->
             <form method="GET" action="{{ route('search') }}" class="relative hidden md:block">
@@ -85,9 +95,10 @@
                     @endif
 
                     <!-- LOGOUT -->
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" data-swal-confirm="Keluar dari akun sekarang?">
                         @csrf
-                        <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 border-t border-gray-100">
+                        <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 border-t border-gray-100"
+                            data-swal-confirm-button="Ya, logout">
                             Logout
                         </button>
                     </form>
@@ -151,35 +162,30 @@
                         class="z-50 hidden absolute mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-lg">
 
                         <ul class="p-2 text-sm text-gray-800">
+                            @php
+                                $categoryRoutes = [
+                                    'mobil' => 'mobil.index',
+                                    'motor' => 'motor.index',
+                                    'rumah' => 'rumah.index',
+                                    'tanah' => 'tanah.index',
+                                ];
+                            @endphp
 
-                            <li>
-                                <a href="{{ route('mobil.index') }}"
-                                    class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
-                                    🚗 Mobil
-                                </a>
-                            </li>
+                            @foreach($activeNavCategories as $category)
+                                @php
+                                    $slug = strtolower($category->slug ?: $category->name);
+                                    $routeName = $categoryRoutes[$slug] ?? null;
+                                @endphp
 
-                            <li>
-                                <a href="{{ route('motor.index') }}"
-                                    class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
-                                    🏍️ Motor
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('rumah.index') }}"
-                                    class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
-                                    🏠 Rumah
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{{ route('tanah.index') }}"
-                                    class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
-                                    🌱 Tanah
-                                </a>
-                            </li>
-
+                                @if($routeName)
+                                    <li>
+                                        <a href="{{ route($routeName) }}"
+                                            class="block px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-800 hover:text-blue-600 transition">
+                                            {{ $category->name }}
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
                         </ul>
                     </div>
 
@@ -209,8 +215,11 @@
 
     <aside class="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col overflow-y-auto bg-white shadow-2xl">
         <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-            <a href="{{ route('home') }}" class="text-base font-bold text-gray-950" onclick="closeMobileMenu()">
-                Arsantara Management
+            <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-3" onclick="closeMobileMenu()">
+                <img src="{{ asset('images/logo.png') }}"
+                    alt="Arsantara Management"
+                    class="h-10 w-10 rounded-xl object-contain">
+                <span class="truncate text-base font-bold text-gray-950">Arsantara Management</span>
             </a>
             <button type="button" onclick="closeMobileMenu()"
                 class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition hover:bg-gray-50"
@@ -280,14 +289,19 @@
             <div>
                 <p class="mb-3 px-1 text-xs font-bold uppercase tracking-wide text-gray-500">Kategori</p>
                 <div class="grid grid-cols-2 gap-3">
-                    <a href="{{ route('rumah.index') }}" onclick="closeMobileMenu()"
-                        class="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-blue-200 hover:bg-blue-50">Rumah</a>
-                    <a href="{{ route('tanah.index') }}" onclick="closeMobileMenu()"
-                        class="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-blue-200 hover:bg-blue-50">Tanah</a>
-                    <a href="{{ route('mobil.index') }}" onclick="closeMobileMenu()"
-                        class="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-blue-200 hover:bg-blue-50">Mobil</a>
-                    <a href="{{ route('motor.index') }}" onclick="closeMobileMenu()"
-                        class="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-blue-200 hover:bg-blue-50">Motor</a>
+                    @foreach($activeNavCategories as $category)
+                        @php
+                            $slug = strtolower($category->slug ?: $category->name);
+                            $routeName = $categoryRoutes[$slug] ?? null;
+                        @endphp
+
+                        @if($routeName)
+                            <a href="{{ route($routeName) }}" onclick="closeMobileMenu()"
+                                class="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-blue-200 hover:bg-blue-50">
+                                {{ $category->name }}
+                            </a>
+                        @endif
+                    @endforeach
                 </div>
             </div>
 
@@ -311,10 +325,11 @@
                         <button type="button" onclick="closeMobileMenu(); openUpgradeModal('pemilik')"
                             class="w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700">Pemilik Produk</button>
                     @endif
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" data-swal-confirm="Keluar dari akun sekarang?">
                         @csrf
                         <button type="submit"
-                            class="w-full rounded-xl border border-red-100 px-4 py-3 text-left text-sm font-semibold text-red-600 hover:bg-red-50">
+                            class="w-full rounded-xl border border-red-100 px-4 py-3 text-left text-sm font-semibold text-red-600 hover:bg-red-50"
+                            data-swal-confirm-button="Ya, logout">
                             Logout
                         </button>
                     </form>

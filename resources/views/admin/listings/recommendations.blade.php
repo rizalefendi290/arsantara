@@ -83,7 +83,8 @@
                                     @csrf
                                     @method('PATCH')
                                     <button class="px-3 py-1 rounded text-white {{ $listing->is_featured ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-600 hover:bg-blue-700' }}"
-                                        onclick="return confirm('Ubah status rekomendasi produk ini?')">
+                                        data-swal-confirm="Ubah status rekomendasi produk ini?"
+                                        data-swal-confirm-button="Ya, ubah">
                                         {{ $listing->is_featured ? 'Hapus' : 'Jadikan' }}
                                     </button>
                                 </form>

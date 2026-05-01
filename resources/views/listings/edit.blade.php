@@ -89,7 +89,8 @@
                         class="h-24 w-full object-cover rounded">
 
                     <a href="{{ route('images.delete',$img->id) }}"
-                        onclick="return confirm('Hapus gambar?')"
+                        data-swal-confirm="Hapus gambar?"
+                        data-swal-confirm-button="Ya, hapus"
                         class="absolute top-1 right-1 bg-red-500 text-white px-2 py-1 text-xs rounded">
                         X
                     </a>

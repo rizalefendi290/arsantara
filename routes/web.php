@@ -48,6 +48,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::patch('/admin/categories/{category}/toggle', [App\Http\Controllers\AdminDashboardController::class, 'toggleCategory'])->name('admin.categories.toggle');
+    Route::get('/admin/listing-exports/excel', [ListingController::class, 'exportExcel'])->name('admin.listings.export.excel');
+    Route::get('/admin/listing-exports/pdf', [ListingController::class, 'exportPdf'])->name('admin.listings.export.pdf');
     Route::resource('/admin/listings', App\Http\Controllers\ListingController::class);
     Route::get('/admin', [ListingController::class, 'index']);
     Route::get('/admin/create', [ListingController::class, 'create']);
@@ -72,6 +75,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware(['auth','admin'])->group(function(){
     Route::get('/admin/carousel',[CarouselController::class,'index'])->name('carousel.index');
     Route::post('/admin/carousel',[CarouselController::class,'store'])->name('carousel.store');
+    Route::patch('/admin/carousel/{id}',[CarouselController::class,'update'])->name('carousel.update');
     Route::delete('/admin/carousel/{id}',[CarouselController::class,'destroy'])->name('carousel.delete');
 });
 //beranda user
@@ -136,6 +140,7 @@ Route::get('/about', function () {
 Route::view('/syarat', 'pages.terms')->name('terms');
 Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
 Route::view('/faq', 'pages.faq')->name('faq');
+Route::view('/pasang-iklan', 'pages.pasang-iklan')->name('ads.guide');
 
 Route::prefix('kategori')->group(function () {
     Route::get('/tanah', [ListingController::class, 'tanah'])->name('tanah.index');

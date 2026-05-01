@@ -77,6 +77,51 @@
 
     </div>
 
+    <div class="bg-white rounded-xl shadow overflow-hidden mb-8">
+        <div class="p-4 border-b flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="font-semibold text-gray-700">Status Kategori</h2>
+                <p class="text-sm text-gray-500">Nonaktifkan kategori sementara tanpa menghapus data listing.</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-100 text-gray-600">
+                    <tr>
+                        <th class="p-3 text-left">Kategori</th>
+                        <th class="p-3 text-center">Jumlah Listing</th>
+                        <th class="p-3 text-center">Status</th>
+                        <th class="p-3 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($categories as $category)
+                        <tr class="border-t hover:bg-gray-50">
+                            <td class="p-3 font-semibold text-gray-900">{{ $category->name }}</td>
+                            <td class="p-3 text-center">{{ $category->listings_count }}</td>
+                            <td class="p-3 text-center">
+                                <span class="rounded px-2 py-1 text-xs font-semibold {{ $category->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
+                                    {{ $category->is_active ? 'Aktif' : 'Nonaktif' }}
+                                </span>
+                            </td>
+                            <td class="p-3 text-center">
+                                <form action="{{ route('admin.categories.toggle', $category->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="rounded px-3 py-1 text-sm font-semibold {{ $category->is_active ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-blue-600 text-white hover:bg-blue-700' }}"
+                                        data-swal-confirm="{{ $category->is_active ? 'Nonaktifkan' : 'Aktifkan' }} kategori {{ $category->name }}?">
+                                        {{ $category->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-xl shadow overflow-hidden xl:col-span-2">
             <div class="p-4 border-b">
@@ -242,8 +287,9 @@
                                     <form action="{{ route('admin.listings.approve',$listing->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
-                                        <button onclick="return confirm('Publikasikan listing ini?')"
-                                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
+                                        <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                                            data-swal-confirm="Publikasikan listing ini?"
+                                            data-swal-confirm-button="Ya, publikasikan">
                                             Approve
                                         </button>
                                     </form>
@@ -252,8 +298,9 @@
                                 <form action="{{ route('listings.destroy',$listing->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <button onclick="return confirm('Yakin hapus data?')"
-                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                    <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                                        data-swal-confirm="Yakin hapus data?"
+                                        data-swal-confirm-button="Ya, hapus">
                                         Hapus
                                     </button>
                                 </form>

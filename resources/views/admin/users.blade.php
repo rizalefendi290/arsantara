@@ -159,7 +159,8 @@
                                         <form method="POST" action="{{ route('admin.users.approve', $user->id) }}">
                                             @csrf
                                             <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
-                                                onclick="return confirm('Setujui pengajuan role user ini?')">
+                                                data-swal-confirm="Setujui pengajuan role user ini?"
+                                                data-swal-confirm-button="Ya, setujui">
                                                 Approve
                                             </button>
                                         </form>
@@ -167,7 +168,8 @@
                                         <form method="POST" action="{{ route('admin.users.reject', $user->id) }}">
                                             @csrf
                                             <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
-                                                onclick="return confirm('Tolak pengajuan role user ini?')">
+                                                data-swal-confirm="Tolak pengajuan role user ini?"
+                                                data-swal-confirm-button="Ya, tolak">
                                                 Reject
                                             </button>
                                         </form>
@@ -178,7 +180,8 @@
                                         @method('DELETE')
                                         <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
                                             {{ auth()->id() === $user->id ? 'disabled' : '' }}
-                                            onclick="return confirm('Hapus user ini? Listing miliknya juga akan terhapus.')">
+                                            data-swal-confirm="Hapus user ini? Listing miliknya juga akan terhapus."
+                                            data-swal-confirm-button="Ya, hapus">
                                             Hapus
                                         </button>
                                     </form>

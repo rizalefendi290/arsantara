@@ -6,6 +6,7 @@ use App\Models\Listing;
 use App\Models\SiteVisit;
 use App\Models\User;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -57,6 +58,10 @@ class AdminDashboardController extends Controller
             ->groupBy('status')
             ->pluck('total', 'status');
 
+        $categories = Category::withCount('listings')
+            ->orderBy('id')
+            ->get();
+
         return view('admin.dashboard', compact(
             'totalListings',
             'totalUsers',
@@ -67,7 +72,20 @@ class AdminDashboardController extends Controller
             'dailyVisitors',
             'topListings',
             'activeAgents',
-            'listingStatusCounts'
+            'listingStatusCounts',
+            'categories'
         ));
+    }
+
+    public function toggleCategory(Request $request, Category $category)
+    {
+        $category->update([
+            'is_active' => !$category->is_active,
+        ]);
+
+        return back()->with(
+            'success',
+            'Kategori '.$category->name.' berhasil '.($category->is_active ? 'diaktifkan' : 'dinonaktifkan').'.'
+        );
     }
 }

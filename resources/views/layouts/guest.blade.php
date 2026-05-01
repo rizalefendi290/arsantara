@@ -26,5 +26,7 @@
                 {{ $slot }}
             </div>
         </div>
+        <x-sweet-alert />
+        @stack('scripts')
     </body>
 </html>

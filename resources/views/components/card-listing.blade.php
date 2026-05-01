@@ -40,6 +40,9 @@
     </div>
 
     <div class="p-4">
+        <p class="mb-1 text-xs font-bold uppercase text-blue-600">
+            {{ $listing->product_code ?: $listing->buildProductCode() }}
+        </p>
         <h3 class="font-semibold text-gray-800 line-clamp-1">{{ $listing->title }}</h3>
         <p class="text-gray-500 text-sm line-clamp-1">{{ $listing->location }}</p>
 

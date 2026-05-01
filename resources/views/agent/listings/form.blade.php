@@ -167,7 +167,8 @@
                                 <button type="submit"
                                     form="delete-image-{{ $image->id }}"
                                     class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs"
-                                    onclick="return confirm('Hapus gambar ini?')">
+                                    data-swal-confirm="Hapus gambar ini?"
+                                    data-swal-confirm-button="Ya, hapus">
                                     Hapus
                                 </button>
                             </div>

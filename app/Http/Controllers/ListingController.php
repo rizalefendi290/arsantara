@@ -19,22 +19,229 @@ use App\Services\ImageWatermarkService;
 
 class ListingController extends Controller
 {
-    public function index()
-    {
-        $listings = Listing::with(['category','images','user'])
-                    ->latest()
-                    ->paginate(15);
+    private array $adminListingStatuses = [
+        'pending' => 'Pending',
+        'aktif' => 'Aktif',
+        'sold' => 'Terjual',
+    ];
 
-        return view('admin.listings.index', compact('listings'));
+    public function index(Request $request)
+    {
+        $listings = $this->adminListingQuery($request)
+                    ->paginate(15)
+                    ->appends($request->query());
+
+        $categories = Category::orderBy('name')->get();
+        $statuses = $this->adminListingStatuses;
+
+        return view('admin.listings.index', compact('listings', 'categories', 'statuses'));
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $listings = $this->adminListingQuery($request)->get();
+        $filename = 'katalog-listing-'.now()->format('Ymd-His').'.xls';
+
+        return response($this->buildExcelTable($listings), 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $listings = $this->adminListingQuery($request)->get();
+        $filename = 'katalog-listing-'.now()->format('Ymd-His').'.pdf';
+
+        return response($this->buildSimplePdf($listings), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    private function adminListingQuery(Request $request)
+    {
+        return Listing::with(['category','images','user','propertyDetail','carDetail','motorcycleDetail'])
+            ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->category_id))
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
+            ->when($request->filled('condition'), fn ($query) => $query->where('condition', $request->condition))
+            ->when($request->filled('is_kpr'), function ($query) use ($request) {
+                $query->where('category_id', 1)
+                    ->whereHas('propertyDetail', fn ($property) => $property->where('is_kpr', $request->is_kpr));
+            })
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', '%'.$search.'%')
+                        ->orWhere('product_code', 'like', '%'.$search.'%')
+                        ->orWhere('location', 'like', '%'.$search.'%')
+                        ->orWhereHas('user', fn ($user) => $user->where('name', 'like', '%'.$search.'%'))
+                        ->orWhereHas('category', fn ($category) => $category->where('name', 'like', '%'.$search.'%'));
+                });
+            })
+            ->latest();
+    }
+
+    private function buildExcelTable($listings): string
+    {
+        $rows = $listings->map(fn ($listing) => $this->exportRow($listing));
+        $headers = ['ID', 'Kode Produk', 'Judul', 'Pemilik', 'Kategori', 'Status', 'Kondisi', 'Harga', 'Harga Diskon', 'Harga Final', 'Lokasi', 'Jenis Rumah', 'Detail', 'Tanggal Dibuat'];
+
+        $html = '<html><head><meta charset="UTF-8"></head><body>';
+        $html .= '<h2>Katalog Listing Arsantara</h2>';
+        $html .= '<table border="1"><thead><tr>';
+
+        foreach ($headers as $header) {
+            $html .= '<th style="background:#dbeafe;font-weight:bold;">'.e($header).'</th>';
+        }
+
+        $html .= '</tr></thead><tbody>';
+
+        foreach ($rows as $row) {
+            $html .= '<tr>';
+            foreach ($row as $value) {
+                $html .= '<td>'.e((string) $value).'</td>';
+            }
+            $html .= '</tr>';
+        }
+
+        $html .= '</tbody></table></body></html>';
+
+        return "\xEF\xBB\xBF".$html;
+    }
+
+    private function exportRow(Listing $listing): array
+    {
+        $detail = '-';
+        $jenisRumah = '-';
+
+        if ($listing->category_id == 1 && $listing->propertyDetail) {
+            $jenisRumah = $listing->propertyDetail->is_kpr ? 'KPR' : 'Non KPR';
+            $detail = collect([
+                'LT '.$listing->propertyDetail->land_area.' m2',
+                'LB '.$listing->propertyDetail->building_area.' m2',
+                $listing->propertyDetail->bedrooms.' KT',
+                $listing->propertyDetail->bathrooms.' KM',
+            ])->filter(fn ($value) => !str_contains($value, '  m2') && !str_starts_with($value, ' KT') && !str_starts_with($value, ' KM'))->implode(', ');
+        } elseif ($listing->category_id == 2 && $listing->propertyDetail) {
+            $detail = 'LT '.$listing->propertyDetail->land_area.' m2, '.$listing->propertyDetail->certificate;
+        } elseif ($listing->category_id == 3 && $listing->carDetail) {
+            $detail = collect([$listing->carDetail->brand, $listing->carDetail->model, $listing->carDetail->year, ucfirst($listing->carDetail->transmission ?? '')])->filter()->implode(', ');
+        } elseif ($listing->category_id == 4 && $listing->motorcycleDetail) {
+            $detail = collect([$listing->motorcycleDetail->brand, $listing->motorcycleDetail->model, $listing->motorcycleDetail->year, ucfirst($listing->motorcycleDetail->transmission ?? '')])->filter()->implode(', ');
+        }
+
+        return [
+            $listing->id,
+            $listing->product_code ?: $listing->buildProductCode(),
+            $listing->title,
+            $listing->user->name ?? '-',
+            $listing->category->name ?? '-',
+            ucfirst($listing->status),
+            ucfirst($listing->condition ?? '-'),
+            $listing->price,
+            $listing->discount_price ?: '-',
+            $listing->finalPrice(),
+            $listing->location,
+            $jenisRumah,
+            $detail ?: '-',
+            optional($listing->created_at)->format('d/m/Y H:i'),
+        ];
+    }
+
+    private function buildSimplePdf($listings): string
+    {
+        $lines = [
+            'Katalog Listing Arsantara',
+            'Dicetak: '.now()->format('d/m/Y H:i'),
+            'Total data: '.$listings->count(),
+            '',
+        ];
+
+        foreach ($listings as $index => $listing) {
+            $row = $this->exportRow($listing);
+            $lines[] = ($index + 1).'. ['.$row[1].'] '.$row[2];
+            $lines[] = '   Kategori: '.$row[4].' | Status: '.$row[5].' | Kondisi: '.$row[6];
+            $lines[] = '   Harga: Rp '.number_format((int) $row[9], 0, ',', '.').' | Pemilik: '.$row[3];
+            $lines[] = '   Lokasi: '.$row[10];
+            if ($row[11] !== '-') {
+                $lines[] = '   Jenis Rumah: '.$row[11];
+            }
+            $lines[] = '   Detail: '.$row[12];
+            $lines[] = '';
+        }
+
+        return $this->makeTextPdf($lines);
+    }
+
+    private function makeTextPdf(array $lines): string
+    {
+        $fontSize = 9;
+        $lineHeight = 13;
+        $left = 36;
+        $top = 560;
+        $pageLineLimit = 40;
+        $pages = array_chunk($lines, $pageLineLimit);
+        $objects = [];
+
+        $objects[] = '<< /Type /Catalog /Pages 2 0 R >>';
+        $kids = [];
+
+        foreach ($pages as $pageIndex => $pageLines) {
+            $pageObjectNumber = 3 + ($pageIndex * 2);
+            $contentObjectNumber = $pageObjectNumber + 1;
+            $kids[] = $pageObjectNumber.' 0 R';
+
+            $content = "BT\n/F1 {$fontSize} Tf\n";
+            foreach ($pageLines as $lineIndex => $line) {
+                $y = $top - ($lineIndex * $lineHeight);
+                $content .= "1 0 0 1 {$left} {$y} Tm (".$this->pdfEscape($line).") Tj\n";
+            }
+            $content .= "ET";
+
+            $objects[] = "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 ".(3 + (count($pages) * 2))." 0 R >> >> /Contents {$contentObjectNumber} 0 R >>";
+            $objects[] = "<< /Length ".strlen($content)." >>\nstream\n{$content}\nendstream";
+        }
+
+        array_splice($objects, 1, 0, '<< /Type /Pages /Kids ['.implode(' ', $kids).'] /Count '.count($pages).' >>');
+        $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
+
+        $pdf = "%PDF-1.4\n";
+        $offsets = [0];
+        foreach ($objects as $index => $object) {
+            $offsets[] = strlen($pdf);
+            $pdf .= ($index + 1)." 0 obj\n{$object}\nendobj\n";
+        }
+
+        $xrefOffset = strlen($pdf);
+        $pdf .= "xref\n0 ".(count($objects) + 1)."\n";
+        $pdf .= "0000000000 65535 f \n";
+        for ($i = 1; $i <= count($objects); $i++) {
+            $pdf .= str_pad((string) $offsets[$i], 10, '0', STR_PAD_LEFT)." 00000 n \n";
+        }
+        $pdf .= "trailer\n<< /Size ".(count($objects) + 1)." /Root 1 0 R >>\nstartxref\n{$xrefOffset}\n%%EOF";
+
+        return $pdf;
+    }
+
+    private function pdfEscape(string $text): string
+    {
+        $text = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        $text = preg_replace('/[^\x20-\x7E]/', '', $text);
+        $text = mb_strimwidth($text, 0, 130, '...');
+
+        return str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $text);
     }
 
     public function home()
     {
-        $categories = Category::with([
+        $categories = Category::active()->with([
             'listings' => fn ($query) => $query->active()->with('images')
         ])->get();
         $recommendedListings = Listing::with(['images', 'category'])
             ->active()
+            ->inActiveCategory()
             ->where('is_featured', true)
             ->whereIn('category_id', [1, 2, 3, 4])
             ->latest()
@@ -49,7 +256,7 @@ class ListingController extends Controller
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::active()->get();
         return view('listings.create', compact('categories'));
     }
 
@@ -82,6 +289,7 @@ class ListingController extends Controller
             'kilometer' => 'nullable|integer',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
+        abort_unless(Category::whereKey($request->category_id)->where('is_active', true)->exists(), 422);
 
         // SIMPAN LISTING UTAMA
         $listing = Listing::create([
@@ -95,6 +303,7 @@ class ListingController extends Controller
             'condition' => $request->condition,
             'status' => 'aktif'
         ]);
+        $listing->assignProductCode();
 
         // ================= RUMAH =================
         if ($request->category_id == 1) {
@@ -181,7 +390,7 @@ class ListingController extends Controller
             'property',
             'car',
             'motorcycle'
-        ])->active()->findOrFail($id);
+        ])->active()->inActiveCategory()->findOrFail($id);
 
         ListingView::create([
             'listing_id' => $listing->id,
@@ -194,6 +403,7 @@ class ListingController extends Controller
 
         $similar = Listing::with('images')
         ->active()
+        ->inActiveCategory()
         ->where('category_id', $listing->category_id)
         ->where('id', '!=', $listing->id)
         ->latest()
@@ -214,12 +424,18 @@ class ListingController extends Controller
     public function update(Request $request, $id, ImageWatermarkService $watermarkService)
     {
         $listing = Listing::findOrFail($id);
+        $oldCategoryId = $listing->category_id;
 
         $request->validate([
             'discount_price' => 'nullable|numeric|min:0|lt:price',
         ]);
 
         $listing->update($request->except('images'));
+        $listing->refresh();
+
+        if ((int) $oldCategoryId !== (int) $listing->category_id || blank($listing->product_code)) {
+            $listing->assignProductCode(true);
+        }
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -306,6 +522,8 @@ class ListingController extends Controller
 
     public function rumah(Request $request)
     {
+        $this->abortIfCategoryInactive(1);
+
         // Base query untuk semua rumah
         $listingsQuery = Listing::with(['images','category','propertyDetail'])
             ->active()
@@ -397,6 +615,8 @@ class ListingController extends Controller
 
     public function tanah(Request $request)
     {
+        $this->abortIfCategoryInactive(2);
+
         $listings = Listing::with(['images','propertyDetail'])
             ->active()
             ->where('category_id', 2);
@@ -431,6 +651,8 @@ class ListingController extends Controller
 
     public function mobil(Request $request)
     {
+        $this->abortIfCategoryInactive(3);
+
         $listings = Listing::with(['images','car'])
             ->active()
             ->where('category_id', 3);
@@ -475,7 +697,8 @@ class ListingController extends Controller
         $categoryId = $request->input('category', $request->input('category_id'));
 
         $listingsQuery = Listing::with(['images', 'category', 'propertyDetail', 'carDetail', 'motorcycleDetail'])
-            ->active();
+            ->active()
+            ->inActiveCategory();
 
         if ($categoryId) {
             $listingsQuery->where('category_id', $categoryId);
@@ -532,8 +755,13 @@ class ListingController extends Controller
             ->paginate(6, ['*'], 'posts_page')
             ->appends($request->query());
 
-        $categories = Category::all();
+        $categories = Category::active()->get();
 
         return view('search.index', compact('listings', 'posts', 'categories', 'keyword', 'categoryId'));
+    }
+
+    private function abortIfCategoryInactive(int $categoryId): void
+    {
+        abort_unless(Category::whereKey($categoryId)->where('is_active', true)->exists(), 404);
     }
 }

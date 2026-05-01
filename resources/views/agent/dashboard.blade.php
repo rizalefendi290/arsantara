@@ -64,6 +64,7 @@
                 <thead class="bg-gray-50 text-gray-600">
                     <tr>
                         <th class="p-3 text-left">Gambar</th>
+                        <th class="p-3 text-left">Kode</th>
                         <th class="p-3 text-left">Judul</th>
                         <th class="p-3 text-left">Kategori</th>
                         <th class="p-3 text-left">Harga</th>
@@ -77,6 +78,11 @@
                             <td class="p-3">
                                 <img src="{{ $listing->images->count() ? asset('storage/'.$listing->images->first()->image) : 'https://via.placeholder.com/96x72?text=No+Image' }}"
                                     class="w-20 h-14 object-cover rounded" alt="{{ $listing->title }}">
+                            </td>
+                            <td class="p-3">
+                                <span class="rounded bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700">
+                                    {{ $listing->product_code ?: $listing->buildProductCode() }}
+                                </span>
                             </td>
                             <td class="p-3">
                                 <p class="font-semibold text-gray-900">{{ $listing->title }}</p>
@@ -115,7 +121,8 @@
                                             @csrf
                                             @method('PATCH')
                                             <button class="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white"
-                                                onclick="return confirm('Tandai listing ini sebagai terjual/disewa?')">
+                                                data-swal-confirm="Tandai listing ini sebagai terjual/disewa?"
+                                                data-swal-confirm-button="Ya, tandai">
                                                 Sold
                                             </button>
                                         </form>
@@ -125,7 +132,8 @@
                                         @csrf
                                         @method('DELETE')
                                         <button class="px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white"
-                                            onclick="return confirm('Yakin hapus listing ini?')">
+                                            data-swal-confirm="Yakin hapus listing ini?"
+                                            data-swal-confirm-button="Ya, hapus">
                                             Hapus
                                         </button>
                                     </form>
@@ -134,7 +142,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-gray-500">
+                            <td colspan="7" class="p-8 text-center text-gray-500">
                                 Belum ada listing. Mulai posting produk pertama Anda.
                             </td>
                         </tr>

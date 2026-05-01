@@ -22,7 +22,7 @@ class HomeController extends Controller
         $categoryId = $request->category;
 
         // Ambil semua kategori + relasi listing + image
-        $categories = Category::with([
+        $categories = Category::active()->with([
             'listings' => fn ($query) => $query->active()->with('images')
         ])
             ->get();
@@ -30,6 +30,7 @@ class HomeController extends Controller
         // Ambil listing (untuk filter halaman "lihat semua")
         $listings = Listing::with('images')
             ->active()
+            ->inActiveCategory()
             ->when($categoryId, function ($query) use ($categoryId) {
                 $query->where('category_id', $categoryId);
             })
@@ -52,6 +53,7 @@ class HomeController extends Controller
     {
         $query = Listing::with(['images','category','carDetail','motorcycleDetail'])
             ->active()
+            ->inActiveCategory()
             ->whereIn('category_id', [3, 4]); // mobil & motor
 
         // 🔍 FILTER KEYWORD
@@ -109,6 +111,7 @@ class HomeController extends Controller
     {
         $query = Listing::with(['images','category','carDetail','motorcycleDetail'])
             ->active()
+            ->inActiveCategory()
             ->whereIn('category_id', [3,4]);
 
         if ($request->keyword) {
@@ -161,9 +164,13 @@ class HomeController extends Controller
 
     public function properti(Request $request)
     {
+        $rumahActive = Category::whereKey(1)->where('is_active', true)->exists();
+        $tanahActive = Category::whereKey(2)->where('is_active', true)->exists();
+
         // RUMAH KPR
         $rumahKpr = Listing::with(['images','category','propertyDetail'])
             ->active()
+            ->inActiveCategory()
             ->where('category_id', 1)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', true);
@@ -175,6 +182,7 @@ class HomeController extends Controller
         // RUMAH NON KPR
         $rumahNonKpr = Listing::with(['images','category','propertyDetail'])
             ->active()
+            ->inActiveCategory()
             ->where('category_id', 1)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', false);
@@ -186,6 +194,7 @@ class HomeController extends Controller
         // TANAH
         $tanah = Listing::with(['images','category','propertyDetail'])
             ->active()
+            ->inActiveCategory()
             ->where('category_id', 2)
             ->latest()
             ->take(8)
@@ -193,17 +202,18 @@ class HomeController extends Controller
 
         $listings = Listing::with(['images','category','propertyDetail'])
             ->active()
+            ->inActiveCategory()
             ->whereIn('category_id', [1, 2])
             ->latest()
             ->paginate(8);
 
-        return view('properti.index', compact('rumahKpr','rumahNonKpr','tanah','listings'));
+        return view('properti.index', compact('rumahKpr','rumahNonKpr','tanah','listings','rumahActive','tanahActive'));
     }
 
     public function propertiFilter(Request $request)
     {
         $query = Listing::with(['images','category','propertyDetail']);
-        $query->active();
+        $query->active()->inActiveCategory();
 
         // kategori rumah / tanah
         if ($request->category) {
@@ -248,19 +258,23 @@ class HomeController extends Controller
 
     public function category($slug)
     {
-        $query = Listing::with(['images'])->active();
+        $query = Listing::with(['images'])->active()->inActiveCategory();
 
         // FILTER BERDASARKAN SLUG
         if ($slug == 'mobil') {
+            $this->abortIfCategoryInactive(3);
             $query->where('category_id', 3);
             $title = 'Mobil';
         } elseif ($slug == 'motor') {
+            $this->abortIfCategoryInactive(4);
             $query->where('category_id', 4);
             $title = 'Motor';
         } elseif ($slug == 'rumah') {
+            $this->abortIfCategoryInactive(1);
             $query->where('category_id', 1);
             $title = 'Rumah';
         } elseif ($slug == 'tanah') {
+            $this->abortIfCategoryInactive(2);
             $query->where('category_id', 2);
             $title = 'Tanah';
         } else {
@@ -274,6 +288,8 @@ class HomeController extends Controller
 
     public function mobil(Request $request)
     {
+        $this->abortIfCategoryInactive(3);
+
         $query = Listing::with(['images','category','carDetail'])
             ->active()
             ->where('category_id', 3);
@@ -322,6 +338,8 @@ class HomeController extends Controller
 
     public function motor(Request $request)
     {
+        $this->abortIfCategoryInactive(4);
+
         $query = Listing::with(['images','category','motorcycleDetail'])
             ->active()
             ->where('category_id', 4);
@@ -370,6 +388,8 @@ class HomeController extends Controller
 
     public function rumah()
     {
+        $this->abortIfCategoryInactive(1);
+
         $listings = Listing::with(['images','property'])
             ->active()
             ->where('category_id', 1)
@@ -381,6 +401,8 @@ class HomeController extends Controller
 
     public function tanah(Request $request)
     {
+        $this->abortIfCategoryInactive(2);
+
         $query = Listing::with(['images','category','propertyDetail'])
             ->active()
             ->where('category_id', 2);
@@ -417,5 +439,10 @@ class HomeController extends Controller
         $listings = $query->paginate(12)->appends($request->query());
 
         return view('tanah.index', compact('listings'));
+    }
+
+    private function abortIfCategoryInactive(int $categoryId): void
+    {
+        abort_unless(Category::whereKey($categoryId)->where('is_active', true)->exists(), 404);
     }
 }

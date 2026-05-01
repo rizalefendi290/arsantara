@@ -29,6 +29,7 @@
     $message = urlencode(
         "Halo Admin Arsantara\n\n".
         "Saya tertarik dengan:\n".
+        "Kode Produk: ".($listing->product_code ?: $listing->buildProductCode())."\n".
         $listing->title."\n".
         "Rp ".number_format($listing->finalPrice(), 0, ',', '.')."\n".
         $listing->location."\n\n".
@@ -38,6 +39,7 @@
     $categoryName = $listing->category->name ?? 'Listing';
     $conditionLabel = $listing->condition ? ucfirst($listing->condition) : '-';
     $primaryFacts = [
+        ['label' => 'Kode Produk', 'value' => $listing->product_code ?: $listing->buildProductCode()],
         ['label' => 'Kategori', 'value' => $categoryName],
         ['label' => 'Kondisi', 'value' => $conditionLabel],
         ['label' => 'Status', 'value' => 'Tersedia'],
@@ -117,6 +119,11 @@
     } else {
         $facilities = collect();
     }
+
+    $isKprListing = $listing->category_id == 1 && $listing->property && $listing->property->is_kpr;
+    $kprPrice = $listing->finalPrice();
+    $defaultKprDpPercent = 20;
+    $defaultKprDp = (int) round($kprPrice * ($defaultKprDpPercent / 100));
 @endphp
 
 <div class="bg-white text-slate-950">
@@ -297,6 +304,69 @@
                     </p>
                 @endif
 
+                @if($isKprListing)
+                    <div class="mt-5 rounded border border-blue-100 bg-blue-50 p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="text-sm font-bold text-blue-800">Simulasi KPR</p>
+                                <p class="mt-1 text-xs leading-5 text-blue-700">Estimasi cicilan berdasarkan harga listing.</p>
+                            </div>
+                            <span class="rounded bg-white px-2 py-1 text-xs font-bold text-blue-700 shadow-sm">KPR</span>
+                        </div>
+
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <label for="kprPrice" class="mb-1 block text-xs font-semibold uppercase text-slate-500">Harga Properti</label>
+                                <input id="kprPrice" type="text" value="Rp {{ number_format($kprPrice, 0, ',', '.') }}"
+                                    class="w-full rounded border border-blue-100 bg-white px-3 py-2 text-sm font-semibold text-slate-900"
+                                    readonly>
+                            </div>
+
+                            <div>
+                                <div class="mb-1 flex items-center justify-between gap-3">
+                                    <label for="kprDpPercent" class="text-xs font-semibold uppercase text-slate-500">DP</label>
+                                    <span id="kprDpLabel" class="text-xs font-bold text-blue-700">{{ $defaultKprDpPercent }}%</span>
+                                </div>
+                                <input id="kprDpPercent" type="range" min="0" max="80" step="1" value="{{ $defaultKprDpPercent }}"
+                                    class="w-full accent-blue-600">
+                                <p id="kprDpAmount" class="mt-1 text-sm font-semibold text-slate-900">Rp {{ number_format($defaultKprDp, 0, ',', '.') }}</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="kprRate" class="mb-1 block text-xs font-semibold uppercase text-slate-500">Bunga / Tahun</label>
+                                    <div class="flex overflow-hidden rounded border border-blue-100 bg-white">
+                                        <input id="kprRate" type="number" min="0" max="30" step="0.1" value="7.5"
+                                            class="w-full border-0 px-3 py-2 text-sm font-semibold focus:ring-0">
+                                        <span class="flex items-center px-3 text-sm font-semibold text-slate-500">%</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="kprTenor" class="mb-1 block text-xs font-semibold uppercase text-slate-500">Tenor</label>
+                                    <select id="kprTenor" class="w-full rounded border border-blue-100 bg-white px-3 py-2 text-sm font-semibold">
+                                        <option value="5">5 tahun</option>
+                                        <option value="10">10 tahun</option>
+                                        <option value="15" selected>15 tahun</option>
+                                        <option value="20">20 tahun</option>
+                                        <option value="25">25 tahun</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="rounded bg-white p-4 shadow-sm">
+                                <p class="text-xs font-semibold uppercase text-slate-500">Estimasi Cicilan</p>
+                                <p id="kprMonthly" class="mt-1 text-2xl font-extrabold text-blue-700">Rp 0</p>
+                                <p id="kprLoan" class="mt-1 text-xs text-slate-500">Plafon pinjaman: Rp 0</p>
+                            </div>
+                        </div>
+
+                        <p class="mt-3 text-[11px] leading-5 text-slate-500">
+                            Simulasi bersifat estimasi. Angka final mengikuti kebijakan bank/lembaga pembiayaan.
+                        </p>
+                    </div>
+                @endif
+
                 <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                     <a href="tel:+{{ $phone }}"
                         class="inline-flex items-center justify-center gap-2 rounded bg-blue-600 px-5 py-3 text-sm font-bold text-white hover:bg-blue-700">
@@ -397,10 +467,54 @@
 
 <script>
 const galleryImages = @json($images->values());
+const kprBasePrice = {{ $isKprListing ? $kprPrice : 0 }};
 let currentIndex = 0;
 let galleryScrollTimer = null;
 let modalTouchStartX = 0;
 let modalTouchStartY = 0;
+
+function formatRupiah(value) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+    }).format(Math.max(0, Math.round(value)));
+}
+
+function calculateKpr() {
+    const dpPercentInput = document.getElementById('kprDpPercent');
+    const rateInput = document.getElementById('kprRate');
+    const tenorInput = document.getElementById('kprTenor');
+
+    if (!dpPercentInput || !rateInput || !tenorInput || !kprBasePrice) return;
+
+    const dpPercent = Number(dpPercentInput.value) || 0;
+    const annualRate = Number(rateInput.value) || 0;
+    const tenorYears = Number(tenorInput.value) || 1;
+    const dpAmount = kprBasePrice * (dpPercent / 100);
+    const loanAmount = Math.max(kprBasePrice - dpAmount, 0);
+    const months = tenorYears * 12;
+    const monthlyRate = annualRate / 100 / 12;
+
+    let monthlyPayment = loanAmount / months;
+    if (monthlyRate > 0) {
+        monthlyPayment = loanAmount * monthlyRate / (1 - Math.pow(1 + monthlyRate, -months));
+    }
+
+    document.getElementById('kprDpLabel').textContent = dpPercent + '%';
+    document.getElementById('kprDpAmount').textContent = formatRupiah(dpAmount);
+    document.getElementById('kprMonthly').textContent = formatRupiah(monthlyPayment) + ' / bulan';
+    document.getElementById('kprLoan').textContent = 'Plafon pinjaman: ' + formatRupiah(loanAmount);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    ['kprDpPercent', 'kprRate', 'kprTenor'].forEach(function(id) {
+        const input = document.getElementById(id);
+        if (input) input.addEventListener('input', calculateKpr);
+    });
+
+    calculateKpr();
+});
 
 function setGalleryIndex(index) {
     currentIndex = Math.max(0, Math.min(index, galleryImages.length - 1));

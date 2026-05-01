@@ -203,10 +203,10 @@
                     Cair cepat, bunga kompetitif, dan proses mudah & aman.
                 </p>
 
-                <button onclick="openModal()"
+                <a href="{{ route('pinjaman.index') }}"
                     class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
                     Ajukan Sekarang →
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -217,23 +217,32 @@
 <div data-aos="fade-up" class="container -mt-20 mx-auto p-6">
     <!-- CAROUSEL -->
     @if($carousels->count())
-<div data-aos="fade-up" id="default-carousel" class="relative w-full my-10" data-carousel="slide">
+<div data-aos="fade-up" id="default-carousel" class="relative mx-auto my-8 w-full max-w-6xl overflow-hidden rounded-2xl" data-carousel="slide">
     <!-- WRAPPER -->
-    <div class="relative h-[400px] bg-black flex items-center justify-center overflow-hidden rounded-xl">
+    <div class="relative h-[450px] w-full overflow-hidden rounded-2xl">
         @foreach($carousels as $index => $item)
-        <div class="{{ $index == 0 ? '' : 'hidden' }} duration-700 ease-in-out"
+        <div class="{{ $index == 0 ? '' : 'hidden' }} absolute inset-0 h-full w-full overflow-hidden rounded-2xl duration-700 ease-in-out"
             data-carousel-item>
-            <img src="{{ asset('storage/'.$item->image) }}"
-                class="max-h-full max-w-full absolute block w-full h-full object-cover object-center" alt="...">
+            @if($item->link_url)
+                <a href="{{ $item->link_url }}"
+                    class="absolute inset-0 bg-black/20 block overflow-hidden rounded-2xl"
+                    aria-label="{{ $item->title ?: 'Buka halaman carousel' }}">
+                    <img src="{{ asset('storage/'.$item->image) }}"
+                        class="absolute inset-0 block h-full w-full rounded-2xl object-cover object-center" alt="{{ $item->title ?: 'Carousel' }}">
+                </a>
+            @else
+                <img src="{{ asset('storage/'.$item->image) }}"
+                    class="absolute inset-0 block h-full w-full rounded-2xl object-contain object-center" alt="{{ $item->title ?: 'Carousel' }}">
+            @endif
         </div>
         @endforeach
     </div>
 
     <!-- INDICATOR -->
-    <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3">
+    <div class="absolute z-30 flex -translate-x-1/2 bottom-3 left-1/2 space-x-2 sm:bottom-4 sm:space-x-3">
         @foreach($carousels as $index => $item)
         <button type="button"
-            class="w-3 h-3 rounded-full bg-white/50"
+            class="h-2.5 w-2.5 rounded-full bg-white/70 ring-1 ring-black/10 sm:h-3 sm:w-3"
             aria-current="{{ $index == 0 ? 'true' : 'false' }}"
             data-carousel-slide-to="{{ $index }}">
         </button>
@@ -242,18 +251,18 @@
 
     <!-- PREV BUTTON -->
     <button type="button"
-        class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group"
+        class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-2 sm:px-4 cursor-pointer group"
         data-carousel-prev>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-sm text-white group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
             ❮
         </span>
     </button>
 
     <!-- NEXT BUTTON -->
     <button type="button"
-        class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group"
+        class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-2 sm:px-4 cursor-pointer group"
         data-carousel-next>
-        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-sm text-white group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
             ❯
         </span>
     </button>
@@ -264,7 +273,6 @@
 <section data-aos="fade-up" class="mb-14">
     <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between mb-6">
         <div>
-            <p class="text-sm font-semibold text-blue-600 uppercase">Pilihan Admin</p>
             <h2 class="text-3xl font-bold text-gray-800">Produk Rekomendasi</h2>
         </div>
 
@@ -307,6 +315,9 @@
                 </div>
 
                 <div class="p-4">
+                    <p class="mb-1 text-xs font-bold uppercase text-blue-600">
+                        {{ $listing->product_code ?: $listing->buildProductCode() }}
+                    </p>
                     <h3 class="font-semibold line-clamp-1">{{ $listing->title }}</h3>
                     <p class="text-gray-500 text-sm line-clamp-1">{{ $listing->location }}</p>
                     <div class="mt-1">
@@ -412,6 +423,10 @@
                             {{ $listing->title }}
                         </h3>
 
+                        <p class="mt-1 text-xs font-bold uppercase text-blue-600">
+                            {{ $listing->product_code ?: $listing->buildProductCode() }}
+                        </p>
+
                         <p class="text-gray-500 text-sm">
                             {{ $listing->location }}
                         </p>
@@ -445,6 +460,37 @@
         </div>
 
     @endforeach
+
+<section data-aos="fade-up" class="mt-12 mb-16">
+    <a href="{{ route('ads.guide') }}"
+        class="group relative block w-full overflow-hidden rounded-xl bg-gray-900 text-left shadow hover:shadow-xl transition">
+        <img src="{{ asset('images/thumbnail_properti.png') }}"
+            alt="Daftar sebagai agen"
+            class="h-60 md:h-72 w-full object-cover transition duration-700 group-hover:scale-105">
+
+        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+
+        <div class="absolute inset-0 flex items-center">
+            <div class="max-w-xl px-6 md:px-10 text-white">
+                <p class="mb-3 inline-flex rounded-full border border-white/40 px-4 py-1 text-xs font-semibold uppercase">
+                    Peluang Mitra Arsantara
+                </p>
+
+                <h2 class="text-3xl md:text-5xl font-extrabold leading-tight">
+                    Daftar Sebagai Agen
+                </h2>
+
+                <p class="mt-3 max-w-md text-sm md:text-base text-white/85">
+                    Jangkau lebih banyak calon pembeli dan pasarkan listing terbaik Anda bersama Arsantara.
+                </p>
+
+                <span class="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700">
+                    Mulai Bergabung Sekarang
+                </span>
+            </div>
+        </div>
+    </a>
+</section>
 
 <section>
     <div class="mt-16" data-aos="fade-up">
@@ -571,64 +617,6 @@
 </section>
 </div>
 
-<!-- ================= MODAL PENGAJUAN DANA ================= -->
-<div id="pinjamModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 relative animate-fadeIn">
-
-            <!-- HEADER -->
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-bold">
-                    Syarat & Ketentuan Pinjaman Dana
-                </h3>
-
-                <button onclick="closeModal()"
-                    class="text-gray-400 hover:text-gray-700 text-xl">
-                    ✕
-                </button>
-            </div>
-
-            <!-- BODY -->
-            <div class="mt-4 space-y-3 text-sm text-gray-600 max-h-64 overflow-y-auto">
-
-                <p>1. Pengajuan pinjaman menggunakan jaminan BPKB kendaraan.</p>
-                <p>2. Kendaraan wajib atas nama sendiri atau keluarga.</p>
-                <p>3. Unit kendaraan minimal tahun 2010.</p>
-                <p>4. Dokumen wajib lengkap (STNK, BPKB, KTP).</p>
-                <p>5. Proses persetujuan tergantung hasil survey.</p>
-                <p>6. Data harus valid dan dapat dipertanggungjawabkan.</p>
-
-            </div>
-
-            <!-- CHECKBOX -->
-            <div class="mt-4 flex items-start gap-2">
-                <input type="checkbox" id="agreeCheckbox" onchange="toggleWA()" class="mt-1">
-
-                <label for="agreeCheckbox" class="text-sm text-gray-700">
-                    Saya telah membaca dan menyetujui syarat & ketentuan
-                </label>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="mt-5 flex justify-end gap-3">
-
-                <button onclick="closeModal()"
-                    class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
-                    Batal
-                </button>
-
-                <a id="waButton"
-                    href="#"
-                    target="_blank"
-                    class="px-4 py-2 bg-green-500 text-white rounded-lg opacity-50 pointer-events-none transition">
-                    Ajukan via WhatsApp
-                </a>
-
-            </div>
-
-        </div>
-    </div>
 @endsection
 <script>
 function scrollTesti(direction){
@@ -671,70 +659,6 @@ function prevSlide(btn){
 
     let prevIndex = (activeIndex - 1 + slides.length) % slides.length;
     slides[prevIndex].classList.remove('hidden');
-}
-
-function openModal() {
-    document.getElementById('pinjamModal').classList.remove('hidden');
-}
-
-function closeModal() {
-    document.getElementById('pinjamModal').classList.add('hidden');
-}
-
-function toggleWA() {
-    let checkbox = document.getElementById('agreeCheckbox');
-    let btn = document.getElementById('waButton');
-
-    if (checkbox.checked) {
-        let phone = "62895347042844";
-        let message = encodeURIComponent("Halo, saya ingin mengajukan pinjaman dana dengan jaminan BPKB");
-
-        btn.href = `https://wa.me/${phone}?text=${message}`;
-        btn.classList.remove('opacity-50', 'pointer-events-none');
-    } else {
-        btn.href = "#";
-        btn.classList.add('opacity-50', 'pointer-events-none');
-    }
-}
-
-// klik luar modal = close
-window.onclick = function(e) {
-    let modal = document.getElementById('pinjamModal');
-    if (e.target === modal) {
-        closeModal();
-    }
-}
-
-function openModal() {
-    document.getElementById('pinjamModal').classList.remove('hidden');
-}
-
-function closeModal() {
-    document.getElementById('pinjamModal').classList.add('hidden');
-}
-
-function toggleWA() {
-    let checkbox = document.getElementById('agreeCheckbox');
-    let btn = document.getElementById('waButton');
-
-    if (checkbox.checked) {
-        let phone = "62895347042844";
-        let message = encodeURIComponent("Halo, saya ingin mengajukan pinjaman dana dengan jaminan BPKB");
-
-        btn.href = `https://wa.me/${phone}?text=${message}`;
-        btn.classList.remove('opacity-50', 'pointer-events-none');
-    } else {
-        btn.href = "#";
-        btn.classList.add('opacity-50', 'pointer-events-none');
-    }
-}
-
-// klik luar modal = close
-window.onclick = function(e) {
-    let modal = document.getElementById('pinjamModal');
-    if (e.target === modal) {
-        closeModal();
-    }
 }
 </script>
 

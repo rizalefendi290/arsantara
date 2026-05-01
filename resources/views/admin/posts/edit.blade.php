@@ -81,26 +81,36 @@
 <!-- ================= SCRIPT ================= -->
 <script>
 function deleteImage(id){
-    if(!confirm('Hapus gambar ini?')) return;
+    window.ArsantaraSwal.confirm('Hapus gambar ini?', {
+        confirmButtonText: 'Ya, hapus',
+        icon: 'warning',
+    }).then(function(result) {
+        if (!result.isConfirmed) return;
 
-    fetch(`/admin/post-image/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
-    })
-    .then(res => {
-        if(!res.ok) throw new Error('Gagal hapus');
-        return res.json();
-    })
-    .then(data => {
-        // HAPUS DARI UI TANPA RELOAD
-        document.getElementById('img-' + id).remove();
-    })
-    .catch(err => {
-        alert('Gagal menghapus gambar');
-        console.error(err);
+        fetch(`/admin/post-image/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => {
+            if(!res.ok) throw new Error('Gagal hapus');
+            return res.json();
+        })
+        .then(data => {
+            // HAPUS DARI UI TANPA RELOAD
+            document.getElementById('img-' + id).remove();
+            window.ArsantaraSwal.toast('success', 'Gambar berhasil dihapus');
+        })
+        .catch(err => {
+            window.ArsantaraSwal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Gagal menghapus gambar',
+            });
+            console.error(err);
+        });
     });
 }
 </script>

@@ -17,7 +17,7 @@ class AgentListingController extends Controller
 {
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::active()->get();
         $listing = new Listing();
 
         return view('agent.listings.form', compact('categories', 'listing'));
@@ -26,6 +26,7 @@ class AgentListingController extends Controller
     public function store(Request $request)
     {
         $data = $this->validatedData($request);
+        abort_unless(Category::whereKey($data['category_id'])->where('is_active', true)->exists(), 422);
 
         $listing = Listing::create([
             'user_id' => $request->user()->id,
@@ -37,6 +38,7 @@ class AgentListingController extends Controller
             'condition' => $data['condition'],
             'status' => 'pending',
         ]);
+        $listing->assignProductCode();
 
         $this->syncDetails($listing, $request);
         $this->storeImages($listing, $request, app(ImageWatermarkService::class));
@@ -56,7 +58,7 @@ class AgentListingController extends Controller
         $this->authorizeOwner($request, $listing);
 
         $listing->load(['propertyDetail', 'carDetail', 'motorcycleDetail', 'images']);
-        $categories = Category::all();
+        $categories = Category::active()->get();
 
         return view('agent.listings.form', compact('categories', 'listing'));
     }
@@ -66,6 +68,8 @@ class AgentListingController extends Controller
         $this->authorizeOwner($request, $listing);
 
         $data = $this->validatedData($request);
+        abort_unless(Category::whereKey($data['category_id'])->where('is_active', true)->exists(), 422);
+        $oldCategoryId = $listing->category_id;
 
         $listing->update([
             'category_id' => $data['category_id'],
@@ -76,6 +80,11 @@ class AgentListingController extends Controller
             'condition' => $data['condition'],
             'status' => 'pending',
         ]);
+        $listing->refresh();
+
+        if ((int) $oldCategoryId !== (int) $listing->category_id || blank($listing->product_code)) {
+            $listing->assignProductCode(true);
+        }
 
         $this->syncDetails($listing, $request);
         $this->storeImages($listing, $request, app(ImageWatermarkService::class));
