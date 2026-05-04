@@ -1,22 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<section data-aos="fade-up" class="relative min-h-[520px] flex items-center bg-cover bg-center"
-    style="background-image:url('{{ asset('images/thumbnail_kendaraan.png') }}');">
-    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/70 to-blue-700/30"></div>
+@php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero mobil.png'),
+            'label' => 'Arsantara Autoshow',
+            'title' => 'Mobil dan motor pilihan, siap Anda bandingkan.',
+            'text' => 'Cari unit berdasarkan harga, kondisi, kategori, dan transmisi. Kartu listing memakai tampilan yang konsisten dengan halaman beranda.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Properti Arsantara',
+            'title' => 'Pilihan rumah dan tanah yang mudah dibandingkan',
+            'text' => 'Lihat lokasi, harga, sertifikat, dan detail utama dari satu tampilan yang rapi.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Autoshow Arsantara',
+            'title' => 'Mobil dan motor pilihan dalam satu platform',
+            'text' => 'Bandingkan kendaraan berdasarkan kategori, harga, kondisi, dan kebutuhan Anda.',
+        ],
+        [
+            'image' => asset('images/thumbnail_pinjam_dana.png'),
+            'label' => 'Layanan Dana',
+            'title' => 'Konsultasi pinjam dana dengan jaminan BPKB',
+            'text' => 'Hubungi admin untuk informasi awal dan pendampingan proses pengajuan.',
+        ],
+    ];
+@endphp
 
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-28 text-white">
-        <div class="max-w-2xl">
-            <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-200">Arsantara Autoshow</p>
-            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
-                Mobil dan motor pilihan, siap Anda bandingkan.
-            </h1>
-            <p class="mt-5 text-lg text-blue-100 leading-relaxed">
-                Cari unit berdasarkan harga, kondisi, kategori, dan transmisi. Kartu listing memakai tampilan yang konsisten dengan halaman beranda.
-            </p>
-        </div>
-    </div>
-</section>
+<x-hero-carousel :slides="$heroSlides" height="min-h-[520px]" inner-height="min-h-[520px]" content-width="max-w-2xl" />
 
 <div class="relative z-20 -mt-16 px-6">
     <form id="filterForm" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">

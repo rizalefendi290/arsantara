@@ -1,29 +1,36 @@
 ﻿@extends('layouts.app')
 
 @section('content')
-<!-- HERO -->
-<section data-aos="fade-up"
-    class="relative min-h-screen flex items-center justify-center bg-cover bg-center"
-    style="background-image:url('{{asset('images/hero.png')}}');">
+@php
+    $homeHeroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Arsantara Marketplace',
+            'title' => 'Temukan properti impian Anda',
+            'text' => 'Rumah, tanah, mobil hingga kebutuhan lainnya dalam satu platform terpercaya.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Properti Pilihan',
+            'title' => 'Rumah dan tanah dalam satu tempat',
+            'text' => 'Cari properti aktif, lokasi strategis, dan pilihan harga yang mudah dibandingkan.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Autoshow Arsantara',
+            'title' => 'Mobil dan motor siap Anda bandingkan',
+            'text' => 'Jelajahi kendaraan berdasarkan harga, kondisi, kategori, dan kebutuhan harian Anda.',
+        ],
+        [
+            'image' => asset('images/thumbnail_pinjam_dana.png'),
+            'label' => 'Pinjaman Dana',
+            'title' => 'Ajukan dana dengan jaminan BPKB',
+            'text' => 'Konsultasikan kebutuhan dana dan lanjutkan proses awal bersama admin Arsantara.',
+        ],
+    ];
+@endphp
 
-    <!-- Overlay Gradient -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
-
-    <!-- CONTENT -->
-    <div class="relative px-6 py-24 max-w-6xl z-10 w-full mx-auto text-center text-white">
-        
-        <h1 data-aos="zoom-in"
-            class="text-4xl md:text-6xl font-extrabold leading-tight mb-6 tracking-tight">
-            Temukan Properti Impian Anda
-        </h1>
-
-        <p data-aos="zoom-in"
-            class="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            Rumah, tanah, mobil hingga kebutuhan lainnya dalam satu platform terpercaya.
-        </p>
-
-    </div>
-</section>
+<x-hero-carousel :slides="$homeHeroSlides" height="min-h-screen" inner-height="min-h-[calc(100vh-6rem)]" content-width="max-w-2xl" />
 
 <!-- SEARCH BOX FLOAT -->
 <div class="relative -mt-20 z-20 px-6 flex justify-center">
@@ -121,7 +128,7 @@
             <div>
                 <!-- BADGE -->
                 <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
-                    🏠 PROPERTI
+                    ?? PROPERTI
                 </div>
 
                 <!-- TITLE -->
@@ -138,7 +145,7 @@
                 <!-- BUTTON -->
                 <a href="{{ route('properti') }}"
                     class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
-                    Lihat Properti →
+                    Lihat Properti ?
                 </a>
             </div>
         </div>
@@ -157,7 +164,7 @@
 
             <div>
                 <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
-                    🚗 MOBIL BEKAS
+                    ?? MOBIL BEKAS
                 </div>
 
                 <h2 class="text-3xl font-bold leading-tight">
@@ -171,7 +178,7 @@
 
                 <a href="{{ route('autoshow') }}"
                     class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
-                    Lihat Mobil →
+                    Lihat Mobil ?
                 </a>
             </div>
         </div>
@@ -190,7 +197,7 @@
 
             <div>
                 <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
-                    💰 PEMBIAYAAN
+                    ?? PEMBIAYAAN
                 </div>
 
                 <h2 class="text-3xl font-bold leading-tight">
@@ -205,7 +212,7 @@
 
                 <a href="{{ route('pinjaman.index') }}"
                     class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
-                    Ajukan Sekarang →
+                    Ajukan Sekarang ?
                 </a>
             </div>
         </div>
@@ -254,7 +261,7 @@
         class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-2 sm:px-4 cursor-pointer group"
         data-carousel-prev>
         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-sm text-white group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
-            ❮
+            ?
         </span>
     </button>
 
@@ -263,7 +270,7 @@
         class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-2 sm:px-4 cursor-pointer group"
         data-carousel-next>
         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-sm text-white group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
-            ❯
+            ?
         </span>
     </button>
 </div>
@@ -304,12 +311,12 @@
                     @if($listing->images->count() > 1)
                         <button onclick="event.stopPropagation(); prevSlide(this)"
                             class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                            ❮
+                            ?
                         </button>
 
                         <button onclick="event.stopPropagation(); nextSlide(this)"
                             class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                            ❯
+                            ?
                         </button>
                     @endif
                 </div>
@@ -372,7 +379,7 @@
 
                 <div>
                     <button type="button" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
-                        bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route($route) }}">Lihat Semua →</a>
+                        bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route($route) }}">Lihat Semua ?</a>
                     </button>
                 </div>
             </div>
@@ -406,12 +413,12 @@
                         <!-- BUTTON -->
                         <button onclick="event.stopPropagation(); prevSlide(this)"
                             class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                            ❮
+                            ?
                         </button>
 
                         <button onclick="event.stopPropagation(); nextSlide(this)"
                             class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                            ❯
+                            ?
                         </button>
 
                     </div>
@@ -536,7 +543,7 @@
             Testimoni Mereka Tentang Arsantara
         </h2>
         <button type="button" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
-                bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route('testimoni.index') }}">Lihat Semua →</a>
+                bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route('testimoni.index') }}">Lihat Semua ?</a>
         </button>
     </div>
 
@@ -545,7 +552,7 @@
         <!-- LEFT -->
         <button onclick="scrollTesti(-1)"
             class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
-            ←
+            ?
         </button>
 
         <!-- SLIDER -->
@@ -579,13 +586,13 @@
                         {{ $item->name }}
                     </h3>
 
-                    <!-- ⭐ RATING -->
+                    <!-- ? RATING -->
                     <div class="text-yellow-400 mb-3">
                         @for($i=1; $i<=5; $i++)
                             @if($i <= $item->rating)
-                                ★
+                                ?
                             @else
-                                ☆
+                                ?
                             @endif
                         @endfor
                     </div>
@@ -610,7 +617,7 @@
         <!-- RIGHT -->
         <button onclick="scrollTesti(1)"
             class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
-            →
+            ?
         </button>
 
     </div>
@@ -661,5 +668,7 @@ function prevSlide(btn){
     slides[prevIndex].classList.remove('hidden');
 }
 </script>
+
+
 
 

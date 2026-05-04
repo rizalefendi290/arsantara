@@ -28,17 +28,30 @@
         : null;
 @endphp
 
-<section class="relative min-h-[380px] flex items-center bg-cover bg-center"
-    style="background-image:url('{{ asset('images/hero.png') }}');">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/75 to-blue-700/30"></div>
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-24 text-white">
-        <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-200">Profile Akun</p>
-        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">Halo, {{ $user->name }}</h1>
-        <p class="mt-4 max-w-2xl text-blue-100">
-            Kelola informasi akun, keamanan, status role, dan akses dashboard Anda dari satu halaman.
-        </p>
-    </div>
-</section>
+@php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Profile Akun',
+            'title' => 'Halo, '.$user->name,
+            'text' => 'Kelola informasi akun, keamanan, status role, dan akses dashboard Anda dari satu halaman.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Akses Properti',
+            'title' => 'Pantau aktivitas akun Anda',
+            'text' => 'Perbarui data profil agar komunikasi dan akses layanan Arsantara berjalan lancar.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Dashboard Pengguna',
+            'title' => 'Kelola role dan status akun',
+            'text' => 'Ajukan peningkatan role untuk menjadi agen atau pemilik produk saat dibutuhkan.',
+        ],
+    ];
+@endphp
+
+<x-hero-carousel :slides="$heroSlides" height="min-h-[380px]" inner-height="min-h-[380px]" content-width="max-w-3xl" />
 
 <main class="bg-gradient-to-b from-blue-50 via-white to-white">
     <div class="mx-auto max-w-7xl px-6 py-12">

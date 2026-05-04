@@ -1,15 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="relative min-h-[460px] flex items-center bg-cover bg-center"
-    style="background-image:url('{{ asset('images/thumbnail_properti.png') }}');">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-900/70 to-blue-700/30"></div>
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-24 text-white">
-        <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-200">Kategori Tanah</p>
-        <h1 class="max-w-3xl text-4xl md:text-6xl font-extrabold leading-tight">Daftar Tanah</h1>
-        <p class="mt-4 max-w-2xl text-lg text-blue-100">Cari tanah berdasarkan lokasi, harga, luas tanah, sertifikat, dan urutan harga.</p>
-    </div>
-</section>
+@php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Kategori Tanah',
+            'title' => 'Daftar Tanah',
+            'text' => 'Cari tanah berdasarkan lokasi, harga, luas tanah, sertifikat, dan urutan harga.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Properti Arsantara',
+            'title' => 'Pilihan rumah dan tanah yang mudah dibandingkan',
+            'text' => 'Lihat lokasi, harga, sertifikat, dan detail utama dari satu tampilan yang rapi.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Autoshow Arsantara',
+            'title' => 'Mobil dan motor pilihan dalam satu platform',
+            'text' => 'Bandingkan kendaraan berdasarkan kategori, harga, kondisi, dan kebutuhan Anda.',
+        ],
+        [
+            'image' => asset('images/thumbnail_pinjam_dana.png'),
+            'label' => 'Layanan Dana',
+            'title' => 'Konsultasi pinjam dana dengan jaminan BPKB',
+            'text' => 'Hubungi admin untuk informasi awal dan pendampingan proses pengajuan.',
+        ],
+    ];
+@endphp
+
+<x-hero-carousel :slides="$heroSlides" height="min-h-[460px]" inner-height="min-h-[460px]" content-width="max-w-2xl" />
 
 <div class="relative z-20 -mt-14 px-6">
     <form method="GET" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">

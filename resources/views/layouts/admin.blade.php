@@ -46,6 +46,18 @@
             'icon' => 'M4 5h16v10H7l-3 3V5z',
         ],
         [
+            'label' => 'Organisasi',
+            'route' => 'admin.organization.index',
+            'active' => request()->routeIs('admin.organization.*'),
+            'icon' => 'M8 7a4 4 0 1 0 8 0M4 21a8 8 0 0 1 16 0M17 11h4M19 9v4',
+        ],
+        [
+            'label' => 'Mitra',
+            'route' => 'admin.partners.index',
+            'active' => request()->routeIs('admin.partners.*'),
+            'icon' => 'M8 12h8M4 8h16M4 16h16M6 4h12v16H6z',
+        ],
+        [
             'label' => 'User',
             'route' => 'admin.users',
             'active' => request()->routeIs('admin.users*'),

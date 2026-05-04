@@ -1,33 +1,37 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="relative min-h-[560px] flex items-center bg-cover bg-center"
-    style="background-image:url('{{ asset('images/hero.png') }}');">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/75 to-blue-700/30"></div>
+@php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Tentang Arsantara',
+            'title' => 'Ekosistem digital untuk properti, kendaraan, dan pembiayaan.',
+            'text' => 'Arsantara membantu pengguna menemukan listing terpercaya, membandingkan pilihan, dan terhubung cepat dengan penjual atau admin melalui pengalaman marketplace yang sederhana.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Properti Terpadu',
+            'title' => 'Cari rumah dan tanah dengan informasi yang jelas.',
+            'text' => 'Setiap listing disusun agar harga, lokasi, sertifikat, dan detail utama mudah dipahami.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Kendaraan Pilihan',
+            'title' => 'Bandingkan mobil dan motor dengan cepat.',
+            'text' => 'Temukan unit berdasarkan kategori, kondisi, harga, dan kebutuhan Anda.',
+        ],
+    ];
+@endphp
 
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-28 text-white">
-        <div class="max-w-3xl">
-            <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-200">Tentang Arsantara</p>
-            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
-                Ekosistem digital untuk properti, kendaraan, dan pembiayaan.
-            </h1>
-            <p class="mt-5 text-lg text-blue-100 leading-relaxed">
-                Arsantara membantu pengguna menemukan listing terpercaya, membandingkan pilihan, dan terhubung cepat dengan penjual atau admin melalui pengalaman marketplace yang sederhana.
-            </p>
-
-            <div class="mt-8 flex flex-wrap gap-3">
-                <a href="{{ route('properti') }}"
-                    class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow hover:bg-blue-700">
-                    Jelajahi Properti
-                </a>
-                <a href="{{ route('autoshow') }}"
-                    class="rounded-xl bg-white/10 px-5 py-3 font-semibold text-white ring-1 ring-white/30 backdrop-blur hover:bg-white/20">
-                    Lihat Autoshow
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
+<x-hero-carousel :slides="$heroSlides" height="min-h-[560px]" inner-height="min-h-[560px]" content-width="max-w-3xl">
+    <a href="{{ route('properti') }}" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow hover:bg-blue-700">
+        Jelajahi Properti
+    </a>
+    <a href="{{ route('autoshow') }}" class="inline-flex items-center justify-center rounded-xl border border-white/30 px-5 py-3 font-semibold text-white transition hover:bg-white/10">
+        Lihat Autoshow
+    </a>
+</x-hero-carousel>
 
 <main class="bg-gradient-to-b from-blue-50 via-white to-white">
     <section class="relative z-20 -mt-16 px-6">
@@ -181,5 +185,96 @@
             </aside>
         </div>
     </section>
+
+    @if($organizationMembers->count())
+        <section class="mx-auto max-w-6xl px-6 pb-16">
+            <div class="mb-10 text-center">
+                <p class="text-sm font-semibold uppercase text-blue-600">Kepemimpinan</p>
+                <h2 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
+                    Struktur Organisasi Arsantara
+                </h2>
+                <p class="mx-auto mt-4 max-w-3xl leading-7 text-gray-600">
+                    Kenali tim yang mengelola operasional, kemitraan, layanan, dan pengembangan produk Arsantara.
+                </p>
+            </div>
+
+            <div class="space-y-14">
+                @foreach($organizationMembers as $member)
+                    <article class="grid items-center gap-8 md:grid-cols-[1fr_280px] {{ $loop->even ? 'md:grid-cols-[280px_1fr]' : '' }}">
+                        <div class="{{ $loop->even ? 'md:order-2' : '' }}">
+                            <p class="text-sm font-bold uppercase text-blue-600">{{ $member->position }}</p>
+                            <h3 class="mt-2 text-2xl font-extrabold text-gray-950">{{ $member->name }}</h3>
+                            @if($member->profile)
+                                <p class="mt-4 text-sm leading-7 text-gray-600 md:text-base">{{ $member->profile }}</p>
+                            @else
+                                <p class="mt-4 text-sm leading-7 text-gray-600 md:text-base">
+                                    Berperan dalam memastikan layanan Arsantara berjalan profesional, responsif, dan selaras dengan kebutuhan pengguna.
+                                </p>
+                            @endif
+                        </div>
+
+                        <div class="{{ $loop->even ? 'md:order-1' : '' }} mx-auto">
+                            <div class="h-64 w-64 overflow-hidden rounded-full bg-gray-100 ring-8 ring-blue-50 md:h-72 md:w-72">
+                                <img src="{{ $member->photo ? asset('storage/'.$member->photo) : asset('images/logo.png') }}"
+                                    alt="{{ $member->name }}"
+                                    class="h-full w-full object-cover">
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    @if($partners->count())
+        <section class="mx-auto max-w-7xl px-6 pb-20">
+            <div class="mb-8 text-center">
+                <p class="text-sm font-semibold uppercase text-blue-600">Mitra</p>
+                <h2 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
+                    Mitra Arsantara
+                </h2>
+                <p class="mx-auto mt-4 max-w-3xl leading-7 text-gray-600">
+                    Kolaborasi dengan mitra membantu Arsantara memperluas layanan properti, kendaraan, pembiayaan, dan dukungan transaksi.
+                </p>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                @foreach($partners as $partner)
+                    @if($partner->website_url)
+                        <a href="{{ $partner->website_url }}" target="_blank" rel="noopener noreferrer"
+                            class="group block rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                            <div class="mx-auto flex h-24 w-full items-center justify-center rounded-xl bg-gray-50 p-4">
+                                <img src="{{ $partner->logo ? asset('storage/'.$partner->logo) : asset('images/logo.png') }}"
+                                    alt="{{ $partner->name }}"
+                                    class="max-h-full max-w-full object-contain">
+                            </div>
+                            <h3 class="mt-4 text-lg font-extrabold text-gray-950 group-hover:text-blue-700">{{ $partner->name }}</h3>
+                            @if($partner->category)
+                                <p class="mt-1 text-sm font-semibold text-blue-700">{{ $partner->category }}</p>
+                            @endif
+                            @if($partner->description)
+                                <p class="mt-3 text-sm leading-6 text-gray-600">{{ $partner->description }}</p>
+                            @endif
+                        </a>
+                    @else
+                        <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
+                            <div class="mx-auto flex h-24 w-full items-center justify-center rounded-xl bg-gray-50 p-4">
+                                <img src="{{ $partner->logo ? asset('storage/'.$partner->logo) : asset('images/logo.png') }}"
+                                    alt="{{ $partner->name }}"
+                                    class="max-h-full max-w-full object-contain">
+                            </div>
+                            <h3 class="mt-4 text-lg font-extrabold text-gray-950">{{ $partner->name }}</h3>
+                            @if($partner->category)
+                                <p class="mt-1 text-sm font-semibold text-blue-700">{{ $partner->category }}</p>
+                            @endif
+                            @if($partner->description)
+                                <p class="mt-3 text-sm leading-6 text-gray-600">{{ $partner->description }}</p>
+                            @endif
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        </section>
+    @endif
 </main>
 @endsection

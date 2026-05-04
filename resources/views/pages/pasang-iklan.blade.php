@@ -2,66 +2,52 @@
 
 @section('content')
 <main class="bg-white">
-    <section class="relative overflow-hidden bg-gradient-to-br from-blue-950 via-blue-800 to-slate-950 pt-28 text-white">
-        <div class="absolute inset-0 opacity-20">
-            <img src="{{ asset('images/thumbnail_properti.png') }}" alt="" class="h-full w-full object-cover">
-        </div>
-        <div class="relative mx-auto grid max-w-screen-xl gap-10 px-4 py-14 lg:grid-cols-[1.2fr_0.8fr] lg:px-6 lg:py-20">
-            <div>
-                <p class="mb-4 inline-flex rounded-full border border-white/30 px-4 py-1 text-xs font-bold uppercase tracking-wide">
-                    Pasang Iklan di Arsantara
-                </p>
-                <h1 class="max-w-3xl text-4xl font-extrabold leading-tight md:text-6xl">
-                    Pasarkan properti dan kendaraan dengan data yang rapi dan terpercaya.
-                </h1>
-                <p class="mt-5 max-w-2xl text-base leading-7 text-blue-100 md:text-lg">
-                    Arsantara membantu agen dan pemilik produk menampilkan listing rumah, tanah, mobil, dan motor kepada calon pembeli dengan informasi yang jelas, foto berkualitas, dan proses review admin.
-                </p>
+    @php
+    $heroSlides = [
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Pasang Iklan di Arsantara',
+            'title' => 'Pasarkan properti dan kendaraan dengan data yang rapi dan terpercaya.',
+            'text' => 'Arsantara membantu agen dan pemilik produk menampilkan listing rumah, tanah, mobil, dan motor kepada calon pembeli dengan informasi yang jelas, foto berkualitas, dan proses review admin.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Jangkauan Listing',
+            'title' => 'Tampilkan produk Anda ke calon pembeli yang tepat.',
+            'text' => 'Produk tampil di halaman kategori, pencarian, dan dapat masuk rekomendasi beranda setelah disetujui admin.',
+        ],
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Agen & Pemilik',
+            'title' => 'Kelola listing dari akun yang sesuai kebutuhan.',
+            'text' => 'Agen dan pemilik produk dapat mengunggah data, foto, serta detail produk secara lebih profesional.',
+        ],
+    ];
+@endphp
 
-                <div class="mt-8 flex flex-wrap gap-3">
-                    @auth
-                        @if(in_array(auth()->user()->role, ['agen', 'pemilik']))
-                            <a href="{{ route('agent.listings.create') }}" class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow hover:bg-blue-50">
-                                Upload Produk
-                            </a>
-                        @else
-                            <button type="button" onclick="openUpgradeModal('agen')" class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow hover:bg-blue-50">
-                                Daftar Sebagai Agen
-                            </button>
-                            <button type="button" onclick="openUpgradeModal('pemilik')" class="rounded-xl border border-white/40 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">
-                                Daftar Pemilik Produk
-                            </button>
-                        @endif
-                    @else
-                        <button type="button" data-modal-target="login-modal" data-modal-toggle="login-modal" onclick="showRegister()" class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow hover:bg-blue-50">
-                            Daftar Akun
-                        </button>
-                        <button type="button" data-modal-target="login-modal" data-modal-toggle="login-modal" class="rounded-xl border border-white/40 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">
-                            Login
-                        </button>
-                    @endauth
-                </div>
-            </div>
-
-            <div class="rounded-2xl border border-white/20 bg-white/95 p-6 text-gray-900 shadow-2xl">
-                <h2 class="text-xl font-extrabold">Siapa yang bisa pasang iklan?</h2>
-                <div class="mt-5 space-y-4">
-                    <div class="rounded-xl border border-blue-100 bg-blue-50 p-4">
-                        <h3 class="font-bold text-blue-800">Agen</h3>
-                        <p class="mt-1 text-sm text-gray-600">Untuk pemasar properti atau kendaraan yang mengelola beberapa listing.</p>
-                    </div>
-                    <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
-                        <h3 class="font-bold text-emerald-800">Pemilik Produk</h3>
-                        <p class="mt-1 text-sm text-gray-600">Untuk pemilik rumah, tanah, mobil, atau motor yang ingin menjual langsung.</p>
-                    </div>
-                    <div class="rounded-xl border border-orange-100 bg-orange-50 p-4">
-                        <h3 class="font-bold text-orange-800">Produk yang didukung</h3>
-                        <p class="mt-1 text-sm text-gray-600">Rumah, tanah, mobil, motor, dan kategori aktif lain yang tersedia di Arsantara.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<x-hero-carousel :slides="$heroSlides" height="min-h-[560px]" inner-height="min-h-[560px]" content-width="max-w-3xl">
+    @auth
+        @if(in_array(auth()->user()->role, ['agen', 'pemilik']))
+            <a href="{{ route('agent.listings.create') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow hover:bg-blue-50">
+                Upload Produk
+            </a>
+        @else
+            <button type="button" onclick="openUpgradeModal('agen')" class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow hover:bg-blue-50">
+                Daftar Sebagai Agen
+            </button>
+            <button type="button" onclick="openUpgradeModal('pemilik')" class="rounded-xl border border-white/40 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">
+                Daftar Pemilik Produk
+            </button>
+        @endif
+    @else
+        <button type="button" data-modal-target="login-modal" data-modal-toggle="login-modal" onclick="showRegister()" class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow hover:bg-blue-50">
+            Daftar Akun
+        </button>
+        <button type="button" data-modal-target="login-modal" data-modal-toggle="login-modal" class="rounded-xl border border-white/40 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">
+            Login
+        </button>
+    @endauth
+</x-hero-carousel>
 
     <section class="mx-auto max-w-screen-xl px-4 py-14 lg:px-6">
         <div class="grid gap-6 md:grid-cols-3">

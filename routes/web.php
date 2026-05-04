@@ -13,6 +13,8 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Agent\AgentDashboardController;
 use App\Http\Controllers\Agent\AgentListingController;
+use App\Http\Controllers\OrganizationMemberController;
+use App\Http\Controllers\PartnerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -70,6 +72,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('/admin/approve/{id}', [AdminController::class, 'approve'])->name('admin.users.approve');
     Route::post('/admin/reject/{id}', [AdminController::class, 'reject'])->name('admin.users.reject');
+    Route::get('/admin/organization', [OrganizationMemberController::class, 'index'])->name('admin.organization.index');
+    Route::post('/admin/organization', [OrganizationMemberController::class, 'store'])->name('admin.organization.store');
+    Route::patch('/admin/organization/{organization}', [OrganizationMemberController::class, 'update'])->name('admin.organization.update');
+    Route::delete('/admin/organization/{organization}', [OrganizationMemberController::class, 'destroy'])->name('admin.organization.destroy');
+    Route::get('/admin/partners', [PartnerController::class, 'index'])->name('admin.partners.index');
+    Route::post('/admin/partners', [PartnerController::class, 'store'])->name('admin.partners.store');
+    Route::patch('/admin/partners/{partner}', [PartnerController::class, 'update'])->name('admin.partners.update');
+    Route::delete('/admin/partners/{partner}', [PartnerController::class, 'destroy'])->name('admin.partners.destroy');
 });
 //edit carousel
 Route::middleware(['auth','admin'])->group(function(){
@@ -133,8 +143,16 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
 Route::get('/about', function () {
     $posts = \App\Models\Post::with('images')->latest()->take(5)->get();
+    $organizationMembers = \App\Models\OrganizationMember::where('is_active', true)
+        ->orderBy('sort_order')
+        ->latest()
+        ->get();
+    $partners = \App\Models\Partner::where('is_active', true)
+        ->orderBy('sort_order')
+        ->latest()
+        ->get();
 
-    return view('about', compact('posts'));
+    return view('about', compact('posts', 'organizationMembers', 'partners'));
 })->name('about');
 
 Route::view('/syarat', 'pages.terms')->name('terms');

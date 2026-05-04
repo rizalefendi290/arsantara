@@ -3,17 +3,30 @@
 @section('content')
 
 <div class="min-h-screen bg-slate-50">
-    <section data-aos="fade-up"
-        class="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.16),_transparent_45%)] py-16">
-        <div class="container mx-auto px-6">
-            <div class="max-w-3xl mx-auto text-center">
-                <p class="text-sm uppercase tracking-[0.3em] text-blue-600 mb-4">Ulasan</p>
-                <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Buat Ulasan Anda</h1>
-                <p class="text-slate-600 text-lg">Bagikan pengalaman terbaik Anda di Arsantara agar pelanggan lain
-                    semakin percaya.</p>
-            </div>
-        </div>
-    </section>
+    @php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Ulasan',
+            'title' => 'Buat Ulasan Anda',
+            'text' => 'Bagikan pengalaman terbaik Anda di Arsantara agar pelanggan lain semakin percaya.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Pengalaman Properti',
+            'title' => 'Ceritakan proses Anda menemukan pilihan terbaik.',
+            'text' => 'Ulasan Anda membantu pengguna lain membaca gambaran layanan dengan lebih jernih.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Pengalaman Kendaraan',
+            'title' => 'Bagikan cerita saat membandingkan listing.',
+            'text' => 'Masukan Anda menjadi sinyal kepercayaan untuk calon pengguna berikutnya.',
+        ],
+    ];
+@endphp
+
+<x-hero-carousel :slides="$heroSlides" height="min-h-[420px]" inner-height="min-h-[420px]" content-width="max-w-3xl" />
 
     <div class="container mx-auto px-6 pb-16">
         <div class="mx-auto max-w-3xl overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-xl">

@@ -3,17 +3,30 @@
 @section('content')
 
 <div class="min-h-screen bg-slate-50">
-    <section data-aos="fade-up"
-        class="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.16),_transparent_45%)] py-16">
-        <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto text-center">
-                <p class="text-sm uppercase tracking-[0.3em] text-blue-600 mb-4">Ulasan Pengguna</p>
-                <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Apa Kata Mereka?</h1>
-                <p class="text-slate-600 text-lg md:text-xl">Ulasan dari pelanggan Arsantara untuk membantu calon
-                    pembeli menemukan pengalaman terbaik.</p>
-            </div>
-        </div>
-    </section>
+    @php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Ulasan Pengguna',
+            'title' => 'Apa Kata Mereka?',
+            'text' => 'Ulasan dari pelanggan Arsantara untuk membantu calon pembeli menemukan pengalaman terbaik.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Cerita Properti',
+            'title' => 'Pengalaman menemukan properti pilihan.',
+            'text' => 'Baca cerita pengguna saat mencari rumah, tanah, dan layanan terkait di Arsantara.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Cerita Kendaraan',
+            'title' => 'Pengalaman memilih mobil dan motor.',
+            'text' => 'Ulasan membantu pengguna lain merasa lebih yakin sebelum menghubungi penjual.',
+        ],
+    ];
+@endphp
+
+<x-hero-carousel :slides="$heroSlides" height="min-h-[420px]" inner-height="min-h-[420px]" content-width="max-w-3xl" />
 
     <div class="container mx-auto px-6 pb-16">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">

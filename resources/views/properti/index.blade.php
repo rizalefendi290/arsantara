@@ -1,22 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<section data-aos="fade-up" class="relative min-h-[520px] flex items-center bg-cover bg-center"
-    style="background-image:url('{{ asset('images/thumbnail_properti.png') }}');">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-900/70 to-blue-700/30"></div>
+@php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Arsantara Properti',
+            'title' => 'Rumah dan tanah pilihan dalam satu tempat.',
+            'text' => 'Temukan properti aktif, lokasi strategis, pilihan KPR, dan tanah siap bangun dengan tampilan listing yang mudah dipindai.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Properti Arsantara',
+            'title' => 'Pilihan rumah dan tanah yang mudah dibandingkan',
+            'text' => 'Lihat lokasi, harga, sertifikat, dan detail utama dari satu tampilan yang rapi.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Rumah Arsantara',
+            'title' => 'Cari Rumah Yang Nyaman',
+            'text' => 'Rumah Nyaman Di Hati Anda, Temukan Rumah Impian Anda dengan Mudah di Arsantara.',
+        ],
+        [
+            'image' => asset('images/thumbnail_pinjam_dana.png'),
+            'label' => 'Konsultasi Gratis',
+            'title' => 'Konsultasikan Hunian dan Tanah Impian Anda',
+            'text' => 'Hubungi admin untuk konsultasi gratis tentang rumah dan tanah impian Anda, termasuk opsi KPR dan proses pembelian.',
+        ],
+    ];
+@endphp
 
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-28 text-white">
-        <div class="max-w-2xl">
-            <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-200">Arsantara Properti</p>
-            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
-                Rumah dan tanah pilihan dalam satu tempat.
-            </h1>
-            <p class="mt-5 text-lg text-blue-100 leading-relaxed">
-                Temukan properti aktif, lokasi strategis, pilihan KPR, dan tanah siap bangun dengan tampilan listing yang mudah dipindai.
-            </p>
-        </div>
-    </div>
-</section>
+<x-hero-carousel :slides="$heroSlides" height="min-h-[520px]" inner-height="min-h-[520px]" content-width="max-w-2xl" />
 
 <div class="relative z-20 -mt-16 px-6">
     <form id="filterForm" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">

@@ -1,20 +1,30 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="relative min-h-[430px] flex items-center bg-cover bg-center"
-    style="background-image:url('{{ asset('images/hero.png') }}');">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-900/75 to-blue-700/30"></div>
+@php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Pencarian Arsantara',
+            'title' => 'Hasil untuk "'.($keyword !== '' ? $keyword : 'semua data').'"',
+            'text' => 'Cari listing properti, kendaraan, dan berita terbaru dari satu halaman.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Properti Arsantara',
+            'title' => 'Temukan rumah dan tanah sesuai kebutuhan',
+            'text' => 'Gunakan filter kategori, harga, dan kata kunci untuk mempersempit hasil pencarian.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Autoshow Arsantara',
+            'title' => 'Cari mobil dan motor dari satu halaman',
+            'text' => 'Bandingkan listing kendaraan aktif dan lanjutkan komunikasi lewat WhatsApp.',
+        ],
+    ];
+@endphp
 
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-24 text-white">
-        <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-200">Pencarian Arsantara</p>
-        <h1 class="max-w-3xl text-4xl md:text-6xl font-extrabold leading-tight">
-            Hasil untuk "{{ $keyword !== '' ? $keyword : 'semua data' }}"
-        </h1>
-        <p class="mt-4 max-w-2xl text-lg text-blue-100">
-            Cari listing properti, kendaraan, dan berita terbaru dari satu halaman.
-        </p>
-    </div>
-</section>
+<x-hero-carousel :slides="$heroSlides" height="min-h-[430px]" inner-height="min-h-[430px]" content-width="max-w-3xl" />
 
 <div class="relative z-20 -mt-14 px-6">
     <form method="GET" action="{{ route('search') }}" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">

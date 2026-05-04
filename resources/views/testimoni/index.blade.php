@@ -1,15 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="relative min-h-[460px] flex items-center bg-cover bg-center"
-    style="background-image:url('{{ asset('images/hero.png') }}');">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/75 to-blue-700/30"></div>
-    <div class="relative z-10 mx-auto w-full max-w-7xl px-6 py-24 text-white">
-        <p class="mb-3 text-sm font-semibold uppercase tracking-wide text-blue-200">Testimoni Arsantara</p>
-        <h1 class="max-w-3xl text-4xl md:text-6xl font-extrabold leading-tight">Cerita pengguna yang sudah mencoba Arsantara.</h1>
-        <p class="mt-4 max-w-2xl text-lg text-blue-100">Baca pengalaman pembeli, pemilik, agen, dan pengguna yang menemukan properti atau kendaraan melalui Arsantara.</p>
-    </div>
-</section>
+@php
+    $heroSlides = [
+        [
+            'image' => asset('images/hero.png'),
+            'label' => 'Testimoni Arsantara',
+            'title' => 'Cerita pengguna yang sudah mencoba Arsantara.',
+            'text' => 'Baca pengalaman pembeli, pemilik, agen, dan pengguna yang menemukan properti atau kendaraan melalui Arsantara.',
+        ],
+        [
+            'image' => asset('images/thumbnail_properti.png'),
+            'label' => 'Properti Arsantara',
+            'title' => 'Pilihan rumah dan tanah yang mudah dibandingkan',
+            'text' => 'Lihat lokasi, harga, sertifikat, dan detail utama dari satu tampilan yang rapi.',
+        ],
+        [
+            'image' => asset('images/thumbnail_kendaraan.png'),
+            'label' => 'Autoshow Arsantara',
+            'title' => 'Mobil dan motor pilihan dalam satu platform',
+            'text' => 'Bandingkan kendaraan berdasarkan kategori, harga, kondisi, dan kebutuhan Anda.',
+        ],
+        [
+            'image' => asset('images/thumbnail_pinjam_dana.png'),
+            'label' => 'Layanan Dana',
+            'title' => 'Konsultasi pinjam dana dengan jaminan BPKB',
+            'text' => 'Hubungi admin untuk informasi awal dan pendampingan proses pengajuan.',
+        ],
+    ];
+@endphp
+
+<x-hero-carousel :slides="$heroSlides" height="min-h-[460px]" inner-height="min-h-[460px]" content-width="max-w-3xl" />
 
 <main class="bg-gradient-to-b from-blue-50 via-white to-white">
     <div class="mx-auto max-w-7xl px-6 py-12">
