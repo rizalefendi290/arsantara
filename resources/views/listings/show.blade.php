@@ -202,10 +202,10 @@
             @endif
         </div>
 
-        <div class="bg-pink-600">
+        <div class="bg-blue-500">
             <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-4 py-2.5 text-sm font-semibold text-white sm:px-6 lg:px-8">
                 <span>Must See</span>
-                <span class="hidden sm:inline">Curated by Arsantara</span>
+                <span class="hidden sm:inline">Created by Arsantara</span>
                 <span class="hidden sm:inline">Verified listing</span>
             </div>
         </div>

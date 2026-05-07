@@ -5,7 +5,7 @@
 
         <!-- LOGO -->
         <a href="{{ route('home') }}" class="relative z-20 flex min-w-0 items-center gap-3">
-            <img src="{{ asset('images/logo fi.png') }}"
+            <img src="{{ asset('images/logo_fixx.png') }}"
                 alt="Arsantara Management"
                 class="h-11 w-11 rounded-xl object-contain">
             <span class="hidden text-lg font-bold leading-tight text-gray-900 md:block lg:text-xl">
