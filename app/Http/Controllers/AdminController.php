@@ -42,6 +42,44 @@ class AdminController extends Controller
         return view('admin.users', compact('users', 'stats'));
     }
 
+    public function requests(Request $request)
+    {
+        $query = User::query()
+            ->whereNotNull('requested_role')
+            ->withCount('listings')
+            ->latest('updated_at');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('email', 'like', '%'.$search.'%')
+                    ->orWhere('phone', 'like', '%'.$search.'%');
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('requested_role', $request->role);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        } else {
+            $query->where('status', 'pending');
+        }
+
+        $requests = $query->paginate(15)->appends($request->query());
+
+        $stats = [
+            'total' => User::whereNotNull('requested_role')->count(),
+            'pending' => User::whereNotNull('requested_role')->where('status', 'pending')->count(),
+            'agen' => User::where('requested_role', 'agen')->count(),
+            'pemilik' => User::where('requested_role', 'pemilik')->count(),
+        ];
+
+        return view('admin.role-requests.index', compact('requests', 'stats'));
+    }
+
     public function approve($id)
     {
         $user = User::findOrFail($id);

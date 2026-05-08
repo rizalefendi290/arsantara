@@ -31,7 +31,7 @@
         <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
             <input type="text" name="keyword" value="{{ $keyword }}"
                 class="md:col-span-2 rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
-                placeholder="Cari judul, lokasi, merk, kategori, atau berita">
+                placeholder="Cari judul, kode produk, lokasi, merk, kategori, atau berita">
 
             <select name="category" class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">Semua kategori listing</option>

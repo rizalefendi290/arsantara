@@ -695,6 +695,13 @@ class ListingController extends Controller
     {
         $keyword = trim((string) $request->input('keyword', $request->input('search', '')));
         $categoryId = $request->input('category', $request->input('category_id'));
+        $categories = Category::active()->get();
+        $terms = collect(preg_split('/\s+/', $keyword))
+            ->map(fn ($term) => trim($term))
+            ->filter(fn ($term) => mb_strlen($term) > 1)
+            ->unique()
+            ->take(8)
+            ->values();
 
         $listingsQuery = Listing::with(['images', 'category', 'propertyDetail', 'carDetail', 'motorcycleDetail'])
             ->active()
@@ -705,32 +712,33 @@ class ListingController extends Controller
         }
 
         if ($keyword !== '') {
-            $listingsQuery->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', '%'.$keyword.'%')
-                    ->orWhere('location', 'like', '%'.$keyword.'%')
-                    ->orWhere('description', 'like', '%'.$keyword.'%')
-                    ->orWhereHas('category', function ($category) use ($keyword) {
-                        $category->where('name', 'like', '%'.$keyword.'%');
-                    })
-                    ->orWhereHas('user', function ($user) use ($keyword) {
-                        $user->where('name', 'like', '%'.$keyword.'%');
-                    })
-                    ->orWhereHas('propertyDetail', function ($property) use ($keyword) {
-                        $property->where('house_type', 'like', '%'.$keyword.'%')
-                            ->orWhere('certificate', 'like', '%'.$keyword.'%')
-                            ->orWhere('facilities', 'like', '%'.$keyword.'%');
-                    })
-                    ->orWhereHas('carDetail', function ($car) use ($keyword) {
-                        $car->where('brand', 'like', '%'.$keyword.'%')
-                            ->orWhere('model', 'like', '%'.$keyword.'%')
-                            ->orWhere('color', 'like', '%'.$keyword.'%')
-                            ->orWhere('fuel_type', 'like', '%'.$keyword.'%');
-                    })
-                    ->orWhereHas('motorcycleDetail', function ($motorcycle) use ($keyword) {
-                        $motorcycle->where('brand', 'like', '%'.$keyword.'%')
-                            ->orWhere('model', 'like', '%'.$keyword.'%');
+            $listingsQuery->where(function ($query) use ($keyword, $terms) {
+                $query->where(function ($phraseQuery) use ($keyword) {
+                    $this->applyListingSearchTerm($phraseQuery, $keyword);
+                });
+
+                if ($terms->count() > 1) {
+                    $query->orWhere(function ($tokenQuery) use ($terms) {
+                        foreach ($terms as $term) {
+                            $tokenQuery->where(function ($termQuery) use ($term) {
+                                $this->applyListingSearchTerm($termQuery, $term);
+                            });
+                        }
                     });
+                }
             });
+
+            $listingsQuery->orderByRaw(
+                'CASE
+                    WHEN product_code = ? THEN 0
+                    WHEN title LIKE ? THEN 1
+                    WHEN title LIKE ? THEN 2
+                    WHEN location LIKE ? THEN 3
+                    WHEN description LIKE ? THEN 4
+                    ELSE 5
+                END',
+                [$keyword, $keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%']
+            );
         }
 
         if ($request->min_price) {
@@ -744,20 +752,73 @@ class ListingController extends Controller
         $listings = $listingsQuery->latest()->paginate(12, ['*'], 'listings_page')->appends($request->query());
 
         $posts = Post::with('images')
-            ->when($keyword !== '', function ($query) use ($keyword) {
-                $query->where(function ($q) use ($keyword) {
-                    $q->where('title', 'like', '%'.$keyword.'%')
-                        ->orWhere('content', 'like', '%'.$keyword.'%')
-                        ->orWhere('source_name', 'like', '%'.$keyword.'%');
+            ->when($keyword !== '', function ($query) use ($keyword, $terms) {
+                $query->where(function ($postQuery) use ($keyword, $terms) {
+                    $this->applyPostSearchTerm($postQuery, $keyword);
+
+                    if ($terms->count() > 1) {
+                        $postQuery->orWhere(function ($tokenQuery) use ($terms) {
+                            foreach ($terms as $term) {
+                                $tokenQuery->where(function ($termQuery) use ($term) {
+                                    $this->applyPostSearchTerm($termQuery, $term);
+                                });
+                            }
+                        });
+                    }
                 });
+
+                $query->orderByRaw(
+                    'CASE
+                        WHEN title LIKE ? THEN 0
+                        WHEN title LIKE ? THEN 1
+                        WHEN source_name LIKE ? THEN 2
+                        ELSE 3
+                    END',
+                    [$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%']
+                );
             })
             ->latest()
             ->paginate(6, ['*'], 'posts_page')
             ->appends($request->query());
 
-        $categories = Category::active()->get();
-
         return view('search.index', compact('listings', 'posts', 'categories', 'keyword', 'categoryId'));
+    }
+
+    private function applyListingSearchTerm($query, string $term): void
+    {
+        $query->where('title', 'like', '%'.$term.'%')
+            ->orWhere('product_code', 'like', '%'.$term.'%')
+            ->orWhere('location', 'like', '%'.$term.'%')
+            ->orWhere('description', 'like', '%'.$term.'%')
+            ->orWhereHas('category', function ($category) use ($term) {
+                $category->where('name', 'like', '%'.$term.'%')
+                    ->orWhere('slug', 'like', '%'.$term.'%');
+            })
+            ->orWhereHas('user', function ($user) use ($term) {
+                $user->where('name', 'like', '%'.$term.'%');
+            })
+            ->orWhereHas('propertyDetail', function ($property) use ($term) {
+                $property->where('house_type', 'like', '%'.$term.'%')
+                    ->orWhere('certificate', 'like', '%'.$term.'%')
+                    ->orWhere('facilities', 'like', '%'.$term.'%');
+            })
+            ->orWhereHas('carDetail', function ($car) use ($term) {
+                $car->where('brand', 'like', '%'.$term.'%')
+                    ->orWhere('model', 'like', '%'.$term.'%')
+                    ->orWhere('color', 'like', '%'.$term.'%')
+                    ->orWhere('fuel_type', 'like', '%'.$term.'%');
+            })
+            ->orWhereHas('motorcycleDetail', function ($motorcycle) use ($term) {
+                $motorcycle->where('brand', 'like', '%'.$term.'%')
+                    ->orWhere('model', 'like', '%'.$term.'%');
+            });
+    }
+
+    private function applyPostSearchTerm($query, string $term): void
+    {
+        $query->where('title', 'like', '%'.$term.'%')
+            ->orWhere('content', 'like', '%'.$term.'%')
+            ->orWhere('source_name', 'like', '%'.$term.'%');
     }
 
     private function abortIfCategoryInactive(int $categoryId): void

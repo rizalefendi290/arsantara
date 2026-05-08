@@ -68,6 +68,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('admin/posts', PostController::class);
     Route::delete('/admin/post-image/{id}', [PostController::class, 'deleteImage'])->name('post-image.delete');
     Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+    Route::get('/admin/role-requests', [AdminController::class, 'requests'])->name('admin.role-requests.index');
     Route::patch('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.users.update');
     Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('/admin/approve/{id}', [AdminController::class, 'approve'])->name('admin.users.approve');
