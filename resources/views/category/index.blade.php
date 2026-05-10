@@ -32,7 +32,7 @@
     </div>
 
     <!-- LISTING -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
 
         @forelse($listings as $listing)
         <div class="bg-white border rounded-xl shadow hover:shadow-lg transition overflow-hidden">
@@ -41,14 +41,14 @@
                 src="{{ $listing->images->count() 
                         ? asset('storage/'.$listing->images->first()->image) 
                         : 'https://via.placeholder.com/300x200' }}"
-                class="w-full h-48 object-cover">
+                class="w-full h-32 object-cover sm:h-40 md:h-48">
 
-            <div class="p-4">
-                <h3 class="font-bold text-lg">
+            <div class="p-3 sm:p-4">
+                <h3 class="line-clamp-1 text-sm font-bold sm:text-base md:text-lg">
                     {{ $listing->title }}
                 </h3>
 
-                <p class="text-gray-500 text-sm">
+                <p class="line-clamp-1 text-xs text-gray-500 sm:text-sm">
                     {{ $listing->location }}
                 </p>
 
@@ -57,7 +57,7 @@
                 </div>
 
                 <!-- DETAIL SPESIFIK -->
-                <div class="text-sm text-gray-600 mt-2">
+                <div class="text-xs text-gray-600 mt-2 sm:text-sm">
 
                     @if($slug == 'mobil' && $listing->car)
                         <p>{{ $listing->car->brand }} • {{ $listing->car->year }}</p>
@@ -78,7 +78,7 @@
                 </div>
 
                 <a href="{{ route('listing.show',$listing->id) }}"
-                   class="block mt-3 text-center bg-blue-600 text-white py-1 rounded hover:bg-blue-700">
+                   class="block mt-3 text-center bg-blue-600 text-white py-1 rounded text-sm hover:bg-blue-700">
                    Detail
                 </a>
             </div>

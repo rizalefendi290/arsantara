@@ -1,30 +1,30 @@
-<nav data-aos="fade-down" x-data="{ open: false }"
-    class="fixed top-0 left-0 w-full z-50 bg-white shadow border-b border-gray-100 dark:border-gray-700 text-white">
+<nav x-data="{ open: false }"
+    class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white text-gray-900 shadow">
     <!-- Primary Navigation Menu -->
-    <div data-aos="fade-down" class="relative max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <div class="relative mx-auto flex h-16 max-w-screen-xl items-center justify-between gap-2 px-3 sm:px-4 md:h-20 lg:px-6">
 
         <!-- LOGO -->
-        <a href="{{ route('home') }}" class="relative z-20 flex min-w-0 items-center gap-3">
+        <a href="{{ route('home') }}" class="relative z-20 flex min-w-0 shrink-0 items-center gap-3">
             <img src="{{ asset('images/logo_fixx.png') }}"
                 alt="Arsantara Management"
-                class="h-11 w-11 rounded-xl object-contain">
-            <span class="hidden text-lg font-bold leading-tight text-gray-900 md:block lg:text-xl">
+                class="h-10 w-10 rounded-xl object-contain md:h-12 md:w-12">
+            <span class="hidden max-w-[180px] truncate text-base font-bold leading-tight text-gray-900 md:block lg:max-w-none lg:text-xl">
                 Arsantara Management
             </span>
         </a>
 
         <a href="{{ route('home') }}"
-            class="pointer-events-auto absolute inset-x-16 top-1/2 z-10 block -translate-y-1/2 truncate text-center text-sm font-extrabold leading-tight text-gray-950 sm:inset-x-20 sm:text-base md:hidden">
+            class="pointer-events-auto absolute inset-x-14 top-1/2 z-10 block -translate-y-1/2 truncate px-2 text-center text-sm font-extrabold leading-tight text-gray-950 sm:inset-x-20 sm:text-base md:hidden">
             Arsantara Management
         </a>
 
         <!-- RIGHT (SEARCH + USER) -->
-        <div class="relative z-20 flex items-center text-gray-800 gap-3 md:order-2">
+        <div class="relative z-20 flex shrink-0 items-center gap-2 text-gray-800 md:order-2 lg:gap-3">
 
             <!-- SEARCH -->
             <form method="GET" action="{{ route('search') }}" class="relative hidden md:block">
                 <input type="text" name="keyword" value="{{ request('keyword') }}"
-                    class="w-64 ps-3 pe-3 py-2 border rounded text-sm"
+                    class="w-44 rounded border px-3 py-2 text-sm lg:w-64"
                     placeholder="Cari listing atau berita">
             </form>
 
@@ -115,21 +115,20 @@
 
             <!-- HAMBURGER -->
             <button type="button" onclick="openMobileMenu()"
-                class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-[0px] text-gray-800 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 md:hidden"
+                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-800 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 md:hidden"
                 aria-label="Buka menu navigasi">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
                 </svg>
-                ☰
             </button>
         </div>
 
         <!-- MENU -->
-        <div id="menu" class="hidden w-full md:flex md:w-auto md:order-1">
-            <ul class="flex flex-col md:flex-row gap-4 mt-4 md:mt-0">
+        <div id="menu" class="hidden min-w-0 md:order-1 md:flex md:w-auto md:flex-1 md:justify-center">
+            <ul class="flex items-center gap-1 lg:gap-3">
 
                 <li>
-                    <a href="{{ route('home') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">
+                    <a href="{{ route('home') }}" class="block whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-600 lg:text-base">
                         Home
                     </a>
                 </li>
@@ -137,7 +136,7 @@
                 @auth
                 @if(auth()->user()->role === 'admin')
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">
+                    <a href="{{ route('admin.dashboard') }}" class="block whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-600 lg:text-base">
                         Admin
                     </a>
                 </li>
@@ -149,7 +148,7 @@
                     <!-- BUTTON -->
                     <button id="dropdownKategoriButton" data-dropdown-toggle="dropdownKategori"
                         data-dropdown-trigger="hover"
-                        class="flex items-center gap-1 py-2 px-3 text-gray-800 hover:text-blue-500 font-medium">
+                        class="flex items-center gap-1 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-600 lg:text-base">
 
                         Kategori
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -192,13 +191,17 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('testimoni.index') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">
+                    <a href="{{ route('testimoni.index') }}" class="block whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-600 lg:text-base">
                         Ulasan
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('about') }}" class="block py-2 px-3 text-gray-800 hover:text-blue-500">Tentang</a>
+                    <a href="{{ route('about') }}" class="block whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-600 lg:text-base">Tentang</a>
+                </li>
+
+                <li>
+                    <a href="{{ route('careers.index') }}" class="block whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-600 lg:text-base">Karir</a>
                 </li>
 
             </ul>
@@ -209,11 +212,11 @@
 </nav>
 
 <!-- MOBILE NAVIGATION MODAL -->
-<div id="mobileMenuModal" class="fixed inset-0 z-[60] hidden md:hidden" aria-hidden="true">
+<div id="mobileMenuModal" class="fixed inset-0 z-[90] hidden md:hidden" aria-hidden="true">
     <button type="button" class="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onclick="closeMobileMenu()"
         aria-label="Tutup menu"></button>
 
-    <aside class="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col overflow-y-auto bg-white shadow-2xl">
+    <aside class="absolute right-0 top-0 flex h-full w-[min(22rem,100vw)] max-w-full flex-col overflow-y-auto bg-white shadow-2xl">
         <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
             <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-3" onclick="closeMobileMenu()">
                 <img src="{{ asset('images/logo.png') }}"
@@ -284,6 +287,8 @@
                     class="block rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700">Ulasan</a>
                 <a href="{{ route('about') }}" onclick="closeMobileMenu()"
                     class="block rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700">Tentang</a>
+                <a href="{{ route('careers.index') }}" onclick="closeMobileMenu()"
+                    class="block rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700">Karir</a>
             </nav>
 
             <div>

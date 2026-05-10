@@ -6,13 +6,13 @@
         [
             'image' => asset('images/hero.png'),
             'label' => 'Arsantara Properti',
-            'title' => 'Rumah dan tanah pilihan dalam satu tempat.',
-            'text' => 'Temukan properti aktif, lokasi strategis, pilihan KPR, dan tanah siap bangun dengan tampilan listing yang mudah dipindai.',
+            'title' => 'Katalog properti pilihan dalam satu tempat.',
+            'text' => 'Temukan rumah, tanah, ruko, perkantoran, gudang, dan kios aktif dengan tampilan listing yang mudah dipindai.',
         ],
         [
             'image' => asset('images/thumbnail_properti.png'),
             'label' => 'Properti Arsantara',
-            'title' => 'Pilihan rumah dan tanah yang mudah dibandingkan',
+            'title' => 'Pilihan properti yang mudah dibandingkan',
             'text' => 'Lihat lokasi, harga, sertifikat, dan detail utama dari satu tampilan yang rapi.',
         ],
         [
@@ -33,25 +33,24 @@
 <x-hero-carousel :slides="$heroSlides" height="min-h-[520px]" inner-height="min-h-[520px]" content-width="max-w-2xl" />
 
 <div class="relative z-20 -mt-16 px-6">
-    <form id="filterForm" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">
+    <form id="filterForm" method="GET" action="{{ route('search') }}" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-6">
             <input type="text" name="keyword" value="{{ request('keyword') }}"
-                placeholder="Cari rumah, tanah, lokasi..."
+                placeholder="Cari rumah, tanah, ruko, gudang..."
                 class="md:col-span-2 rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
 
             <select name="category" class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">Semua Properti</option>
-                <option value="1" {{ request('category') == 1 ? 'selected' : '' }}>Rumah</option>
-                <option value="2" {{ request('category') == 2 ? 'selected' : '' }}>Tanah</option>
+                @foreach($propertyCategories as $category)
+                    <option value="{{ $category->id }}" {{ (string) request('category') === (string) $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
             </select>
 
-            <input type="number" name="min_price" value="{{ request('min_price') }}"
-                placeholder="Harga Min"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+            <x-price-filter-input name="min_price" :value="request('min_price')" placeholder="Harga Min" />
 
-            <input type="number" name="max_price" value="{{ request('max_price') }}"
-                placeholder="Harga Max"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+            <x-price-filter-input name="max_price" :value="request('max_price')" placeholder="Harga Max" />
 
             <select name="certificate" class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">Sertifikat</option>
@@ -62,7 +61,7 @@
         </div>
 
         <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-gray-500">Filter berjalan otomatis saat kolom diubah.</p>
+            <p class="text-sm text-gray-500">Cari properti berdasarkan kategori, harga, dan sertifikat.</p>
             <div class="flex gap-2">
                 <button type="button" onclick="resetFilter()"
                     class="rounded-xl bg-gray-100 px-5 py-2.5 font-semibold text-gray-700 hover:bg-gray-200">
@@ -73,6 +72,7 @@
                 </button>
             </div>
         </div>
+        <input type="hidden" name="product_type" value="property">
     </form>
 </div>
 
@@ -80,26 +80,15 @@
     <div class="mx-auto max-w-7xl px-6 py-12">
         @if($rumahActive)
         <section data-aos="fade-up" class="mb-14">
-            <div class="mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                <div>
-                    <p class="text-sm font-semibold uppercase text-blue-600">Hasil Filter</p>
-                    <h2 class="text-3xl font-bold text-gray-800">Jelajahi Properti</h2>
-                </div>
-            </div>
-
-            <div id="listing-container">
-                @include('properti.partials.list', ['listings' => $listings])
-            </div>
-        </section>
-
-        <section data-aos="fade-up" class="mb-14">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-800">Rumah Bisa KPR</h2>
-                <a href="{{ route('rumah.index') }}" class="font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
+                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 1]) }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
                 @forelse($rumahKpr as $listing)
-                    <x-card-listing :listing="$listing" />
+                    <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                        <x-card-listing :listing="$listing" />
+                    </div>
                 @empty
                     <p class="col-span-full text-gray-400">Belum ada rumah KPR</p>
                 @endforelse
@@ -109,11 +98,13 @@
         <section data-aos="fade-up" class="mb-14">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-800">Rumah Non KPR</h2>
-                <a href="{{ route('rumah.index') }}" class="font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
+                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 0]) }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
                 @forelse($rumahNonKpr as $listing)
-                    <x-card-listing :listing="$listing" />
+                    <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                        <x-card-listing :listing="$listing" />
+                    </div>
                 @empty
                     <p class="col-span-full text-gray-400">Belum ada rumah Non KPR</p>
                 @endforelse
@@ -122,67 +113,46 @@
         @endif
 
         @if($tanahActive)
-        <section data-aos="fade-up">
+        <section data-aos="fade-up" class="mb-14">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-800">Tanah</h2>
-                <a href="{{ route('tanah.index') }}" class="font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
+                <a href="{{ route('tanah.index') }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
                 @forelse($tanah as $listing)
-                    <x-card-listing :listing="$listing" />
+                    <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                        <x-card-listing :listing="$listing" />
+                    </div>
                 @empty
                     <p class="col-span-full text-gray-400">Belum ada tanah</p>
                 @endforelse
             </div>
         </section>
         @endif
+
+        @foreach($commercialSections as $section)
+        <section data-aos="fade-up" class="mb-14">
+            <div class="mb-6 flex items-center justify-between gap-4">
+                <h2 class="text-2xl font-bold text-gray-800">{{ $section['category']->name }}</h2>
+                <a href="{{ route('search', ['category' => $section['category']->id]) }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
+            </div>
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
+                @forelse($section['listings'] as $listing)
+                    <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                        <x-card-listing :listing="$listing" />
+                    </div>
+                @empty
+                    <p class="col-span-full text-gray-400">Belum ada {{ strtolower($section['category']->name) }}</p>
+                @endforelse
+            </div>
+        </section>
+        @endforeach
     </div>
 </main>
 
 <script>
-let debounceTimer;
-let controller;
-
-function loadData(url = null) {
-    const form = document.getElementById('filterForm');
-    const params = new URLSearchParams(new FormData(form)).toString();
-    const fetchUrl = url ? url + (url.includes('?') ? '&' : '?') + params : "{{ route('properti.filter') }}?" + params;
-
-    if (controller) controller.abort();
-    controller = new AbortController();
-
-    document.getElementById('listing-container').innerHTML = '<div class="rounded-xl bg-white p-10 text-center text-gray-500 shadow">Loading...</div>';
-
-    fetch(fetchUrl, { signal: controller.signal })
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('listing-container').innerHTML = html;
-        })
-        .catch(error => {
-            if (error.name !== 'AbortError') console.error(error);
-        });
-}
-
-document.getElementById('filterForm').addEventListener('input', function() {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => loadData(), 450);
-});
-
-document.getElementById('filterForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    loadData();
-});
-
-document.addEventListener('click', function(event) {
-    const link = event.target.closest('#pagination-links a');
-    if (!link) return;
-    event.preventDefault();
-    loadData(link.href);
-});
-
 function resetFilter() {
-    document.getElementById('filterForm').reset();
-    loadData();
+    window.location.href = "{{ route('properti') }}";
 }
 
 function nextSlide(btn) {

@@ -113,10 +113,27 @@
                 </div>
             </div>
 
-            <div id="mobil-fields" class="mt-6 category-section hidden" data-category="3">
-                <h2 class="font-semibold text-gray-800 mb-3">Detail Mobil</h2>
+            <div id="komersial-fields" class="mt-6 category-section hidden" data-categories="5,6,7,8">
+                <h2 class="font-semibold text-gray-800 mb-3">Detail Properti Komersial</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" name="brand" value="{{ old('brand', $car->brand ?? '') }}" placeholder="Merk Mobil" class="border p-2 rounded">
+                    <input type="text" name="house_type" value="{{ old('house_type', $property->house_type ?? '') }}" placeholder="Tipe / Nama Unit" class="border p-2 rounded">
+                    <input type="number" name="land_area" value="{{ old('land_area', $property->land_area ?? '') }}" placeholder="Luas Tanah" class="border p-2 rounded">
+                    <input type="number" name="building_area" value="{{ old('building_area', $property->building_area ?? '') }}" placeholder="Luas Bangunan" class="border p-2 rounded">
+                    <input type="number" name="bathrooms" value="{{ old('bathrooms', $property->bathrooms ?? '') }}" placeholder="Kamar Mandi / Toilet" class="border p-2 rounded">
+                    <input type="number" name="floors" value="{{ old('floors', $property->floors ?? '') }}" placeholder="Jumlah Lantai" class="border p-2 rounded">
+                    <input type="text" name="certificate" value="{{ old('certificate', $property->certificate ?? '') }}" placeholder="Sertifikat" class="border p-2 rounded">
+                </div>
+
+                <div class="mt-3">
+                    <label class="block font-medium mb-1">Fasilitas</label>
+                    <textarea name="facilities" rows="3" class="w-full border p-2 rounded" placeholder="Parkir, akses truk, listrik, keamanan, dan lainnya...">{{ old('facilities', $property->facilities ?? '') }}</textarea>
+                </div>
+            </div>
+
+            <div id="mobil-fields" class="mt-6 category-section hidden" data-categories="3,9">
+                <h2 class="font-semibold text-gray-800 mb-3">Detail Kendaraan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" name="brand" value="{{ old('brand', $car->brand ?? '') }}" placeholder="Merk Kendaraan" class="border p-2 rounded">
                     <input type="text" name="model" value="{{ old('model', $car->model ?? '') }}" placeholder="Model" class="border p-2 rounded">
                     <input type="number" name="year" value="{{ old('year', $car->year ?? '') }}" min="1901" max="2155" placeholder="Tahun" class="border p-2 rounded">
                     <input type="number" name="engine" value="{{ old('engine', $car->engine ?? '') }}" placeholder="Mesin (cc)" class="border p-2 rounded">
@@ -211,11 +228,12 @@
 
 <script>
 function toggleCategoryFields(value) {
-    ['rumah', 'tanah', 'mobil', 'motor'].forEach(function(section) {
+    ['rumah', 'tanah', 'komersial', 'mobil', 'motor'].forEach(function(section) {
         const el = document.getElementById(section + '-fields');
         if (!el) return;
 
-        const active = String(el.dataset.category) === String(value);
+        const categories = (el.dataset.categories || el.dataset.category || '').split(',');
+        const active = categories.includes(String(value));
         el.classList.toggle('hidden', !active);
 
         el.querySelectorAll('input, select, textarea').forEach(function(field) {

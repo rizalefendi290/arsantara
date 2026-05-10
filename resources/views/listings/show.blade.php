@@ -57,7 +57,14 @@
             ['label' => 'Luas Tanah', 'value' => ($listing->property->land_area ?? '-').' m2'],
             ['label' => 'Sertifikat', 'value' => $listing->property->certificate ?? '-'],
         ], $primaryFacts);
-    } elseif ($listing->category_id == 3 && $listing->car) {
+    } elseif (in_array((int) $listing->category_id, [5, 6, 7, 8], true) && $listing->property) {
+        $primaryFacts = array_merge([
+            ['label' => 'Tipe', 'value' => $listing->property->house_type ?? $categoryName],
+            ['label' => 'Bangunan', 'value' => ($listing->property->building_area ?? '-').' m2'],
+            ['label' => 'Tanah', 'value' => ($listing->property->land_area ?? '-').' m2'],
+            ['label' => 'Sertifikat', 'value' => $listing->property->certificate ?? '-'],
+        ], $primaryFacts);
+    } elseif (in_array((int) $listing->category_id, [3, 9], true) && $listing->car) {
         $primaryFacts = array_merge([
             ['label' => 'Merk', 'value' => $listing->car->brand ?? '-'],
             ['label' => 'Model', 'value' => $listing->car->model ?? '-'],
@@ -95,7 +102,20 @@
             ['Sertifikat', $listing->property->certificate ?? '-'],
         ];
         $facilities = collect();
-    } elseif ($listing->category_id == 3 && $listing->car) {
+    } elseif (in_array((int) $listing->category_id, [5, 6, 7, 8], true) && $listing->property) {
+        $detailRows = [
+            ['Tipe / Nama Unit', $listing->property->house_type ?? '-'],
+            ['Luas Tanah', ($listing->property->land_area ?? '-').' m2'],
+            ['Luas Bangunan', ($listing->property->building_area ?? '-').' m2'],
+            ['Kamar Mandi / Toilet', $listing->property->bathrooms ?? '-'],
+            ['Jumlah Lantai', $listing->property->floors ?? '-'],
+            ['Sertifikat', $listing->property->certificate ?? '-'],
+        ];
+        $facilities = collect(explode(',', $listing->property->facilities ?? ''))
+            ->map(fn ($facility) => trim($facility))
+            ->filter()
+            ->values();
+    } elseif (in_array((int) $listing->category_id, [3, 9], true) && $listing->car) {
         $detailRows = [
             ['Merk', $listing->car->brand ?? '-'],
             ['Model', $listing->car->model ?? '-'],

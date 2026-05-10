@@ -1,6 +1,9 @@
 @extends('layouts.admin')
 
 @section('admin_content')
+@php
+    $commercialCategoryIds = [5, 6, 7, 8];
+@endphp
 <div>
 
 <h1 class="text-2xl font-bold mb-6">Tambah Listing</h1>
@@ -101,9 +104,28 @@
 </div>
 </div>
 
+{{-- ================= PROPERTI KOMERSIAL ================= --}}
+<div id="komersial-fields" class="mt-6 category-section {{ in_array((int) old('category_id'), $commercialCategoryIds, true) ? '' : 'hidden' }}" data-categories="5,6,7,8">
+<h3 class="font-bold mb-3">Detail Properti Komersial</h3>
+
+<div class="grid grid-cols-3 gap-4">
+    <input type="text" name="house_type" placeholder="Tipe / Nama Unit" class="border p-2 rounded">
+    <input type="number" name="land_area" placeholder="Luas Tanah" class="border p-2 rounded">
+    <input type="number" name="building_area" placeholder="Luas Bangunan" class="border p-2 rounded">
+    <input type="number" name="bathrooms" placeholder="Kamar Mandi / Toilet" class="border p-2 rounded">
+    <input type="number" name="floors" placeholder="Jumlah Lantai" class="border p-2 rounded">
+    <input type="text" name="certificate" placeholder="Sertifikat" class="border p-2 rounded">
+</div>
+
+<div class="mt-3">
+    <label>Fasilitas</label>
+    <textarea name="facilities" class="w-full border p-2 rounded" placeholder="Parkir, akses truk, listrik, keamanan, dan lainnya..."></textarea>
+</div>
+</div>
+
 {{-- ================= MOBIL ================= --}}
-<div id="mobil-fields" class="mt-6 category-section {{ old('category_id') == 3 ? '' : 'hidden' }}" data-category="3">
-    <h3 class="font-bold mb-3">Detail Mobil</h3>
+<div id="mobil-fields" class="mt-6 category-section {{ in_array((int) old('category_id'), [3, 9], true) ? '' : 'hidden' }}" data-categories="3,9">
+    <h3 class="font-bold mb-3">Detail Kendaraan</h3>
 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
 
@@ -111,7 +133,7 @@
         <input type="text" name="brand"
             value="{{ old('brand') }}"
             class="w-full border p-2 rounded"
-            placeholder="Merk Mobil">
+            placeholder="Merk Kendaraan">
 
         <!-- MODEL -->
         <input type="text" name="model"
@@ -231,11 +253,12 @@ function bindRupiahInputs() {
 }
 
 function toggleCategoryFields(value) {
-    ['rumah', 'tanah', 'mobil', 'motor'].forEach(function(section) {
+    ['rumah', 'tanah', 'komersial', 'mobil', 'motor'].forEach(function(section) {
         let el = document.getElementById(section + '-fields');
         if (!el) return;
 
-        let active = String(el.dataset.category) === String(value);
+        let categories = (el.dataset.categories || el.dataset.category || '').split(',');
+        let active = categories.includes(String(value));
         el.classList.toggle('hidden', !active);
 
         el.querySelectorAll('input, select, textarea').forEach(function(field) {

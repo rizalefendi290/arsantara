@@ -15,6 +15,10 @@ use App\Services\ImageWatermarkService;
 
 class AgentListingController extends Controller
 {
+    private const PROPERTY_CATEGORY_IDS = [1, 2, 5, 6, 7, 8];
+    private const COMMERCIAL_PROPERTY_CATEGORY_IDS = [5, 6, 7, 8];
+    private const CAR_LIKE_CATEGORY_IDS = [3, 9];
+
     public function create()
     {
         $categories = Category::active()->get();
@@ -131,25 +135,25 @@ class AgentListingController extends Controller
     {
         return $request->validate([
             'title' => 'required|string|max:255',
-            'category_id' => 'required|in:1,2,3,4',
+            'category_id' => 'required|in:1,2,3,4,5,6,7,8,9',
             'price' => 'required|numeric|min:0',
             'location' => 'required|string|max:255',
             'condition' => 'required|in:baru,bekas',
             'description' => 'nullable|string',
             'house_type' => 'required_if:category_id,1|nullable|string|max:255',
-            'land_area' => 'required_if:category_id,1,2|nullable|numeric',
+            'land_area' => 'required_if:category_id,1,2,5,6,7,8|nullable|numeric',
             'building_area' => 'required_if:category_id,1|nullable|numeric',
             'bedrooms' => 'required_if:category_id,1|nullable|integer',
             'bathrooms' => 'required_if:category_id,1|nullable|integer',
             'floors' => 'required_if:category_id,1|nullable|integer',
-            'certificate' => 'required_if:category_id,1,2|nullable|string|max:255',
+            'certificate' => 'required_if:category_id,1,2,5,6,7,8|nullable|string|max:255',
             'is_kpr' => 'required_if:category_id,1|nullable|boolean',
             'facilities' => 'nullable|string',
-            'brand' => 'required_if:category_id,3,4|nullable|string|max:100',
-            'model' => 'required_if:category_id,3,4|nullable|string|max:100',
-            'year' => 'required_if:category_id,3,4|nullable|integer|between:1901,2155',
-            'engine' => 'required_if:category_id,3,4|nullable|integer',
-            'transmission' => 'required_if:category_id,3,4|nullable|in:manual,matic',
+            'brand' => 'required_if:category_id,3,4,9|nullable|string|max:100',
+            'model' => 'required_if:category_id,3,4,9|nullable|string|max:100',
+            'year' => 'required_if:category_id,3,4,9|nullable|integer|between:1901,2155',
+            'engine' => 'required_if:category_id,3,4,9|nullable|integer',
+            'transmission' => 'required_if:category_id,3,4,9|nullable|in:manual,matic',
             'fuel_type' => 'nullable|in:bensin,diesel,listrik,hybrid',
             'color' => 'nullable|string|max:100',
             'kilometer' => 'nullable|integer',
@@ -159,26 +163,30 @@ class AgentListingController extends Controller
 
     private function syncDetails(Listing $listing, Request $request): void
     {
-        if ((int) $request->category_id === 1 || (int) $request->category_id === 2) {
+        if (in_array((int) $request->category_id, self::PROPERTY_CATEGORY_IDS, true)) {
+            $isHouse = (int) $request->category_id === 1;
+            $isLand = (int) $request->category_id === 2;
+            $isCommercial = in_array((int) $request->category_id, self::COMMERCIAL_PROPERTY_CATEGORY_IDS, true);
+
             PropertyDetail::updateOrCreate(
                 ['listing_id' => $listing->id],
                 [
-                    'house_type' => $request->category_id == 1 ? $request->house_type : null,
+                    'house_type' => ($isHouse || $isCommercial) ? $request->house_type : null,
                     'land_area' => $request->land_area,
-                    'building_area' => $request->category_id == 1 ? $request->building_area : null,
-                    'bedrooms' => $request->category_id == 1 ? $request->bedrooms : null,
-                    'bathrooms' => $request->category_id == 1 ? $request->bathrooms : null,
-                    'floors' => $request->category_id == 1 ? $request->floors : null,
+                    'building_area' => !$isLand ? $request->building_area : null,
+                    'bedrooms' => $isHouse ? $request->bedrooms : null,
+                    'bathrooms' => !$isLand ? $request->bathrooms : null,
+                    'floors' => !$isLand ? $request->floors : null,
                     'certificate' => $request->certificate,
-                    'facilities' => $request->category_id == 1 ? $request->facilities : null,
-                    'is_kpr' => $request->category_id == 1 ? ($request->is_kpr ?? 0) : 0,
+                    'facilities' => !$isLand ? $request->facilities : null,
+                    'is_kpr' => $isHouse ? ($request->is_kpr ?? 0) : 0,
                 ]
             );
         } else {
             PropertyDetail::where('listing_id', $listing->id)->delete();
         }
 
-        if ((int) $request->category_id === 3) {
+        if (in_array((int) $request->category_id, self::CAR_LIKE_CATEGORY_IDS, true)) {
             CarDetail::updateOrCreate(
                 ['listing_id' => $listing->id],
                 [

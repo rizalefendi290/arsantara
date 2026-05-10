@@ -35,10 +35,8 @@
 <div class="relative z-20 -mt-14 px-6">
     <form method="GET" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">
         <div class="grid grid-cols-1 gap-3 md:grid-cols-6">
-            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Harga Min"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
-            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Harga Max"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+            <x-price-filter-input name="min_price" :value="request('min_price')" placeholder="Harga Min" />
+            <x-price-filter-input name="max_price" :value="request('max_price')" placeholder="Harga Max" />
             <input type="text" name="location" value="{{ request('location') }}" placeholder="Lokasi"
                 class="md:col-span-2 rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
             <select name="bedrooms" class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
@@ -63,10 +61,18 @@
 <main class="bg-gradient-to-b from-blue-50 via-white to-white">
     <div class="mx-auto max-w-7xl px-6 py-12">
         <section class="mb-14">
-            <h2 class="mb-6 text-2xl font-bold text-gray-800">Rumah Bisa KPR</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="mb-6 flex items-center justify-between gap-4">
+                <h2 class="text-2xl font-bold text-gray-800">Rumah Bisa KPR</h2>
+                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 1]) }}"
+                    class="shrink-0 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-700">
+                    Tampilkan Semua
+                </a>
+            </div>
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
                 @forelse($kpr as $listing)
-                    <x-card-listing :listing="$listing" />
+                    <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                        <x-card-listing :listing="$listing" />
+                    </div>
                 @empty
                     <p class="col-span-full text-gray-400">Belum ada rumah KPR</p>
                 @endforelse
@@ -74,10 +80,18 @@
         </section>
 
         <section>
-            <h2 class="mb-6 text-2xl font-bold text-gray-800">Rumah Non KPR</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="mb-6 flex items-center justify-between gap-4">
+                <h2 class="text-2xl font-bold text-gray-800">Rumah Non KPR</h2>
+                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 0]) }}"
+                    class="shrink-0 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-700">
+                    Tampilkan Semua
+                </a>
+            </div>
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
                 @forelse($nonKpr as $listing)
-                    <x-card-listing :listing="$listing" />
+                    <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                        <x-card-listing :listing="$listing" />
+                    </div>
                 @empty
                     <p class="col-span-full text-gray-400">Belum ada rumah Non KPR</p>
                 @endforelse

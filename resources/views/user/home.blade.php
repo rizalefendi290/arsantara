@@ -28,6 +28,12 @@ $homeHeroSlides = [
 'text' => 'Konsultasikan kebutuhan dana dan lanjutkan proses awal bersama admin Arsantara.',
 ],
 ];
+$propertySearchCategories = $categories
+    ->whereIn('id', [1, 2, 5, 6, 7, 8])
+    ->sortBy(fn ($category) => array_search((int) $category->id, [1, 2, 5, 6, 7, 8], true));
+$vehicleSearchCategories = $categories
+    ->whereIn('id', [3, 4, 9])
+    ->sortBy(fn ($category) => array_search((int) $category->id, [3, 4, 9], true));
 @endphp
 
 <x-hero-carousel :slides="$homeHeroSlides" height="min-h-screen" inner-height="min-h-[calc(100vh-6rem)]"
@@ -37,42 +43,188 @@ $homeHeroSlides = [
 <div class="relative -mt-20 z-20 px-6 flex justify-center">
 
     <form data-aos="zoom-in" method="GET" action="{{ route('search') }}"
-        class="w-full max-w-4xl bg-blue backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-2xl">
+        class="w-full max-w-5xl bg-white/95 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-2xl">
 
         <!-- TAB -->
         <div class="flex justify-center gap-3 mb-6">
 
-            <button type="button" onclick="setCategory(1)" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
+            <button type="button" data-search-tab="property" onclick="setSearchType('property')" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
                 bg-blue-600 text-white shadow-md hover:bg-blue-700">
-                Rumah
+                Properti
             </button>
 
-            <button type="button" onclick="setCategory(2)" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
+            <button type="button" data-search-tab="vehicle" onclick="setSearchType('vehicle')" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
                 bg-blue-100 text-blue-700 hover:bg-blue-200">
-                Tanah
-            </button>
-
-            <button type="button" onclick="setCategory(3)" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
-                bg-blue-100 text-blue-700 hover:bg-blue-200">
-                Mobil
+                Kendaraan
             </button>
 
         </div>
 
         <!-- INPUT -->
-        <div class="flex flex-col md:flex-row gap-3">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
 
             <input type="text" name="keyword" placeholder="Cari properti atau kendaraan..."
-                class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-black outline-none">
+                class="md:col-span-2 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
 
+            <x-price-filter-input name="min_price" placeholder="Harga minimum" />
+
+            <x-price-filter-input name="max_price" placeholder="Harga maksimum" />
+
+        </div>
+
+        <div class="mt-4">
+            <div data-filter-panel="property" class="category-filter grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div class="relative md:col-span-1">
+                    <button type="button" data-property-dropdown-toggle
+                        class="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-gray-700 outline-none transition hover:border-blue-300 focus:ring-2 focus:ring-blue-500">
+                        <span data-property-category-label>Semua Properti</span>
+                        <svg class="h-4 w-4 text-blue-600 transition" data-property-dropdown-icon fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+
+                    <div data-property-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl md:w-[620px]">
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            <button type="button" data-property-option="" onclick="selectPropertyCategory('', 'Semua Properti')"
+                                class="property-option flex min-h-20 flex-col justify-between rounded-xl border border-blue-600 bg-blue-50 p-3 text-left text-sm font-semibold text-blue-700 transition hover:border-blue-600">
+                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M4 10.5 12 4l8 6.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M6 10v9h12v-9" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M9 19v-5h6v5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span>Semua Properti</span>
+                            </button>
+
+                            @foreach($propertySearchCategories as $category)
+                                <button type="button" data-property-option="{{ $category->id }}" onclick="selectPropertyCategory('{{ $category->id }}', '{{ $category->name }}')"
+                                    class="property-option flex min-h-20 flex-col justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm font-semibold text-gray-700 transition hover:border-blue-500 hover:text-blue-700">
+                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                                        @if($category->id == 1)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M3 11 12 4l9 7" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M9 20v-6h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        @elseif($category->id == 2)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M4 6h16M4 18h16M7 6v12M17 6v12" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="m7 12 5-3 5 3-5 3-5-3Z" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        @elseif($category->id == 5)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M4 20h16V8L12 4 4 8v12Z" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M8 12h2M14 12h2M8 16h2M14 16h2" stroke-linecap="round" />
+                                            </svg>
+                                        @elseif($category->id == 6)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M5 20V4h14v16" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M9 8h2M13 8h2M9 12h2M13 12h2M9 16h2M13 16h2" stroke-linecap="round" />
+                                            </svg>
+                                        @elseif($category->id == 7)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M3 20h18V9l-9-5-9 5v11Z" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M7 20v-7h10v7M7 13h10" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        @else
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M5 8h14v12H5V8Z" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M8 8V5h8v3M8 12h8M8 16h5" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        @endif
+                                    </span>
+                                    <span>{{ $category->name }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <input type="text" name="location" placeholder="Lokasi properti"
+                    class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div data-filter-panel="vehicle" class="category-filter hidden grid grid-cols-1 gap-3 md:grid-cols-5">
+                <div class="relative md:col-span-2">
+                    <button type="button" data-vehicle-dropdown-toggle disabled
+                        class="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-gray-700 outline-none transition hover:border-blue-300 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50">
+                        <span data-vehicle-category-label>Semua Kendaraan</span>
+                        <svg class="h-4 w-4 text-blue-600 transition" data-vehicle-dropdown-icon fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+
+                    <div data-vehicle-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl md:w-[620px]">
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                            <button type="button" data-vehicle-option="" onclick="selectVehicleCategory('', 'Semua Kendaraan')"
+                                class="vehicle-option flex min-h-20 flex-col justify-between rounded-xl border border-blue-600 bg-blue-50 p-3 text-left text-sm font-semibold text-blue-700 transition hover:border-blue-600">
+                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M3 13h2l2-4h10l2 4h2" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M5 13v5h14v-5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M7 18h.01M17 18h.01" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span>Semua Kendaraan</span>
+                            </button>
+
+                            @foreach($vehicleSearchCategories as $category)
+                                <button type="button" data-vehicle-option="{{ $category->id }}" onclick="selectVehicleCategory('{{ $category->id }}', @js($category->name))"
+                                    class="vehicle-option flex min-h-20 flex-col justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm font-semibold text-gray-700 transition hover:border-blue-500 hover:text-blue-700">
+                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                                        @if($category->id == 3)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M4 13h2l2-4h8l2 4h2" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M5 13v5h14v-5" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M7 18h.01M17 18h.01" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        @elseif($category->id == 4)
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M5 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0ZM16 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M11 17h5l-2-6h-3l-3 3M13 8h3" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        @else
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M3 8h11v10H3V8Z" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M14 12h4l3 3v3h-7v-6Z" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M6 18h.01M17 18h.01" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        @endif
+                                    </span>
+                                    <span>{{ $category->name }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <input type="text" name="brand" placeholder="Merk kendaraan" disabled
+                    class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+
+                <select name="transmission" disabled class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="">Transmisi</option>
+                    <option value="manual">Manual</option>
+                    <option value="matic">Matic</option>
+                </select>
+
+                <select name="condition" disabled class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="">Kondisi</option>
+                    <option value="baru">Baru</option>
+                    <option value="bekas">Bekas</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-4 flex justify-end">
             <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold 
                 hover:bg-blue-700 transition shadow-md">
                 Cari
             </button>
-
         </div>
 
-        <input type="hidden" name="category" id="category">
+        <input type="hidden" name="product_type" id="product_type" value="property">
+        <input type="hidden" name="category" id="category" value="">
 
     </form>
 </div>
@@ -107,108 +259,90 @@ $homeHeroSlides = [
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10 px-6 max-w-6xl mx-auto -mt-24">
 
     <!-- CARD 1 -->
-    <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px]">
+    <a href="{{ route('properti') }}"
+        class="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px] bg-white focus:outline-none focus:ring-4 focus:ring-blue-300"
+        aria-label="Lihat properti">
 
-        <!-- IMAGE (TANPA BLUR) -->
-        <img src="{{ asset('images/thumbnail_properti.png') }}"
-            class="absolute inset-0 w-full h-full object-contain bg-blue-900">
+        <img src="{{ asset('images/11.png') }}"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            alt="Temukan properti impian Anda">
+        <div class="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-white via-white/95 to-white/0"></div>
 
-        <!-- OVERLAY TIPIS -->
-        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
+        <div class="relative z-10 px-7 pt-10 mt-4">
+            <h2 class="text-[30px] font-bold leading-tight text-slate-950">
+                Temukan
+                Properti <span class="text-blue-600">Impian Anda</span>
+            </h2>
 
-        <!-- CONTENT -->
-        <div class="relative z-10 p-6 flex flex-col h-full justify-between text-white">
+            <p class="mt-4 max-w-[270px] text-sm font-medium leading-6 text-slate-700">
+                Pilihan rumah, apartemen, dan lokasi strategis dengan harga terbaik.
+            </p>
 
-            <div>
-                <!-- BADGE -->
-                <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
-                    PROPERTI
-                </div>
-
-                <!-- TITLE -->
-                <h2 class="text-3xl font-bold leading-tight">
-                    Temukan Properti <br>
-                    <span class="text-blue-300">Impian Anda</span>
-                </h2>
-
-                <!-- DESC -->
-                <p class="mt-3 text-sm text-blue-100 max-w-xs">
-                    Pilihan rumah, apartemen, dan tanah lokasi strategis dengan harga terbaik.
-                </p>
-
-                <!-- BUTTON -->
-                <a href="{{ route('properti') }}"
-                    class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
-                    Lihat Properti ?
-                </a>
-            </div>
+            <span
+                class="mt-7 inline-flex items-center gap-3 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-blue-700">
+                Lihat Properti <span aria-hidden="true">&rarr;</span>
+            </span>
         </div>
-    </div>
+    </a>
 
 
     <!-- CARD 2 -->
-    <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px]">
+    <a href="{{ route('autoshow') }}"
+        class="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px] bg-white focus:outline-none focus:ring-4 focus:ring-emerald-300"
+        aria-label="Lihat mobil bekas">
 
-        <img src="{{ asset('images/thumbnail_kendaraan.png') }}" class="absolute inset-0 w-full h-full object-cover">
+        <img src="{{ asset('images/22.png') }}"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            alt="Mobil bekas berkualitas">
+        <div class="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-white via-white/95 to-white/0"></div>
 
-        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
+        <div class="relative z-10 px-7 pt-10 mt-3">
+            <h2 class="text-[30px] font-bold leading-tight text-slate-950">
+                Mobil Bekas <br>
+                <span class="text-emerald-600">Berkualitas</span>
+            </h2>
 
-        <div class="relative z-10 p-6 flex flex-col h-full justify-between text-white">
+            <p class="mt-4 max-w-[270px] text-sm font-medium leading-6 text-slate-700">
+                Unit terpilih, kondisi prima, dan <br>
+                harga bersaing dengan garansi.
+            </p>
 
-            <div>
-                <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
-                    MOBIL BEKAS
-                </div>
-
-                <h2 class="text-3xl font-bold leading-tight">
-                    Mobil Bekas <br>
-                    <span class="text-blue-300">Berkualitas</span>
-                </h2>
-
-                <p class="mt-3 text-sm text-blue-100 max-w-xs">
-                    Unit terpilih, kondisi prima, dan harga bersaing dengan garansi.
-                </p>
-
-                <a href="{{ route('autoshow') }}"
-                    class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
-                    Lihat Mobil ?
-                </a>
-            </div>
+            <span
+                class="mt-7 inline-flex items-center gap-3 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-emerald-700">
+                Lihat Mobil <span aria-hidden="true">&rarr;</span>
+            </span>
         </div>
-    </div>
+    </a>
 
 
     <!-- CARD 3 -->
-    <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px]">
+    <a href="{{ route('pinjaman.index') }}"
+        class="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px] bg-white focus:outline-none focus:ring-4 focus:ring-amber-300"
+        aria-label="Ajukan pinjaman dana">
 
-        <img src="{{ asset('images/thumbnail_pinjam_dana.png') }}" class="absolute inset-0 w-full h-full object-cover">
+        <img src="{{ asset('images/33.png') }}"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            alt="Pinjam dana jaminan BPKB motor dan mobil">
+        <div class="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-amber-50 via-amber-50/95 to-amber-50/0"></div>
 
-        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent"></div>
+        <div class="relative z-10 px-7 pt-10 mt-6">
+            <h2 class="text-[30px] font-bold leading-tight text-slate-950">
+                Pinjam Dana <br>
+                Jaminan BPKB <br>
+                <span class="text-amber-500">Motor & Mobil</span>
+            </h2>
 
-        <div class="relative z-10 p-6 flex flex-col h-full justify-between text-white">
+            <p class="mt-4 max-w-[270px] text-sm font-medium leading-3 text-slate-700">
+                Cair cepat, bunga kompetitif <br>
+                dan proses mudah & aman.
+            </p>
 
-            <div>
-                <div class="inline-flex items-center gap-2 text-xs border border-white/40 px-3 py-1 rounded-full mb-4">
-                    PEMBIAYAAN
-                </div>
-
-                <h2 class="text-3xl font-bold leading-tight">
-                    Pinjam Dana <br>
-                    <span class="text-blue-300">Jaminan BPKB</span><br>
-                    <span class="text-white">Motor & Mobil</span>
-                </h2>
-
-                <p class="mt-3 text-sm text-blue-100 max-w-xs">
-                    Cair cepat, bunga kompetitif, dan proses mudah & aman.
-                </p>
-
-                <a href="{{ route('pinjaman.index') }}"
-                    class="mt-5 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-medium transition">
-                    Ajukan Sekarang ?
-                </a>
-            </div>
+            <span
+                class="mt-6 inline-flex items-center gap-3 rounded-xl bg-amber-400 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-amber-500">
+                Ajukan Sekarang <span aria-hidden="true">&rarr;</span>
+            </span>
         </div>
-    </div>
+    </a>
 
 </div>
 </div>
@@ -292,14 +426,14 @@ $homeHeroSlides = [
             </a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4">
             @foreach($recommendedListings as $listing)
             <div data-aos="fade-up"
-                class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+                class="w-[74vw] max-w-[280px] shrink-0 snap-start bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer md:w-auto md:max-w-none"
                 onclick="window.location='{{ route('listing.show',$listing->id) }}'">
 
                 <div class="relative">
-                    <div class="relative h-48 overflow-hidden">
+                    <div class="relative h-36 overflow-hidden sm:h-40 md:h-48">
                         @forelse($listing->images as $index => $img)
                         <img src="{{ asset('storage/'.$img->image) }}"
                             class="card-slide absolute inset-0 w-full h-full object-cover transition duration-300 {{ $index == 0 ? '' : 'hidden' }}">
@@ -308,14 +442,14 @@ $homeHeroSlides = [
                         @endforelse
                     </div>
 
-                    <span class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                    <span class="absolute top-2 left-2 bg-blue-600 text-white text-[10px] px-2 py-1 rounded sm:text-xs">
                         {{ $listing->category->name ?? 'Rekomendasi' }}
                     </span>
 
                     @if($listing->images->count() > 1)
                     <button onclick="event.stopPropagation(); prevSlide(this)"
-                        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
+                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m15 19-7-7 7-7" />
@@ -323,8 +457,8 @@ $homeHeroSlides = [
                     </button>
 
                     <button onclick="event.stopPropagation(); nextSlide(this)"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
+                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m9 5 7 7-7 7" />
@@ -333,12 +467,12 @@ $homeHeroSlides = [
                     @endif
                 </div>
 
-                <div class="p-4">
-                    <p class="mb-1 text-xs font-bold uppercase text-blue-600">
+                <div class="p-3 sm:p-4">
+                    <p class="mb-1 text-[10px] font-bold uppercase text-blue-600 sm:text-xs">
                         {{ $listing->product_code ?: $listing->buildProductCode() }}
                     </p>
-                    <h3 class="font-semibold line-clamp-1">{{ $listing->title }}</h3>
-                    <p class="text-gray-500 text-sm line-clamp-1">{{ $listing->location }}</p>
+                    <h3 class="text-sm font-semibold line-clamp-1 sm:text-base">{{ $listing->title }}</h3>
+                    <p class="text-gray-500 text-xs line-clamp-1 sm:text-sm">{{ $listing->location }}</p>
                     <div class="mt-1">
                         <x-listing-price :listing="$listing" />
                     </div>
@@ -349,11 +483,74 @@ $homeHeroSlides = [
                     @endphp
 
                     <a href="https://wa.me/{{ $phone }}?text={{ $message }}" onclick="event.stopPropagation()"
-                        target="_blank" class="block mt-3 text-center bg-green-500 text-white py-2 rounded-lg">
+                        target="_blank" class="block mt-3 text-center bg-green-500 text-white py-1.5 rounded-lg text-sm sm:py-2 sm:text-base">
                         WhatsApp
                     </a>
                 </div>
             </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    @if($careerVacancies->count())
+    <section data-aos="fade-up" class="mb-14">
+        <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+                <p class="text-sm font-bold uppercase tracking-wide text-blue-600">Karir Arsantara</p>
+                <h2 class="mt-1 text-3xl font-black italic text-gray-950">Recent Vacancy</h2>
+            </div>
+
+            <a href="{{ route('careers.index') }}"
+                class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-md transition hover:bg-blue-700">
+                Lihat Semua Lowongan
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            @foreach($careerVacancies as $vacancy)
+                <article class="flex min-h-[320px] flex-col rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-sm transition hover:border-blue-200 hover:shadow-lg">
+                    <h3 class="text-xl font-extrabold leading-snug text-gray-950">
+                        {{ $vacancy->title }}
+                    </h3>
+
+                    <div class="mt-6 space-y-4 text-gray-700">
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M4 8h16v11H4z" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <span>{{ $vacancy->employment_type ?: 'Staff' }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M8 3v3M16 3v3M4 9h16M5 5h14v16H5z" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <span>{{ $vacancy->deadline ? $vacancy->deadline->translatedFormat('l, d M Y') : 'Dibuka sampai terpenuhi' }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2.8a7 7 0 0 0-7 7c0 5.2 7 11.4 7 11.4s7-6.2 7-11.4a7 7 0 0 0-7-7Zm0 9.8a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6Z" />
+                                </svg>
+                            </span>
+                            <span>{{ $vacancy->location ?: 'Fleksibel' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto flex justify-end pt-8">
+                        <a href="{{ route('careers.show', $vacancy->id) }}"
+                            class="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">
+                            Details
+                        </a>
+                    </div>
+                </article>
             @endforeach
         </div>
     </section>
@@ -368,16 +565,16 @@ $homeHeroSlides = [
     @foreach($categories as $category)
 
     @php
-    $route = '#';
+    $routeUrl = route('search', ['category' => $category->id]);
 
     if(strtolower($category->name) == 'mobil'){
-    $route = 'mobil.index';
+    $routeUrl = route('mobil.index');
     } elseif(strtolower($category->name) == 'motor'){
-    $route = 'motor.index';
+    $routeUrl = route('motor.index');
     } elseif(strtolower($category->name) == 'rumah'){
-    $route = 'rumah.index';
+    $routeUrl = route('rumah.index');
     } elseif(strtolower($category->name) == 'tanah'){
-    $route = 'tanah.index';
+    $routeUrl = route('tanah.index');
     }
     @endphp
 
@@ -390,19 +587,21 @@ $homeHeroSlides = [
             </h2>
 
             <div>
-                <button type="button" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
-                        bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route($route) }}">Lihat Semua
-                        ?</a>
-                </button>
+                <a href="{{ $routeUrl }}" class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-md transition hover:bg-blue-700">
+                    Lihat Semua
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
             </div>
         </div>
 
         <!-- LISTING -->
-        <div data-aos="fade-up" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div data-aos="fade-up" class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4">
 
             @forelse($category->listings->take(4) as $listing)
             <div data-aos="fade-up"
-                class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+                class="w-[74vw] max-w-[280px] shrink-0 snap-start bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer md:w-auto md:max-w-none"
                 onclick="window.location='{{ route('listing.show',$listing->id) }}'">
 
                 <!-- ================= CAROUSEL ================= -->
@@ -412,7 +611,7 @@ $homeHeroSlides = [
                     $images = $listing->images;
                     @endphp
 
-                    <div class="relative h-48 overflow-hidden">
+                    <div class="relative h-36 overflow-hidden sm:h-40 md:h-48">
 
                         @forelse($images as $index => $img)
                         <img src="{{ asset('storage/'.$img->image) }}"
@@ -425,8 +624,8 @@ $homeHeroSlides = [
 
                     <!-- BUTTON -->
                     <button onclick="event.stopPropagation(); prevSlide(this)"
-                        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
+                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m15 19-7-7 7-7" />
@@ -435,8 +634,8 @@ $homeHeroSlides = [
                     </button>
 
                     <button onclick="event.stopPropagation(); nextSlide(this)"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-8 h-8 rounded-full">
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
+                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m9 5 7 7-7 7" />
@@ -447,23 +646,23 @@ $homeHeroSlides = [
                 </div>
 
                 <!-- ================= CONTENT ================= -->
-                <div class="p-4">
+                <div class="p-3 sm:p-4">
 
-                    <h3 class="font-semibold line-clamp-1">
+                    <h3 class="text-sm font-semibold line-clamp-1 sm:text-base">
                         {{ $listing->title }}
                     </h3>
 
-                    <p class="mt-1 text-xs font-bold uppercase text-blue-600">
+                    <p class="mt-1 text-[10px] font-bold uppercase text-blue-600 sm:text-xs">
                         {{ $listing->product_code ?: $listing->buildProductCode() }}
                     </p>
 
-                    <p class="text-gray-500 text-sm">
+                    <p class="line-clamp-1 text-xs text-gray-500 sm:text-sm">
                         {{ $listing->location }}
                     </p>
 
-                    <p class="text-blue-600 font-bold mt-1">
-                        Rp {{ number_format($listing->price) }}
-                    </p>
+                    <div class="mt-1">
+                        <x-listing-price :listing="$listing" />
+                    </div>
 
                     <!-- WA BUTTON -->
                     @php
@@ -472,7 +671,7 @@ $homeHeroSlides = [
                     @endphp
 
                     <a href="https://wa.me/{{ $phone }}?text={{ $message }}" onclick="event.stopPropagation()"
-                        target="_blank" class="block mt-3 text-center bg-green-500 text-white py-2 rounded-lg">
+                        target="_blank" class="block mt-3 text-center bg-green-500 text-white py-1.5 rounded-lg text-sm sm:py-2 sm:text-base">
                         WhatsApp
                     </a>
 
@@ -525,23 +724,23 @@ $homeHeroSlides = [
         <div class="mt-16" data-aos="fade-up">
             <h2 class="text-2xl font-bold mb-6">Berita Terbaru</h2>
 
-            <div data-aos="fade-up" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div data-aos="fade-up" class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-3">
 
                 @foreach($posts as $post)
                 <div data-aos="fade-up"
-                    class="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+                    class="w-[78vw] max-w-[300px] shrink-0 snap-start bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer md:w-auto md:max-w-none"
                     onclick="window.location='{{ route('post.show',$post->id) }}'">
 
                     <img src="{{ $post->images->count() 
                         ? asset('storage/'.$post->images->first()->image) 
-                        : 'https://via.placeholder.com/300x200' }}" class="w-full h-48 object-cover">
+                        : 'https://via.placeholder.com/300x200' }}" class="w-full h-40 object-cover md:h-48">
 
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-800 line-clamp-2">
+                    <div class="p-3 sm:p-4">
+                        <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 sm:text-base">
                             {{ $post->title }}
                         </h3>
 
-                        <p class="text-gray-500 text-sm mt-2 line-clamp-2">
+                        <p class="text-gray-500 text-xs mt-2 line-clamp-2 sm:text-sm">
                             {{ Str::limit(strip_tags($post->content), 80) }}
                         </p>
 
@@ -558,14 +757,16 @@ $homeHeroSlides = [
     </section>
 
     <section class="mt-20">
-        <div data-aos="fade-up" class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold text-gray-800">
+        <div data-aos="fade-up" class="flex items-center justify-between gap-4 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 md:text-3xl">
                 Testimoni Mereka Tentang Arsantara
             </h2>
-            <button type="button" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
-                bg-blue-600 text-white shadow-md hover:bg-blue-700"><a href="{{ route('testimoni.index') }}">Lihat
-                    Semua ?</a>
-            </button>
+            <a href="{{ route('testimoni.index') }}" class="inline-flex shrink-0 items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-md transition hover:bg-blue-700 sm:px-5">
+                Lihat Semua
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
         </div>
 
         <div class="relative" data-aos="fade-up">
@@ -573,11 +774,13 @@ $homeHeroSlides = [
             <!-- LEFT -->
             <button onclick="scrollTesti(-1)"
                 class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
-                <
+                <svg class="h-5 w-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="m15 19-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </button>
 
             <!-- SLIDER -->
-            <div id="testi-slider" class="flex gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar">
+            <div id="testi-slider" class="flex snap-x gap-4 overflow-x-auto scroll-smooth pb-4 no-scrollbar md:gap-6">
 
                 @foreach($testimonials as $item)
 
@@ -586,13 +789,13 @@ $homeHeroSlides = [
                 @endphp
 
                 <div data-aos="fade-up"
-                    class="min-w-[320px] max-w-[320px] bg-white rounded-2xl p-6 shadow hover:shadow-lg transition relative">
+                    class="w-[78vw] max-w-[300px] shrink-0 snap-start bg-white rounded-2xl p-5 shadow hover:shadow-lg transition relative md:w-[320px] md:max-w-[320px] md:p-6">
 
                     <!-- AVATAR BULAT -->
                     <img src="{{ $item->photo 
                                 ? asset('storage/'.$item->photo) 
                                 : 'https://ui-avatars.com/api/?name='.urlencode($item->name) }}"
-                        class="w-20 h-20 rounded-full object-cover">
+                        class="h-16 w-16 rounded-full object-cover md:h-20 md:w-20">
 
                     <!-- QUOTE ICON -->
                     <div class="absolute top-4 right-4 bg-yellow-400 w-8 h-8 flex items-center justify-center rounded">
@@ -600,20 +803,19 @@ $homeHeroSlides = [
                     </div>
 
                     <!-- CONTENT -->
-                    <div class="mt-6">
+                    <div class="mt-5 md:mt-6">
 
                         <h3 class="font-bold text-gray-800 uppercase">
                             {{ $item->name }}
                         </h3>
 
-                        <!-- ? RATING -->
-                        <div class="text-yellow-400 mb-3">
-                            @for($i=1; $i<=5; $i++) @if($i <=$item->rating)
-                                ?
-                                @else
-                                ?
-                                @endif
-                                @endfor
+                        <!-- RATING -->
+                        <div class="mb-3 flex gap-1 text-yellow-400">
+                            @for($i=1; $i<=5; $i++)
+                                <svg class="h-4 w-4 {{ $i <= $item->rating ? 'fill-current' : 'fill-none text-gray-300' }}" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path d="m12 3.5 2.6 5.26 5.8.84-4.2 4.1.99 5.78L12 16.75l-5.19 2.73.99-5.78-4.2-4.1 5.8-.84L12 3.5Z" stroke-linejoin="round" />
+                                </svg>
+                            @endfor
                         </div>
 
                         <!-- MESSAGE -->
@@ -637,7 +839,9 @@ $homeHeroSlides = [
             <!-- RIGHT -->
             <button onclick="scrollTesti(1)"
                 class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
-                >
+                <svg class="h-5 w-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="m9 5 7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </button>
 
         </div>
@@ -646,6 +850,138 @@ $homeHeroSlides = [
 
 @endsection
 <script>
+let selectedPropertyCategory = '';
+let selectedVehicleCategory = '';
+
+function setSearchType(type) {
+    const categoryInput = document.getElementById('category');
+    const productTypeInput = document.getElementById('product_type');
+    const activeClasses = ['bg-blue-600', 'text-white', 'shadow-md', 'hover:bg-blue-700'];
+    const inactiveClasses = ['bg-blue-100', 'text-blue-700', 'hover:bg-blue-200'];
+
+    if (productTypeInput) {
+        productTypeInput.value = type === 'vehicle' ? 'vehicle' : 'property';
+    }
+
+    if (categoryInput) {
+        categoryInput.value = type === 'vehicle' ? selectedVehicleCategory : selectedPropertyCategory;
+    }
+
+    document.querySelectorAll('[data-search-tab]').forEach((button) => {
+        const isActive = button.dataset.searchTab === type;
+        button.classList.remove(...activeClasses, ...inactiveClasses);
+        button.classList.add(...(isActive ? activeClasses : inactiveClasses));
+    });
+
+    document.querySelectorAll('[data-filter-panel]').forEach((panel) => {
+        const isActive = panel.dataset.filterPanel === type;
+        panel.classList.toggle('hidden', !isActive);
+        panel.querySelectorAll('input, select, textarea, button[data-vehicle-dropdown-toggle]').forEach((field) => {
+            field.disabled = !isActive;
+        });
+    });
+}
+
+function toggleVehicleDropdown(forceOpen = null) {
+    const dropdown = document.querySelector('[data-vehicle-dropdown]');
+    const icon = document.querySelector('[data-vehicle-dropdown-icon]');
+    if (!dropdown) return;
+
+    const shouldOpen = forceOpen === null ? dropdown.classList.contains('hidden') : forceOpen;
+    dropdown.classList.toggle('hidden', !shouldOpen);
+    if (icon) {
+        icon.classList.toggle('rotate-180', shouldOpen);
+    }
+}
+
+function selectVehicleCategory(categoryId, label = 'Semua Kendaraan') {
+    const categoryInput = document.getElementById('category');
+    const labelEl = document.querySelector('[data-vehicle-category-label]');
+    selectedVehicleCategory = String(categoryId);
+
+    if (categoryInput) {
+        categoryInput.value = selectedVehicleCategory;
+    }
+
+    if (labelEl) {
+        labelEl.textContent = label;
+    }
+
+    document.querySelectorAll('[data-vehicle-option]').forEach((option) => {
+        const isActive = option.dataset.vehicleOption === selectedVehicleCategory;
+        option.classList.toggle('border-blue-600', isActive);
+        option.classList.toggle('bg-blue-50', isActive);
+        option.classList.toggle('text-blue-700', isActive);
+        option.classList.toggle('border-gray-200', !isActive);
+        option.classList.toggle('bg-white', !isActive);
+        option.classList.toggle('text-gray-700', !isActive);
+    });
+
+    toggleVehicleDropdown(false);
+}
+
+function togglePropertyDropdown(forceOpen = null) {
+    const dropdown = document.querySelector('[data-property-dropdown]');
+    const icon = document.querySelector('[data-property-dropdown-icon]');
+    if (!dropdown) return;
+
+    const shouldOpen = forceOpen === null ? dropdown.classList.contains('hidden') : forceOpen;
+    dropdown.classList.toggle('hidden', !shouldOpen);
+    if (icon) {
+        icon.classList.toggle('rotate-180', shouldOpen);
+    }
+}
+
+function selectPropertyCategory(categoryId, label) {
+    const categoryInput = document.getElementById('category');
+    const labelEl = document.querySelector('[data-property-category-label]');
+    selectedPropertyCategory = String(categoryId);
+
+    if (categoryInput) {
+        categoryInput.value = selectedPropertyCategory;
+    }
+
+    if (labelEl) {
+        labelEl.textContent = label;
+    }
+
+    document.querySelectorAll('[data-property-option]').forEach((option) => {
+        const isActive = option.dataset.propertyOption === selectedPropertyCategory;
+        option.classList.toggle('border-blue-600', isActive);
+        option.classList.toggle('bg-blue-50', isActive);
+        option.classList.toggle('text-blue-700', isActive);
+        option.classList.toggle('border-gray-200', !isActive);
+        option.classList.toggle('bg-white', !isActive);
+        option.classList.toggle('text-gray-700', !isActive);
+    });
+
+    togglePropertyDropdown(false);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setSearchType('property');
+
+    const dropdownToggle = document.querySelector('[data-property-dropdown-toggle]');
+    if (dropdownToggle) {
+        dropdownToggle.addEventListener('click', () => togglePropertyDropdown());
+    }
+
+    const vehicleDropdownToggle = document.querySelector('[data-vehicle-dropdown-toggle]');
+    if (vehicleDropdownToggle) {
+        vehicleDropdownToggle.addEventListener('click', () => toggleVehicleDropdown());
+    }
+
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('[data-property-dropdown]') && !event.target.closest('[data-property-dropdown-toggle]')) {
+            togglePropertyDropdown(false);
+        }
+
+        if (!event.target.closest('[data-vehicle-dropdown]') && !event.target.closest('[data-vehicle-dropdown-toggle]')) {
+            toggleVehicleDropdown(false);
+        }
+    });
+});
+
 function scrollTesti(direction) {
     const container = document.getElementById('testi-slider');
     container.scrollBy({

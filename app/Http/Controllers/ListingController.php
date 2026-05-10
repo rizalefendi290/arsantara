@@ -15,10 +15,16 @@ use App\Models\Carousel;
 use App\Models\Post;
 use App\Models\Testimonial;
 use App\Models\ListingView;
+use App\Models\JobVacancy;
 use App\Services\ImageWatermarkService;
 
 class ListingController extends Controller
 {
+    private const LISTING_CATEGORY_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    private const PROPERTY_CATEGORY_IDS = [1, 2, 5, 6, 7, 8];
+    private const BUILDING_PROPERTY_CATEGORY_IDS = [1, 5, 6, 7, 8];
+    private const VEHICLE_CATEGORY_IDS = [3, 4, 9];
+
     private array $adminListingStatuses = [
         'pending' => 'Pending',
         'aktif' => 'Aktif',
@@ -86,7 +92,7 @@ class ListingController extends Controller
     private function buildExcelTable($listings): string
     {
         $rows = $listings->map(fn ($listing) => $this->exportRow($listing));
-        $headers = ['ID', 'Kode Produk', 'Judul', 'Pemilik', 'Kategori', 'Status', 'Kondisi', 'Harga', 'Harga Diskon', 'Harga Final', 'Lokasi', 'Jenis Rumah', 'Detail', 'Tanggal Dibuat'];
+        $headers = ['ID', 'Kode Produk', 'Judul', 'Pemilik', 'Kategori', 'Status', 'Kondisi', 'Harga', 'Harga Diskon', 'Harga Final', 'Lokasi', 'Jenis Properti', 'Detail', 'Tanggal Dibuat'];
 
         $html = '<html><head><meta charset="UTF-8"></head><body>';
         $html .= '<h2>Katalog Listing Arsantara</h2>';
@@ -126,7 +132,16 @@ class ListingController extends Controller
             ])->filter(fn ($value) => !str_contains($value, '  m2') && !str_starts_with($value, ' KT') && !str_starts_with($value, ' KM'))->implode(', ');
         } elseif ($listing->category_id == 2 && $listing->propertyDetail) {
             $detail = 'LT '.$listing->propertyDetail->land_area.' m2, '.$listing->propertyDetail->certificate;
-        } elseif ($listing->category_id == 3 && $listing->carDetail) {
+        } elseif (in_array((int) $listing->category_id, [5, 6, 7, 8], true) && $listing->propertyDetail) {
+            $jenisRumah = $listing->category->name ?? '-';
+            $detail = collect([
+                $listing->propertyDetail->house_type,
+                'LT '.$listing->propertyDetail->land_area.' m2',
+                'LB '.$listing->propertyDetail->building_area.' m2',
+                $listing->propertyDetail->floors.' lantai',
+                $listing->propertyDetail->certificate,
+            ])->filter(fn ($value) => filled($value) && !str_contains($value, '  m2') && !str_starts_with($value, ' lantai'))->implode(', ');
+        } elseif (in_array((int) $listing->category_id, [3, 9], true) && $listing->carDetail) {
             $detail = collect([$listing->carDetail->brand, $listing->carDetail->model, $listing->carDetail->year, ucfirst($listing->carDetail->transmission ?? '')])->filter()->implode(', ');
         } elseif ($listing->category_id == 4 && $listing->motorcycleDetail) {
             $detail = collect([$listing->motorcycleDetail->brand, $listing->motorcycleDetail->model, $listing->motorcycleDetail->year, ucfirst($listing->motorcycleDetail->transmission ?? '')])->filter()->implode(', ');
@@ -243,15 +258,16 @@ class ListingController extends Controller
             ->active()
             ->inActiveCategory()
             ->where('is_featured', true)
-            ->whereIn('category_id', [1, 2, 3, 4])
+            ->whereIn('category_id', self::LISTING_CATEGORY_IDS)
             ->latest()
             ->take(8)
             ->get();
-        $carousels = Carousel::all();
+        $carousels = Carousel::content()->active()->orderBy('sort_order')->latest()->get();
         $posts = Post::latest()->take(6)->get();
         $testimonials = Testimonial::where('is_active',1)->latest()->get();
+        $careerVacancies = JobVacancy::active()->ordered()->take(3)->get();
 
-        return view('user.home', compact('categories','recommendedListings','carousels','posts','testimonials'));
+        return view('user.home', compact('categories','recommendedListings','carousels','posts','testimonials','careerVacancies'));
     }
 
     public function create()
@@ -264,26 +280,26 @@ class ListingController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'category_id' => 'required|in:1,2,3,4',
+            'category_id' => 'required|in:1,2,3,4,5,6,7,8,9',
             'price' => 'required|numeric',
             'discount_price' => 'nullable|numeric|min:0|lt:price',
             'location' => 'required',
             'condition' => 'required|in:baru,bekas',
             'description' => 'nullable|string',
             'house_type' => 'required_if:category_id,1|nullable|string|max:255',
-            'land_area' => 'required_if:category_id,1,2|nullable|numeric',
+            'land_area' => 'required_if:category_id,1,2,5,6,7,8|nullable|numeric',
             'building_area' => 'required_if:category_id,1|nullable|numeric',
             'bedrooms' => 'required_if:category_id,1|nullable|integer',
             'bathrooms' => 'required_if:category_id,1|nullable|integer',
             'floors' => 'required_if:category_id,1|nullable|integer',
-            'certificate' => 'required_if:category_id,1,2|nullable|string|max:255',
+            'certificate' => 'required_if:category_id,1,2,5,6,7,8|nullable|string|max:255',
             'is_kpr' => 'required_if:category_id,1|nullable|boolean',
             'facilities' => 'nullable|string',
-            'brand' => 'required_if:category_id,3,4|nullable|string|max:100',
-            'model' => 'required_if:category_id,3,4|nullable|string|max:100',
-            'year' => 'required_if:category_id,3,4|nullable|integer|between:1901,2155',
-            'engine' => 'required_if:category_id,3,4|nullable|integer',
-            'transmission' => 'required_if:category_id,3,4|nullable|in:manual,matic',
+            'brand' => 'required_if:category_id,3,4,9|nullable|string|max:100',
+            'model' => 'required_if:category_id,3,4,9|nullable|string|max:100',
+            'year' => 'required_if:category_id,3,4,9|nullable|integer|between:1901,2155',
+            'engine' => 'required_if:category_id,3,4,9|nullable|integer',
+            'transmission' => 'required_if:category_id,3,4,9|nullable|in:manual,matic',
             'fuel_type' => 'nullable|in:bensin,diesel,listrik,hybrid',
             'color' => 'nullable|string|max:100',
             'kilometer' => 'nullable|integer',
@@ -330,8 +346,22 @@ class ListingController extends Controller
             ]);
         }
 
+        if (in_array((int) $request->category_id, [5, 6, 7, 8], true)) {
+            PropertyDetail::create([
+                'listing_id' => $listing->id,
+                'house_type' => $request->house_type,
+                'land_area' => $request->land_area,
+                'building_area' => $request->building_area,
+                'bathrooms' => $request->bathrooms,
+                'floors' => $request->floors,
+                'certificate' => $request->certificate,
+                'facilities' => $request->facilities,
+                'is_kpr' => 0,
+            ]);
+        }
+
         // ================= MOBIL =================
-        if ($request->category_id == 3) {
+        if (in_array((int) $request->category_id, [3, 9], true)) {
             CarDetail::create([
                 'listing_id' => $listing->id,
                 'brand' => $request->brand,
@@ -474,7 +504,7 @@ class ListingController extends Controller
     {
         $query = Listing::with(['images', 'category', 'user'])
             ->active()
-            ->whereIn('category_id', [1, 2, 3, 4]);
+            ->whereIn('category_id', self::LISTING_CATEGORY_IDS);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -695,13 +725,15 @@ class ListingController extends Controller
     {
         $keyword = trim((string) $request->input('keyword', $request->input('search', '')));
         $categoryId = $request->input('category', $request->input('category_id'));
+        $productType = $request->input('product_type');
         $categories = Category::active()->get();
-        $terms = collect(preg_split('/\s+/', $keyword))
-            ->map(fn ($term) => trim($term))
-            ->filter(fn ($term) => mb_strlen($term) > 1)
-            ->unique()
-            ->take(8)
-            ->values();
+        $naturalSearch = $this->parseNaturalListingSearch($keyword, $categories);
+        $listingTerms = $naturalSearch['terms'];
+        $postTerms = $this->searchTermsFromKeyword($keyword);
+
+        if (!$categoryId && $naturalSearch['category_id']) {
+            $categoryId = $naturalSearch['category_id'];
+        }
 
         $listingsQuery = Listing::with(['images', 'category', 'propertyDetail', 'carDetail', 'motorcycleDetail'])
             ->active()
@@ -709,21 +741,17 @@ class ListingController extends Controller
 
         if ($categoryId) {
             $listingsQuery->where('category_id', $categoryId);
+        } elseif ($productType === 'property') {
+            $listingsQuery->whereIn('category_id', self::PROPERTY_CATEGORY_IDS);
+        } elseif (in_array($productType, ['car', 'vehicle'], true)) {
+            $listingsQuery->whereIn('category_id', self::VEHICLE_CATEGORY_IDS);
         }
 
-        if ($keyword !== '') {
-            $listingsQuery->where(function ($query) use ($keyword, $terms) {
-                $query->where(function ($phraseQuery) use ($keyword) {
-                    $this->applyListingSearchTerm($phraseQuery, $keyword);
-                });
-
-                if ($terms->count() > 1) {
-                    $query->orWhere(function ($tokenQuery) use ($terms) {
-                        foreach ($terms as $term) {
-                            $tokenQuery->where(function ($termQuery) use ($term) {
-                                $this->applyListingSearchTerm($termQuery, $term);
-                            });
-                        }
+        if ($listingTerms->isNotEmpty()) {
+            $listingsQuery->where(function ($tokenQuery) use ($listingTerms) {
+                foreach ($listingTerms as $term) {
+                    $tokenQuery->where(function ($termQuery) use ($term) {
+                        $this->applyListingSearchTerm($termQuery, $term);
                     });
                 }
             });
@@ -741,24 +769,112 @@ class ListingController extends Controller
             );
         }
 
-        if ($request->min_price) {
-            $listingsQuery->where('price', '>=', $request->min_price);
+        $minPrice = $request->filled('min_price') ? (int) $request->min_price : $naturalSearch['min_price'];
+        $maxPrice = $request->filled('max_price') ? (int) $request->max_price : $naturalSearch['max_price'];
+        $this->applyFinalPriceFilter($listingsQuery, $minPrice, $maxPrice);
+
+        if ($request->filled('location')) {
+            $listingsQuery->where('location', 'like', '%'.$request->location.'%');
         }
 
-        if ($request->max_price) {
-            $listingsQuery->where('price', '<=', $request->max_price);
+        if ($request->filled('condition')) {
+            $listingsQuery->where('condition', $request->condition);
+        }
+
+        if ($request->filled('certificate')) {
+            $listingsQuery->whereHas('propertyDetail', function ($property) use ($request) {
+                $property->where('certificate', $request->certificate);
+            });
+        }
+
+        if ($request->filled('min_land')) {
+            $listingsQuery->whereHas('propertyDetail', function ($property) use ($request) {
+                $property->where('land_area', '>=', $request->min_land);
+            });
+        }
+
+        if ((int) $categoryId === 1) {
+            if ($request->filled('bedrooms')) {
+                $listingsQuery->whereHas('propertyDetail', function ($property) use ($request) {
+                    $property->where('bedrooms', '>=', $request->bedrooms);
+                });
+            }
+
+            if ($request->filled('is_kpr')) {
+                $listingsQuery->whereHas('propertyDetail', function ($property) use ($request) {
+                    $property->where('is_kpr', (bool) $request->is_kpr);
+                });
+            }
+        }
+
+        if (in_array((int) $categoryId, [3, 9], true)) {
+            if ($request->filled('brand')) {
+                $listingsQuery->whereHas('carDetail', function ($car) use ($request) {
+                    $car->where('brand', 'like', '%'.$request->brand.'%');
+                });
+            }
+
+            if ($request->filled('transmission')) {
+                $listingsQuery->whereHas('carDetail', function ($car) use ($request) {
+                    $car->where('transmission', $request->transmission);
+                });
+            }
+
+            if ($request->filled('fuel_type')) {
+                $listingsQuery->whereHas('carDetail', function ($car) use ($request) {
+                    $car->where('fuel_type', $request->fuel_type);
+                });
+            }
+        } elseif ((int) $categoryId === 4) {
+            if ($request->filled('brand')) {
+                $listingsQuery->whereHas('motorcycleDetail', function ($motorcycle) use ($request) {
+                    $motorcycle->where('brand', 'like', '%'.$request->brand.'%');
+                });
+            }
+
+            if ($request->filled('transmission')) {
+                $listingsQuery->whereHas('motorcycleDetail', function ($motorcycle) use ($request) {
+                    $motorcycle->where('transmission', $request->transmission);
+                });
+            }
+        } elseif (in_array($productType, ['car', 'vehicle'], true)) {
+            if ($request->filled('brand')) {
+                $listingsQuery->where(function ($vehicle) use ($request) {
+                    $vehicle->whereHas('carDetail', function ($car) use ($request) {
+                        $car->where('brand', 'like', '%'.$request->brand.'%');
+                    })->orWhereHas('motorcycleDetail', function ($motorcycle) use ($request) {
+                        $motorcycle->where('brand', 'like', '%'.$request->brand.'%');
+                    });
+                });
+            }
+
+            if ($request->filled('transmission')) {
+                $listingsQuery->where(function ($vehicle) use ($request) {
+                    $vehicle->whereHas('carDetail', function ($car) use ($request) {
+                        $car->where('transmission', $request->transmission);
+                    })->orWhereHas('motorcycleDetail', function ($motorcycle) use ($request) {
+                        $motorcycle->where('transmission', $request->transmission);
+                    });
+                });
+            }
+
+            if ($request->filled('fuel_type')) {
+                $listingsQuery->whereHas('carDetail', function ($car) use ($request) {
+                    $car->where('fuel_type', $request->fuel_type);
+                });
+            }
         }
 
         $listings = $listingsQuery->latest()->paginate(12, ['*'], 'listings_page')->appends($request->query());
 
         $posts = Post::with('images')
-            ->when($keyword !== '', function ($query) use ($keyword, $terms) {
-                $query->where(function ($postQuery) use ($keyword, $terms) {
+            ->when($keyword !== '', function ($query) use ($keyword, $postTerms) {
+                $query->where(function ($postQuery) use ($keyword, $postTerms) {
                     $this->applyPostSearchTerm($postQuery, $keyword);
 
-                    if ($terms->count() > 1) {
-                        $postQuery->orWhere(function ($tokenQuery) use ($terms) {
-                            foreach ($terms as $term) {
+                    if ($postTerms->count() > 1) {
+                        $postQuery->orWhere(function ($tokenQuery) use ($postTerms) {
+                            foreach ($postTerms as $term) {
                                 $tokenQuery->where(function ($termQuery) use ($term) {
                                     $this->applyPostSearchTerm($termQuery, $term);
                                 });
@@ -782,6 +898,158 @@ class ListingController extends Controller
             ->appends($request->query());
 
         return view('search.index', compact('listings', 'posts', 'categories', 'keyword', 'categoryId'));
+    }
+
+    private function parseNaturalListingSearch(string $keyword, $categories): array
+    {
+        $normalized = $this->normalizeSearchText($keyword);
+        $categoryId = $this->detectCategoryIdFromSearch($normalized, $categories);
+        [$minPrice, $maxPrice] = $this->detectPriceRangeFromSearch($normalized);
+        $terms = $this->meaningfulListingSearchTerms($normalized, $categories);
+
+        return [
+            'category_id' => $categoryId,
+            'min_price' => $minPrice,
+            'max_price' => $maxPrice,
+            'terms' => $terms,
+        ];
+    }
+
+    private function applyFinalPriceFilter($query, ?int $minPrice, ?int $maxPrice): void
+    {
+        $finalPriceSql = 'CASE WHEN discount_price IS NOT NULL AND discount_price > 0 AND discount_price < price THEN discount_price ELSE price END';
+
+        if ($minPrice) {
+            $query->whereRaw($finalPriceSql.' >= ?', [$minPrice]);
+        }
+
+        if ($maxPrice) {
+            $query->whereRaw($finalPriceSql.' <= ?', [$maxPrice]);
+        }
+    }
+
+    private function normalizeSearchText(string $keyword): string
+    {
+        $text = mb_strtolower($keyword);
+        $text = str_replace(['rp.', 'rp', ','], ['', '', '.'], $text);
+        $text = preg_replace('/(\d)\s*-\s*(\d)/', '$1 - $2', $text);
+        $text = preg_replace('/\s+/', ' ', $text);
+
+        return trim($text ?? '');
+    }
+
+    private function detectCategoryIdFromSearch(string $keyword, $categories): ?int
+    {
+        $aliases = [
+            1 => ['rumah', 'hunian'],
+            2 => ['tanah', 'lahan', 'kavling'],
+            3 => ['mobil', 'car'],
+            4 => ['motor', 'motorcycle', 'sepeda motor'],
+            5 => ['ruko', 'rumah toko'],
+            6 => ['perkantoran', 'kantor', 'ruang kantor'],
+            7 => ['gudang', 'warehouse'],
+            8 => ['kios', 'lapak'],
+            9 => ['truk', 'truck', 'kendaraan komersil', 'kendaraan komersial', 'komersil'],
+        ];
+
+        foreach ($categories as $category) {
+            $aliases[(int) $category->id][] = mb_strtolower($category->name);
+            $aliases[(int) $category->id][] = mb_strtolower($category->slug);
+        }
+
+        foreach ($aliases as $id => $words) {
+            foreach (array_unique($words) as $word) {
+                if ($word !== '' && preg_match('/\b'.preg_quote($word, '/').'\b/u', $keyword)) {
+                    return (int) $id;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function detectPriceRangeFromSearch(string $keyword): array
+    {
+        if ($keyword === '') {
+            return [null, null];
+        }
+
+        $numberPattern = '(\d+(?:[.,]\d+)?)';
+        $unitPattern = '(miliar|milyar|m|juta|jt|ribu|rb)?';
+
+        if (preg_match('/(?:di\s*bawah|dibawah|kurang\s+dari|maksimal|max|sampai)\s+'.$numberPattern.'\s*'.$unitPattern.'/u', $keyword, $match)) {
+            return [null, $this->priceToInteger($match[1], $match[2] ?? null)];
+        }
+
+        if (preg_match('/(?:di\s*atas|diatas|lebih\s+dari|minimal|min)\s+'.$numberPattern.'\s*'.$unitPattern.'/u', $keyword, $match)) {
+            return [$this->priceToInteger($match[1], $match[2] ?? null), null];
+        }
+
+        if (preg_match('/'.$numberPattern.'\s*'.$unitPattern.'\s*(?:-|sampai|hingga|sd|s\/d)\s*'.$numberPattern.'\s*'.$unitPattern.'/u', $keyword, $match)) {
+            $leftUnit = $match[2] ?: ($match[4] ?? null);
+            $rightUnit = $match[4] ?: $leftUnit;
+
+            $min = $this->priceToInteger($match[1], $leftUnit);
+            $max = $this->priceToInteger($match[3], $rightUnit);
+
+            return $min <= $max ? [$min, $max] : [$max, $min];
+        }
+
+        if (preg_match('/(?:harga|budget|anggaran)\s*'.$numberPattern.'\s*'.$unitPattern.'/u', $keyword, $match)
+            || preg_match('/'.$numberPattern.'\s+(miliar|milyar|juta|jt|ribu|rb)\b/u', $keyword, $match)) {
+            $price = $this->priceToInteger($match[1], $match[2] ?? null);
+
+            if ($price) {
+                $margin = (int) max(50000000, round($price * 0.15));
+                return [max(0, $price - $margin), $price + $margin];
+            }
+        }
+
+        return [null, null];
+    }
+
+    private function priceToInteger(string $number, ?string $unit): ?int
+    {
+        $value = (float) str_replace(',', '.', $number);
+        $unit = $unit ? mb_strtolower($unit) : null;
+
+        $multiplier = match ($unit) {
+            'miliar', 'milyar', 'm' => 1000000000,
+            'juta', 'jt' => 1000000,
+            'ribu', 'rb' => 1000,
+            default => $value < 10000 ? 1000000 : 1,
+        };
+
+        return (int) round($value * $multiplier);
+    }
+
+    private function meaningfulListingSearchTerms(string $keyword, $categories)
+    {
+        $text = preg_replace('/\d+(?:[.,]\d+)?\s*(?:miliar|milyar|m|juta|jt|ribu|rb)?/u', ' ', $keyword);
+        $text = preg_replace('/\b(?:harga|budget|anggaran|dengan|yang|untuk|cari|carikan|saya|mau|ingin|di|ke|dan|atau|antara|sampai|hingga|sd|s\/d|kurang|lebih|dari|minimal|min|maksimal|max|dibawah|diatas|bawah|atas)\b/u', ' ', $text);
+
+        $categoryWords = $categories
+            ->flatMap(fn ($category) => [$category->name, $category->slug])
+            ->merge(['rumah', 'hunian', 'tanah', 'lahan', 'kavling', 'mobil', 'motor', 'ruko', 'kantor', 'perkantoran', 'gudang', 'kios'])
+            ->map(fn ($word) => preg_quote(mb_strtolower($word), '/'))
+            ->filter()
+            ->implode('|');
+
+        if ($categoryWords !== '') {
+            $text = preg_replace('/\b(?:'.$categoryWords.')\b/u', ' ', $text);
+        }
+
+        return $this->searchTermsFromKeyword($text);
+    }
+
+    private function searchTermsFromKeyword(string $keyword)
+    {
+        return collect(preg_split('/\s+/', trim($keyword)))
+            ->map(fn ($term) => trim($term, " \t\n\r\0\x0B.,;:!?()[]{}'\""))
+            ->filter(fn ($term) => mb_strlen($term) > 1)
+            ->unique()
+            ->take(8)
+            ->values();
     }
 
     private function applyListingSearchTerm($query, string $term): void

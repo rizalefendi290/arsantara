@@ -35,7 +35,7 @@
 @endphp
 
 <main class="bg-white">
-    <section class="relative min-h-screen overflow-hidden bg-slate-950 pt-24 text-white">
+    <section class="relative min-h-screen overflow-hidden bg-slate-950 text-white">
         <div class="absolute inset-0">
             @foreach($slides as $index => $slide)
                 <img src="{{ $slide['image'] }}"

@@ -37,10 +37,8 @@
         <div class="grid grid-cols-1 gap-3 md:grid-cols-6">
             <input type="text" name="location" value="{{ request('location') }}" placeholder="Lokasi"
                 class="md:col-span-2 rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
-            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Harga Min"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
-            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Harga Max"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+            <x-price-filter-input name="min_price" :value="request('min_price')" placeholder="Harga Min" />
+            <x-price-filter-input name="max_price" :value="request('max_price')" placeholder="Harga Max" />
             <input type="number" name="min_land" value="{{ request('min_land') }}" placeholder="Min Luas Tanah"
                 class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
             <select name="certificate" class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
@@ -71,7 +69,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
             @forelse($listings as $listing)
                 <x-card-listing :listing="$listing" />
             @empty

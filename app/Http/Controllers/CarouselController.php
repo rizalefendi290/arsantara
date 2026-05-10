@@ -8,27 +8,72 @@ use Illuminate\Support\Facades\Storage;
 
 class CarouselController extends Controller
 {
+    private array $heroPages = [
+        'home' => 'Beranda',
+        'properti' => 'Katalog Properti',
+        'autoshow' => 'Autoshow',
+        'search' => 'Pencarian',
+        'rumah.index' => 'Rumah',
+        'tanah.index' => 'Tanah',
+        'mobil.index' => 'Mobil',
+        'motor.index' => 'Motor',
+        'about' => 'Tentang Kami',
+        'ads.guide' => 'Pasang Iklan',
+        'faq' => 'FAQ',
+        'terms' => 'Syarat & Ketentuan',
+        'privacy' => 'Kebijakan Privasi',
+        'testimoni.index' => 'Testimoni',
+        'testimoni.create' => 'Buat Testimoni',
+        'profile.edit' => 'Profil',
+    ];
+
     public function index()
     {
-        $carousels = Carousel::all();
-        return view('admin.carousel.index', compact('carousels'));
+        $contentCarousels = Carousel::content()->orderBy('sort_order')->latest()->get();
+        $heroCarousels = Carousel::hero()->orderBy('page_key')->orderBy('sort_order')->latest()->get();
+        $heroPages = $this->heroPages;
+
+        return view('admin.carousel.index', compact('contentCarousels', 'heroCarousels', 'heroPages'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
+            'placement' => ['required', 'in:content,hero'],
+            'page_key' => ['nullable', 'required_if:placement,hero', 'string', 'max:255'],
             'image' => ['required', 'image', 'max:4096'],
-            'title' => ['nullable', 'string', 'max:255'],
+            'title' => ['nullable', 'required_if:placement,hero', 'string', 'max:255'],
+            'label' => ['nullable', 'string', 'max:255'],
+            'text' => ['nullable', 'string'],
+            'label_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'title_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'text_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'buttons' => ['nullable', 'array', 'max:2'],
+            'buttons.*.label' => ['nullable', 'string', 'max:60'],
+            'buttons.*.url' => ['nullable', 'string', 'max:2048'],
+            'buttons.*.variant' => ['nullable', 'in:primary,secondary'],
             'link_url' => ['nullable', 'string', 'max:2048'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         if($request->hasFile('image')){
-            $path = $request->file('image')->store('carousel','public');
+            $path = $request->file('image')->store($data['placement'] === 'hero' ? 'hero-carousel' : 'carousel','public');
 
             Carousel::create([
+                'placement' => $data['placement'],
+                'page_key' => $data['placement'] === 'hero' ? $data['page_key'] : null,
                 'image' => $path,
-                'title' => $request->title,
-                'link_url' => $this->normalizeLink($request->link_url),
+                'title' => $data['title'] ?? null,
+                'label' => $data['label'] ?? null,
+                'text' => $data['text'] ?? null,
+                'label_color' => $data['placement'] === 'hero' ? ($data['label_color'] ?? '#dbeafe') : null,
+                'title_color' => $data['placement'] === 'hero' ? ($data['title_color'] ?? '#ffffff') : null,
+                'text_color' => $data['placement'] === 'hero' ? ($data['text_color'] ?? '#e2e8f0') : null,
+                'buttons' => $data['placement'] === 'hero' ? $this->heroButtons($data['buttons'] ?? []) : null,
+                'link_url' => $data['placement'] === 'content' ? $this->normalizeLink($data['link_url'] ?? null) : null,
+                'sort_order' => $data['sort_order'] ?? 0,
+                'is_active' => $request->boolean('is_active', true),
             ]);
         }
 
@@ -37,22 +82,45 @@ class CarouselController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'image' => ['nullable', 'image', 'max:4096'],
-            'title' => ['nullable', 'string', 'max:255'],
-            'link_url' => ['nullable', 'string', 'max:2048'],
-        ]);
-
         $carousel = Carousel::findOrFail($id);
 
+        $data = $request->validate([
+            'placement' => ['required', 'in:content,hero'],
+            'page_key' => ['nullable', 'required_if:placement,hero', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'max:4096'],
+            'title' => ['nullable', 'required_if:placement,hero', 'string', 'max:255'],
+            'label' => ['nullable', 'string', 'max:255'],
+            'text' => ['nullable', 'string'],
+            'label_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'title_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'text_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'buttons' => ['nullable', 'array', 'max:2'],
+            'buttons.*.label' => ['nullable', 'string', 'max:60'],
+            'buttons.*.url' => ['nullable', 'string', 'max:2048'],
+            'buttons.*.variant' => ['nullable', 'in:primary,secondary'],
+            'link_url' => ['nullable', 'string', 'max:2048'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
         $data = [
-            'title' => $request->title,
-            'link_url' => $this->normalizeLink($request->link_url),
+            'placement' => $data['placement'],
+            'page_key' => $data['placement'] === 'hero' ? $data['page_key'] : null,
+            'title' => $data['title'] ?? null,
+            'label' => $data['label'] ?? null,
+            'text' => $data['text'] ?? null,
+            'label_color' => $data['placement'] === 'hero' ? ($data['label_color'] ?? '#dbeafe') : null,
+            'title_color' => $data['placement'] === 'hero' ? ($data['title_color'] ?? '#ffffff') : null,
+            'text_color' => $data['placement'] === 'hero' ? ($data['text_color'] ?? '#e2e8f0') : null,
+            'buttons' => $data['placement'] === 'hero' ? $this->heroButtons($data['buttons'] ?? []) : null,
+            'link_url' => $data['placement'] === 'content' ? $this->normalizeLink($data['link_url'] ?? null) : null,
+            'sort_order' => $data['sort_order'] ?? 0,
+            'is_active' => $request->boolean('is_active'),
         ];
 
         if ($request->hasFile('image')) {
             Storage::disk('public')->delete($carousel->image);
-            $data['image'] = $request->file('image')->store('carousel', 'public');
+            $data['image'] = $request->file('image')->store($data['placement'] === 'hero' ? 'hero-carousel' : 'carousel', 'public');
         }
 
         $carousel->update($data);
@@ -69,12 +137,39 @@ class CarouselController extends Controller
         return back();
     }
 
+    private function heroButtons(array $buttons): array
+    {
+        return collect($buttons)
+            ->take(2)
+            ->map(function (array $button) {
+                $label = trim((string) ($button['label'] ?? ''));
+                $url = $this->normalizeLink($button['url'] ?? null);
+
+                if ($label === '' || blank($url)) {
+                    return null;
+                }
+
+                return [
+                    'label' => $label,
+                    'url' => $url,
+                    'variant' => ($button['variant'] ?? 'primary') === 'secondary' ? 'secondary' : 'primary',
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
     private function normalizeLink(?string $link): ?string
     {
         $link = trim((string) $link);
 
         if ($link === '') {
             return null;
+        }
+
+        if (str_starts_with($link, 'wa.me/') || str_starts_with($link, 'api.whatsapp.com/')) {
+            return 'https://'.$link;
         }
 
         if (

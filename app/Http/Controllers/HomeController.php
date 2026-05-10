@@ -11,6 +11,10 @@ use App\Models\Testimonial;
 
 class HomeController extends Controller
 {
+    private const PROPERTY_CATEGORY_IDS = [1, 2, 5, 6, 7, 8];
+    private const COMMERCIAL_PROPERTY_CATEGORY_IDS = [5, 6, 7, 8];
+    private const VEHICLE_CATEGORY_IDS = [3, 4, 9];
+
     public function index(Request $request)
     {
         $posts = Post::latest()->take(6)->get();
@@ -38,7 +42,7 @@ class HomeController extends Controller
             ->paginate(8);
 
         // Carousel
-        $carousels = Carousel::latest()->get();
+        $carousels = Carousel::content()->active()->orderBy('sort_order')->latest()->get();
 
         return view('user.home', compact(
             'categories',
@@ -54,7 +58,7 @@ class HomeController extends Controller
         $query = Listing::with(['images','category','carDetail','motorcycleDetail'])
             ->active()
             ->inActiveCategory()
-            ->whereIn('category_id', [3, 4]); // mobil & motor
+            ->whereIn('category_id', self::VEHICLE_CATEGORY_IDS);
 
         // 🔍 FILTER KEYWORD
         if ($request->keyword) {
@@ -112,7 +116,7 @@ class HomeController extends Controller
         $query = Listing::with(['images','category','carDetail','motorcycleDetail'])
             ->active()
             ->inActiveCategory()
-            ->whereIn('category_id', [3,4]);
+            ->whereIn('category_id', self::VEHICLE_CATEGORY_IDS);
 
         if ($request->keyword) {
             $keyword = $request->keyword;
@@ -154,7 +158,7 @@ class HomeController extends Controller
         if ($request->category) {
             $query->where('category_id', $request->category);
         } else {
-            $query->whereIn('category_id', [3,4]);
+            $query->whereIn('category_id', self::VEHICLE_CATEGORY_IDS);
         }
 
         $listings = $query->latest()->paginate(8)->appends($request->all());
@@ -166,6 +170,10 @@ class HomeController extends Controller
     {
         $rumahActive = Category::whereKey(1)->where('is_active', true)->exists();
         $tanahActive = Category::whereKey(2)->where('is_active', true)->exists();
+        $propertyCategories = Category::active()
+            ->whereIn('id', self::PROPERTY_CATEGORY_IDS)
+            ->orderByRaw('CASE id WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 5 THEN 3 WHEN 6 THEN 4 WHEN 7 THEN 5 WHEN 8 THEN 6 ELSE 99 END')
+            ->get();
 
         // RUMAH KPR
         $rumahKpr = Listing::with(['images','category','propertyDetail'])
@@ -200,14 +208,39 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
+        $commercialSections = $propertyCategories
+            ->whereIn('id', self::COMMERCIAL_PROPERTY_CATEGORY_IDS)
+            ->map(function ($category) {
+                return [
+                    'category' => $category,
+                    'listings' => Listing::with(['images','category','propertyDetail'])
+                        ->active()
+                        ->inActiveCategory()
+                        ->where('category_id', $category->id)
+                        ->latest()
+                        ->take(8)
+                        ->get(),
+                ];
+            })
+            ->values();
+
         $listings = Listing::with(['images','category','propertyDetail'])
             ->active()
             ->inActiveCategory()
-            ->whereIn('category_id', [1, 2])
+            ->whereIn('category_id', self::PROPERTY_CATEGORY_IDS)
             ->latest()
             ->paginate(8);
 
-        return view('properti.index', compact('rumahKpr','rumahNonKpr','tanah','listings','rumahActive','tanahActive'));
+        return view('properti.index', compact(
+            'rumahKpr',
+            'rumahNonKpr',
+            'tanah',
+            'commercialSections',
+            'listings',
+            'rumahActive',
+            'tanahActive',
+            'propertyCategories'
+        ));
     }
 
     public function propertiFilter(Request $request)
@@ -219,7 +252,7 @@ class HomeController extends Controller
         if ($request->category) {
             $query->where('category_id', $request->category);
         } else {
-            $query->whereIn('category_id', [1,2]);
+            $query->whereIn('category_id', self::PROPERTY_CATEGORY_IDS);
         }
 
         // keyword
@@ -277,6 +310,26 @@ class HomeController extends Controller
             $this->abortIfCategoryInactive(2);
             $query->where('category_id', 2);
             $title = 'Tanah';
+        } elseif ($slug == 'ruko') {
+            $this->abortIfCategoryInactive(5);
+            $query->where('category_id', 5);
+            $title = 'Ruko';
+        } elseif ($slug == 'perkantoran') {
+            $this->abortIfCategoryInactive(6);
+            $query->where('category_id', 6);
+            $title = 'Perkantoran';
+        } elseif ($slug == 'gudang') {
+            $this->abortIfCategoryInactive(7);
+            $query->where('category_id', 7);
+            $title = 'Gudang';
+        } elseif ($slug == 'kios') {
+            $this->abortIfCategoryInactive(8);
+            $query->where('category_id', 8);
+            $title = 'Kios';
+        } elseif ($slug == 'truk-kendaraan-komersil') {
+            $this->abortIfCategoryInactive(9);
+            $query->where('category_id', 9);
+            $title = 'Truk & Kendaraan Komersil';
         } else {
             abort(404);
         }

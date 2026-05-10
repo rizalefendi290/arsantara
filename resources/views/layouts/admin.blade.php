@@ -64,6 +64,12 @@
             'icon' => 'M8 12h8M4 8h16M4 16h16M6 4h12v16H6z',
         ],
         [
+            'label' => 'Karir',
+            'route' => 'admin.careers.index',
+            'active' => request()->routeIs('admin.careers.*'),
+            'icon' => 'M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1 M4 8h16v11H4z M4 12h16',
+        ],
+        [
             'label' => 'User',
             'route' => 'admin.users',
             'active' => request()->routeIs('admin.users*'),
@@ -72,10 +78,10 @@
     ];
 @endphp
 
-<div class="min-h-screen bg-gray-50 pt-20">
+<div class="min-h-screen bg-gray-50 py-4 lg:py-6">
     <div class="mx-auto flex w-full max-w-screen-2xl gap-0 lg:gap-6 px-0 lg:px-6">
         <aside class="hidden lg:flex lg:w-72 lg:shrink-0">
-            <div class="sticky top-24 h-[calc(100vh-7rem)] w-full rounded-lg border bg-white shadow-sm">
+            <div class="sticky top-6 h-[calc(100vh-3rem)] w-full rounded-lg border bg-white shadow-sm">
                 <div class="border-b px-5 py-4">
                     <p class="text-xs font-semibold uppercase text-gray-500">Panel Admin</p>
                     <h2 class="text-lg font-bold text-gray-900">Arsantara</h2>

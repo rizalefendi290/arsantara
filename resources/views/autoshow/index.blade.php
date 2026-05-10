@@ -43,15 +43,12 @@
                 <option value="">Semua Kendaraan</option>
                 <option value="3" {{ request('category') == 3 ? 'selected' : '' }}>Mobil</option>
                 <option value="4" {{ request('category') == 4 ? 'selected' : '' }}>Motor</option>
+                <option value="9" {{ request('category') == 9 ? 'selected' : '' }}>Truk & Kendaraan Komersil</option>
             </select>
 
-            <input type="number" name="min_price" value="{{ request('min_price') }}"
-                placeholder="Harga Min"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+            <x-price-filter-input name="min_price" :value="request('min_price')" placeholder="Harga Min" />
 
-            <input type="number" name="max_price" value="{{ request('max_price') }}"
-                placeholder="Harga Max"
-                class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
+            <x-price-filter-input name="max_price" :value="request('max_price')" placeholder="Harga Max" />
 
             <select name="condition" class="rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
                 <option value="">Semua Kondisi</option>

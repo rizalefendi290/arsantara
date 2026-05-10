@@ -15,6 +15,7 @@ use App\Http\Controllers\Agent\AgentDashboardController;
 use App\Http\Controllers\Agent\AgentListingController;
 use App\Http\Controllers\OrganizationMemberController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\CareerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -81,6 +82,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/partners', [PartnerController::class, 'store'])->name('admin.partners.store');
     Route::patch('/admin/partners/{partner}', [PartnerController::class, 'update'])->name('admin.partners.update');
     Route::delete('/admin/partners/{partner}', [PartnerController::class, 'destroy'])->name('admin.partners.destroy');
+    Route::get('/admin/careers', [CareerController::class, 'adminIndex'])->name('admin.careers.index');
+    Route::post('/admin/careers', [CareerController::class, 'store'])->name('admin.careers.store');
+    Route::patch('/admin/careers/{jobVacancy}', [CareerController::class, 'update'])->name('admin.careers.update');
+    Route::delete('/admin/careers/{jobVacancy}', [CareerController::class, 'destroy'])->name('admin.careers.destroy');
 });
 //edit carousel
 Route::middleware(['auth','admin'])->group(function(){
@@ -167,6 +172,8 @@ Route::prefix('kategori')->group(function () {
 });
 
 Route::get('/search', [ListingController::class, 'search'])->name('search');
+Route::get('/karir', [CareerController::class, 'index'])->name('careers.index');
+Route::get('/karir/{jobVacancy}', [CareerController::class, 'show'])->name('careers.show');
 
 Route::get('/tentang', function () {
     return view('tentang.index');
