@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JobVacancy extends Model
 {
@@ -32,5 +33,10 @@ class JobVacancy extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->latest();
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(JobApplication::class);
     }
 }

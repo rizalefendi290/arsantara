@@ -20,6 +20,10 @@
             scroll-behavior: smooth;
         }
 
+        [x-cloak] {
+            display: none !important;
+        }
+
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }

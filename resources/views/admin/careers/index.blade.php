@@ -7,6 +7,17 @@
         <h1 class="text-2xl font-bold text-gray-900">Kelola Lowongan Karir</h1>
     </div>
 
+    <div class="mb-6 flex flex-wrap gap-2 rounded-lg border bg-white p-2 shadow-sm">
+        <a href="{{ route('admin.careers.index') }}"
+            class="rounded-md px-4 py-2 text-sm font-bold {{ request()->routeIs('admin.careers.index') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700' }}">
+            Lowongan
+        </a>
+        <a href="{{ route('admin.careers.applications') }}"
+            class="rounded-md px-4 py-2 text-sm font-bold {{ request()->routeIs('admin.careers.applications*') ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700' }}">
+            Pelamar
+        </a>
+    </div>
+
     @if($errors->any())
         <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-700">
             @foreach($errors->all() as $error)
@@ -89,10 +100,11 @@
                         <div>
                             <h3 class="text-lg font-bold text-gray-950">{{ $vacancy->title }}</h3>
                             <p class="mt-1 text-sm text-gray-600">
-                                {{ $vacancy->employment_type ?: 'Staff' }} &bull;
-                                {{ $vacancy->location ?: 'Fleksibel' }} &bull;
-                                {{ $vacancy->deadline ? $vacancy->deadline->format('d/m/Y') : 'Tanpa deadline' }}
-                            </p>
+                            {{ $vacancy->employment_type ?: 'Staff' }} &bull;
+                            {{ $vacancy->location ?: 'Fleksibel' }} &bull;
+                            {{ $vacancy->deadline ? $vacancy->deadline->format('d/m/Y') : 'Tanpa deadline' }} &bull;
+                            {{ $vacancy->applications_count }} pelamar
+                        </p>
                         </div>
                         <span class="rounded px-2 py-1 text-xs font-semibold {{ $vacancy->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">
                             {{ $vacancy->is_active ? 'Aktif' : 'Nonaktif' }}

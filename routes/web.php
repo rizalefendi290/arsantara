@@ -83,6 +83,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/partners/{partner}', [PartnerController::class, 'update'])->name('admin.partners.update');
     Route::delete('/admin/partners/{partner}', [PartnerController::class, 'destroy'])->name('admin.partners.destroy');
     Route::get('/admin/careers', [CareerController::class, 'adminIndex'])->name('admin.careers.index');
+    Route::get('/admin/careers/applications', [CareerController::class, 'adminApplications'])->name('admin.careers.applications');
+    Route::get('/admin/careers/applications/{jobApplication}', [CareerController::class, 'showApplication'])->name('admin.careers.applications.show');
+    Route::get('/admin/careers/applications/{jobApplication}/cv', [CareerController::class, 'downloadApplicationCv'])->name('admin.careers.applications.cv');
+    Route::patch('/admin/careers/applications/{jobApplication}/accept', [CareerController::class, 'acceptApplication'])->name('admin.careers.applications.accept');
+    Route::patch('/admin/careers/applications/{jobApplication}/reject', [CareerController::class, 'rejectApplication'])->name('admin.careers.applications.reject');
+    Route::delete('/admin/careers/applications/{jobApplication}', [CareerController::class, 'destroyApplication'])->name('admin.careers.applications.destroy');
     Route::post('/admin/careers', [CareerController::class, 'store'])->name('admin.careers.store');
     Route::patch('/admin/careers/{jobVacancy}', [CareerController::class, 'update'])->name('admin.careers.update');
     Route::delete('/admin/careers/{jobVacancy}', [CareerController::class, 'destroy'])->name('admin.careers.destroy');
@@ -172,8 +178,14 @@ Route::prefix('kategori')->group(function () {
 });
 
 Route::get('/search', [ListingController::class, 'search'])->name('search');
+Route::get('/api/wilayah/provinces', [CareerController::class, 'wilayahProvinces'])->name('wilayah.provinces');
+Route::get('/api/wilayah/regencies/{provinceCode}', [CareerController::class, 'wilayahRegencies'])->name('wilayah.regencies');
+Route::get('/api/wilayah/districts/{regencyCode}', [CareerController::class, 'wilayahDistricts'])->name('wilayah.districts');
+Route::get('/api/wilayah/villages/{districtCode}', [CareerController::class, 'wilayahVillages'])->name('wilayah.villages');
 Route::get('/karir', [CareerController::class, 'index'])->name('careers.index');
 Route::get('/karir/{jobVacancy}', [CareerController::class, 'show'])->name('careers.show');
+Route::get('/karir/{jobVacancy}/lamar', [CareerController::class, 'apply'])->name('careers.apply');
+Route::post('/karir/{jobVacancy}/lamar', [CareerController::class, 'submitApplication'])->name('careers.apply.submit');
 
 Route::get('/tentang', function () {
     return view('tentang.index');
