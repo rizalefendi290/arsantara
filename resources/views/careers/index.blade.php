@@ -19,7 +19,7 @@
         <div class="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p class="text-sm font-bold uppercase tracking-wide text-blue-600">Recent Vacancy</p>
-                <h1 class="mt-2 text-3xl font-black italic text-gray-950 sm:text-5xl">
+                <h1 class="mt-2 text-3xl font-black text-gray-950 sm:text-5xl">
                     {{ $showAll ? 'Semua Lowongan Tersedia' : 'Lowongan Terbaru' }}
                 </h1>
             </div>

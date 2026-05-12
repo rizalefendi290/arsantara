@@ -28,6 +28,7 @@
             'text' => 'Hubungi admin untuk konsultasi gratis tentang rumah dan tanah impian Anda, termasuk opsi KPR dan proses pembelian.',
         ],
     ];
+    $houseCategory = $propertyCategories->firstWhere('slug', \App\Models\Category::HOUSE_SLUG);
 @endphp
 
 <x-hero-carousel :slides="$heroSlides" height="min-h-[520px]" inner-height="min-h-[520px]" content-width="max-w-2xl" />
@@ -82,7 +83,7 @@
         <section data-aos="fade-up" class="mb-14">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-800">Rumah Bisa KPR</h2>
-                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 1]) }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
+                <a href="{{ route('search', ['category' => $houseCategory?->id, 'is_kpr' => 1]) }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
             </div>
             <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
                 @forelse($rumahKpr as $listing)
@@ -98,7 +99,7 @@
         <section data-aos="fade-up" class="mb-14">
             <div class="mb-6 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-800">Rumah Non KPR</h2>
-                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 0]) }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
+                <a href="{{ route('search', ['category' => $houseCategory?->id, 'is_kpr' => 0]) }}" class="shrink-0 font-semibold text-blue-600 hover:underline">Tampilkan Semua</a>
             </div>
             <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
                 @forelse($rumahNonKpr as $listing)

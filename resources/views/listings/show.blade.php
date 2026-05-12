@@ -37,6 +37,7 @@
     );
 
     $categoryName = $listing->category->name ?? 'Listing';
+    $category = $listing->category;
     $conditionLabel = $listing->condition ? ucfirst($listing->condition) : '-';
     $primaryFacts = [
         ['label' => 'Kode Produk', 'value' => $listing->product_code ?: $listing->buildProductCode()],
@@ -45,33 +46,33 @@
         ['label' => 'Status', 'value' => 'Tersedia'],
     ];
 
-    if ($listing->category_id == 1 && $listing->property) {
+    if ($category?->isHouse() && $listing->property) {
         $primaryFacts = array_merge([
             ['label' => 'Kamar', 'value' => ($listing->property->bedrooms ?? '-').' KT'],
             ['label' => 'Mandi', 'value' => ($listing->property->bathrooms ?? '-').' KM'],
             ['label' => 'Bangunan', 'value' => ($listing->property->building_area ?? '-').' m2'],
             ['label' => 'Tanah', 'value' => ($listing->property->land_area ?? '-').' m2'],
         ], $primaryFacts);
-    } elseif ($listing->category_id == 2 && $listing->property) {
+    } elseif ($category?->isLand() && $listing->property) {
         $primaryFacts = array_merge([
             ['label' => 'Luas Tanah', 'value' => ($listing->property->land_area ?? '-').' m2'],
             ['label' => 'Sertifikat', 'value' => $listing->property->certificate ?? '-'],
         ], $primaryFacts);
-    } elseif (in_array((int) $listing->category_id, [5, 6, 7, 8], true) && $listing->property) {
+    } elseif ($category?->isCommercialProperty() && $listing->property) {
         $primaryFacts = array_merge([
             ['label' => 'Tipe', 'value' => $listing->property->house_type ?? $categoryName],
             ['label' => 'Bangunan', 'value' => ($listing->property->building_area ?? '-').' m2'],
             ['label' => 'Tanah', 'value' => ($listing->property->land_area ?? '-').' m2'],
             ['label' => 'Sertifikat', 'value' => $listing->property->certificate ?? '-'],
         ], $primaryFacts);
-    } elseif (in_array((int) $listing->category_id, [3, 9], true) && $listing->car) {
+    } elseif ($category?->isCarLike() && $listing->car) {
         $primaryFacts = array_merge([
             ['label' => 'Merk', 'value' => $listing->car->brand ?? '-'],
             ['label' => 'Model', 'value' => $listing->car->model ?? '-'],
             ['label' => 'Tahun', 'value' => $listing->car->year ?? '-'],
             ['label' => 'Transmisi', 'value' => ucfirst($listing->car->transmission ?? '-')],
         ], $primaryFacts);
-    } elseif ($listing->category_id == 4 && $listing->motorcycle) {
+    } elseif ($category?->isMotorcycle() && $listing->motorcycle) {
         $primaryFacts = array_merge([
             ['label' => 'Merk', 'value' => $listing->motorcycle->brand ?? '-'],
             ['label' => 'Model', 'value' => $listing->motorcycle->model ?? '-'],
@@ -81,7 +82,7 @@
     }
 
     $detailRows = [];
-    if ($listing->category_id == 1 && $listing->property) {
+    if ($category?->isHouse() && $listing->property) {
         $detailRows = [
             ['Tipe Rumah', $listing->property->house_type ?? '-'],
             ['Luas Tanah', ($listing->property->land_area ?? '-').' m2'],
@@ -96,13 +97,13 @@
             ->map(fn ($facility) => trim($facility))
             ->filter()
             ->values();
-    } elseif ($listing->category_id == 2 && $listing->property) {
+    } elseif ($category?->isLand() && $listing->property) {
         $detailRows = [
             ['Luas Tanah', ($listing->property->land_area ?? '-').' m2'],
             ['Sertifikat', $listing->property->certificate ?? '-'],
         ];
         $facilities = collect();
-    } elseif (in_array((int) $listing->category_id, [5, 6, 7, 8], true) && $listing->property) {
+    } elseif ($category?->isCommercialProperty() && $listing->property) {
         $detailRows = [
             ['Tipe / Nama Unit', $listing->property->house_type ?? '-'],
             ['Luas Tanah', ($listing->property->land_area ?? '-').' m2'],
@@ -115,7 +116,7 @@
             ->map(fn ($facility) => trim($facility))
             ->filter()
             ->values();
-    } elseif (in_array((int) $listing->category_id, [3, 9], true) && $listing->car) {
+    } elseif ($category?->isCarLike() && $listing->car) {
         $detailRows = [
             ['Merk', $listing->car->brand ?? '-'],
             ['Model', $listing->car->model ?? '-'],
@@ -127,7 +128,7 @@
             ['Kilometer', number_format($listing->car->kilometer ?? 0, 0, ',', '.').' km'],
         ];
         $facilities = collect();
-    } elseif ($listing->category_id == 4 && $listing->motorcycle) {
+    } elseif ($category?->isMotorcycle() && $listing->motorcycle) {
         $detailRows = [
             ['Merk', $listing->motorcycle->brand ?? '-'],
             ['Model', $listing->motorcycle->model ?? '-'],
@@ -140,7 +141,7 @@
         $facilities = collect();
     }
 
-    $isKprListing = $listing->category_id == 1 && $listing->property && $listing->property->is_kpr;
+    $isKprListing = $category?->isHouse() && $listing->property && $listing->property->is_kpr;
     $kprPrice = $listing->finalPrice();
     $defaultKprDpPercent = 20;
     $defaultKprDp = (int) round($kprPrice * ($defaultKprDpPercent / 100));

@@ -28,6 +28,7 @@
             'text' => 'Hubungi admin untuk informasi awal dan pendampingan proses pengajuan.',
         ],
     ];
+    $houseCategoryId = $houseCategory->id ?? null;
 @endphp
 
 <x-hero-carousel :slides="$heroSlides" height="min-h-[460px]" inner-height="min-h-[460px]" content-width="max-w-2xl" />
@@ -63,7 +64,7 @@
         <section class="mb-14">
             <div class="mb-6 flex items-center justify-between gap-4">
                 <h2 class="text-2xl font-bold text-gray-800">Rumah Bisa KPR</h2>
-                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 1]) }}"
+                <a href="{{ route('search', ['category' => $houseCategoryId, 'is_kpr' => 1]) }}"
                     class="shrink-0 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-700">
                     Tampilkan Semua
                 </a>
@@ -82,7 +83,7 @@
         <section>
             <div class="mb-6 flex items-center justify-between gap-4">
                 <h2 class="text-2xl font-bold text-gray-800">Rumah Non KPR</h2>
-                <a href="{{ route('search', ['category' => 1, 'is_kpr' => 0]) }}"
+                <a href="{{ route('search', ['category' => $houseCategoryId, 'is_kpr' => 0]) }}"
                     class="shrink-0 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-blue-700">
                     Tampilkan Semua
                 </a>

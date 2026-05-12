@@ -36,6 +36,16 @@ class Listing extends Model
         return $query->whereHas('category', fn ($category) => $category->where('is_active', true));
     }
 
+    public function scopeInCategorySlug($query, string $slug)
+    {
+        return $query->whereHas('category', fn ($category) => $category->where('slug', $slug));
+    }
+
+    public function scopeInCategorySlugs($query, array $slugs)
+    {
+        return $query->whereHas('category', fn ($category) => $category->whereIn('slug', $slugs));
+    }
+
     public function hasDiscount(): bool
     {
         return filled($this->discount_price) && $this->discount_price > 0 && $this->discount_price < $this->price;

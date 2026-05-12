@@ -61,6 +61,7 @@
             animation: fadeIn 0.5s ease;
         }
         </style>
+        @stack('styles')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-gradient-to-b from-white via-blue-50 to-blue-100 relative overflow-x-hidden">

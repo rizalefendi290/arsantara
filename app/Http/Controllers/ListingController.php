@@ -21,10 +21,9 @@ use Illuminate\Validation\Rule;
 
 class ListingController extends Controller
 {
-    private const LISTING_CATEGORY_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    private const PROPERTY_CATEGORY_IDS = [1, 2, 5, 6, 7, 8];
-    private const BUILDING_PROPERTY_CATEGORY_IDS = [1, 5, 6, 7, 8];
-    private const VEHICLE_CATEGORY_IDS = [3, 4, 9];
+    private const LISTING_CATEGORY_SLUGS = ['rumah', 'tanah', 'mobil', 'motor', 'ruko', 'perkantoran', 'gudang', 'kios', 'truk-kendaraan-komersil'];
+    private const PROPERTY_CATEGORY_SLUGS = ['rumah', 'tanah', 'ruko', 'perkantoran', 'gudang', 'kios'];
+    private const VEHICLE_CATEGORY_SLUGS = ['mobil', 'motor', 'truk-kendaraan-komersil'];
 
     private array $adminListingStatuses = [
         'pending' => 'Pending',
@@ -73,7 +72,7 @@ class ListingController extends Controller
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
             ->when($request->filled('condition'), fn ($query) => $query->where('condition', $request->condition))
             ->when($request->filled('is_kpr'), function ($query) use ($request) {
-                $query->where('category_id', 1)
+                $query->inCategorySlug(Category::HOUSE_SLUG)
                     ->whereHas('propertyDetail', fn ($property) => $property->where('is_kpr', $request->is_kpr));
             })
             ->when($request->filled('search'), function ($query) use ($request) {
@@ -123,7 +122,7 @@ class ListingController extends Controller
         $detail = '-';
         $jenisRumah = '-';
 
-        if ($listing->category_id == 1 && $listing->propertyDetail) {
+        if ($listing->category?->isHouse() && $listing->propertyDetail) {
             $jenisRumah = $listing->propertyDetail->is_kpr ? 'KPR' : 'Non KPR';
             $detail = collect([
                 'LT '.$listing->propertyDetail->land_area.' m2',
@@ -131,9 +130,9 @@ class ListingController extends Controller
                 $listing->propertyDetail->bedrooms.' KT',
                 $listing->propertyDetail->bathrooms.' KM',
             ])->filter(fn ($value) => !str_contains($value, '  m2') && !str_starts_with($value, ' KT') && !str_starts_with($value, ' KM'))->implode(', ');
-        } elseif ($listing->category_id == 2 && $listing->propertyDetail) {
+        } elseif ($listing->category?->isLand() && $listing->propertyDetail) {
             $detail = 'LT '.$listing->propertyDetail->land_area.' m2, '.$listing->propertyDetail->certificate;
-        } elseif (in_array((int) $listing->category_id, [5, 6, 7, 8], true) && $listing->propertyDetail) {
+        } elseif ($listing->category?->isCommercialProperty() && $listing->propertyDetail) {
             $jenisRumah = $listing->category->name ?? '-';
             $detail = collect([
                 $listing->propertyDetail->house_type,
@@ -142,9 +141,9 @@ class ListingController extends Controller
                 $listing->propertyDetail->floors.' lantai',
                 $listing->propertyDetail->certificate,
             ])->filter(fn ($value) => filled($value) && !str_contains($value, '  m2') && !str_starts_with($value, ' lantai'))->implode(', ');
-        } elseif (in_array((int) $listing->category_id, [3, 9], true) && $listing->carDetail) {
+        } elseif ($listing->category?->isCarLike() && $listing->carDetail) {
             $detail = collect([$listing->carDetail->brand, $listing->carDetail->model, $listing->carDetail->year, ucfirst($listing->carDetail->transmission ?? '')])->filter()->implode(', ');
-        } elseif ($listing->category_id == 4 && $listing->motorcycleDetail) {
+        } elseif ($listing->category?->isMotorcycle() && $listing->motorcycleDetail) {
             $detail = collect([$listing->motorcycleDetail->brand, $listing->motorcycleDetail->model, $listing->motorcycleDetail->year, ucfirst($listing->motorcycleDetail->transmission ?? '')])->filter()->implode(', ');
         }
 
@@ -259,7 +258,7 @@ class ListingController extends Controller
             ->active()
             ->inActiveCategory()
             ->where('is_featured', true)
-            ->whereIn('category_id', self::LISTING_CATEGORY_IDS)
+            ->inCategorySlugs(self::LISTING_CATEGORY_SLUGS)
             ->latest()
             ->take(8)
             ->get();
@@ -512,7 +511,7 @@ class ListingController extends Controller
     {
         $query = Listing::with(['images', 'category', 'user'])
             ->active()
-            ->whereIn('category_id', self::LISTING_CATEGORY_IDS);
+            ->inCategorySlugs(self::LISTING_CATEGORY_SLUGS);
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
@@ -560,17 +559,17 @@ class ListingController extends Controller
 
     public function rumah(Request $request)
     {
-        $this->abortIfCategoryInactive(1);
+        $this->abortIfCategoryInactive(Category::HOUSE_SLUG);
 
         // Base query untuk semua rumah
         $listingsQuery = Listing::with(['images','category','propertyDetail'])
             ->active()
-            ->where('category_id', 1);
+            ->inCategorySlug(Category::HOUSE_SLUG);
 
         // rumah KPR query
         $kprQuery = Listing::with(['images','category','propertyDetail'])
             ->active()
-            ->where('category_id', 1)
+            ->inCategorySlug(Category::HOUSE_SLUG)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', true);
             });
@@ -578,7 +577,7 @@ class ListingController extends Controller
         // rumah NON KPR query
         $nonKprQuery = Listing::with(['images','category','propertyDetail'])
             ->active()
-            ->where('category_id', 1)
+            ->inCategorySlug(Category::HOUSE_SLUG)
             ->whereHas('propertyDetail', function($q){
                 $q->where('is_kpr', false);
             });
@@ -648,16 +647,18 @@ class ListingController extends Controller
         }
 
         // 🔥 kirim semua
-        return view('rumah.index', compact('listings','kpr','nonKpr'));
+        $houseCategory = Category::where('slug', Category::HOUSE_SLUG)->first();
+
+        return view('rumah.index', compact('listings','kpr','nonKpr','houseCategory'));
     }
 
     public function tanah(Request $request)
     {
-        $this->abortIfCategoryInactive(2);
+        $this->abortIfCategoryInactive(Category::LAND_SLUG);
 
         $listings = Listing::with(['images','propertyDetail'])
             ->active()
-            ->where('category_id', 2);
+            ->inCategorySlug(Category::LAND_SLUG);
 
         // Apply filters
         if ($request->min_price) {
@@ -689,11 +690,11 @@ class ListingController extends Controller
 
     public function mobil(Request $request)
     {
-        $this->abortIfCategoryInactive(3);
+        $this->abortIfCategoryInactive(Category::CAR_SLUG);
 
         $listings = Listing::with(['images','car'])
             ->active()
-            ->where('category_id', 3);
+            ->inCategorySlug(Category::CAR_SLUG);
 
         // Apply filters
         if ($request->min_price) {
@@ -750,9 +751,9 @@ class ListingController extends Controller
         if ($categoryId) {
             $listingsQuery->where('category_id', $categoryId);
         } elseif ($productType === 'property') {
-            $listingsQuery->whereIn('category_id', self::PROPERTY_CATEGORY_IDS);
+            $listingsQuery->inCategorySlugs(self::PROPERTY_CATEGORY_SLUGS);
         } elseif (in_array($productType, ['car', 'vehicle'], true)) {
-            $listingsQuery->whereIn('category_id', self::VEHICLE_CATEGORY_IDS);
+            $listingsQuery->inCategorySlugs(self::VEHICLE_CATEGORY_SLUGS);
         }
 
         if ($listingTerms->isNotEmpty()) {
@@ -801,7 +802,9 @@ class ListingController extends Controller
             });
         }
 
-        if ((int) $categoryId === 1) {
+        $selectedCategory = $categoryId ? $categories->firstWhere('id', (int) $categoryId) : null;
+
+        if ($selectedCategory?->isHouse()) {
             if ($request->filled('bedrooms')) {
                 $listingsQuery->whereHas('propertyDetail', function ($property) use ($request) {
                     $property->where('bedrooms', '>=', $request->bedrooms);
@@ -815,7 +818,7 @@ class ListingController extends Controller
             }
         }
 
-        if (in_array((int) $categoryId, [3, 9], true)) {
+        if ($selectedCategory?->isCarLike()) {
             if ($request->filled('brand')) {
                 $listingsQuery->whereHas('carDetail', function ($car) use ($request) {
                     $car->where('brand', 'like', '%'.$request->brand.'%');
@@ -833,7 +836,7 @@ class ListingController extends Controller
                     $car->where('fuel_type', $request->fuel_type);
                 });
             }
-        } elseif ((int) $categoryId === 4) {
+        } elseif ($selectedCategory?->isMotorcycle()) {
             if ($request->filled('brand')) {
                 $listingsQuery->whereHas('motorcycleDetail', function ($motorcycle) use ($request) {
                     $motorcycle->where('brand', 'like', '%'.$request->brand.'%');
@@ -1097,8 +1100,8 @@ class ListingController extends Controller
             ->orWhere('source_name', 'like', '%'.$term.'%');
     }
 
-    private function abortIfCategoryInactive(int $categoryId): void
+    private function abortIfCategoryInactive(string $slug): void
     {
-        abort_unless(Category::whereKey($categoryId)->where('is_active', true)->exists(), 404);
+        abort_unless(Category::where('slug', $slug)->where('is_active', true)->exists(), 404);
     }
 }

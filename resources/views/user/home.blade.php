@@ -29,11 +29,11 @@ $homeHeroSlides = [
 ],
 ];
 $propertySearchCategories = $categories
-    ->whereIn('id', [1, 2, 5, 6, 7, 8])
-    ->sortBy(fn ($category) => array_search((int) $category->id, [1, 2, 5, 6, 7, 8], true));
+    ->whereIn('slug', \App\Models\Category::PROPERTY_SLUGS)
+    ->sortBy(fn ($category) => array_search($category->slug, \App\Models\Category::PROPERTY_SLUGS, true));
 $vehicleSearchCategories = $categories
-    ->whereIn('id', [3, 4, 9])
-    ->sortBy(fn ($category) => array_search((int) $category->id, [3, 4, 9], true));
+    ->whereIn('slug', [\App\Models\Category::CAR_SLUG, \App\Models\Category::MOTORCYCLE_SLUG, \App\Models\Category::TRUCK_SLUG])
+    ->sortBy(fn ($category) => array_search($category->slug, [\App\Models\Category::CAR_SLUG, \App\Models\Category::MOTORCYCLE_SLUG, \App\Models\Category::TRUCK_SLUG], true));
 @endphp
 
 <x-hero-carousel :slides="$homeHeroSlides" height="min-h-screen" inner-height="min-h-[calc(100vh-6rem)]"
@@ -101,28 +101,28 @@ $vehicleSearchCategories = $categories
                                 <button type="button" data-property-option="{{ $category->id }}" onclick="selectPropertyCategory('{{ $category->id }}', '{{ $category->name }}')"
                                     class="property-option flex min-h-20 flex-col justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm font-semibold text-gray-700 transition hover:border-blue-500 hover:text-blue-700">
                                     <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-                                        @if($category->id == 1)
+                                        @if($category->slug === \App\Models\Category::HOUSE_SLUG)
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M3 11 12 4l9 7" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M9 20v-6h6v6" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
-                                        @elseif($category->id == 2)
+                                        @elseif($category->slug === \App\Models\Category::LAND_SLUG)
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M4 6h16M4 18h16M7 6v12M17 6v12" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="m7 12 5-3 5 3-5 3-5-3Z" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
-                                        @elseif($category->id == 5)
+                                        @elseif($category->slug === 'ruko')
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M4 20h16V8L12 4 4 8v12Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M8 12h2M14 12h2M8 16h2M14 16h2" stroke-linecap="round" />
                                             </svg>
-                                        @elseif($category->id == 6)
+                                        @elseif($category->slug === 'perkantoran')
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M5 20V4h14v16" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M9 8h2M13 8h2M9 12h2M13 12h2M9 16h2M13 16h2" stroke-linecap="round" />
                                             </svg>
-                                        @elseif($category->id == 7)
+                                        @elseif($category->slug === 'gudang')
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M3 20h18V9l-9-5-9 5v11Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M7 20v-7h10v7M7 13h10" stroke-linecap="round" stroke-linejoin="round" />
@@ -173,13 +173,13 @@ $vehicleSearchCategories = $categories
                                 <button type="button" data-vehicle-option="{{ $category->id }}" onclick="selectVehicleCategory('{{ $category->id }}', @js($category->name))"
                                     class="vehicle-option flex min-h-20 flex-col justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm font-semibold text-gray-700 transition hover:border-blue-500 hover:text-blue-700">
                                     <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-                                        @if($category->id == 3)
+                                        @if($category->slug === \App\Models\Category::CAR_SLUG)
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M4 13h2l2-4h8l2 4h2" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M5 13v5h14v-5" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M7 18h.01M17 18h.01" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
-                                        @elseif($category->id == 4)
+                                        @elseif($category->slug === \App\Models\Category::MOTORCYCLE_SLUG)
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M5 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0ZM16 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M11 17h5l-2-6h-3l-3 3M13 8h3" stroke-linecap="round" stroke-linejoin="round" />
@@ -420,10 +420,16 @@ $vehicleSearchCategories = $categories
             <div>
                 <h2 class="text-3xl font-bold text-gray-800">Produk Rekomendasi</h2>
             </div>
+            
+            <div>
+                <a href="{{ route('search') }}" class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-md transition hover:bg-blue-700">
+                    Lihat Semua
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+            </div>
 
-            <a href="{{ route('search') }}" class="text-blue-600 font-semibold hover:underline">
-                Lihat Semua
-            </a>
         </div>
 
         <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4">
@@ -625,58 +631,52 @@ $vehicleSearchCategories = $categories
 
     @endforeach
 
-    <section data-aos="fade-up" class="mt-24 mb-24 grid gap-8 lg:grid-cols-2">
+    <section data-aos="fade-up" class="mt-20 mb-20 grid gap-6 md:mt-24 md:mb-24 md:gap-8 lg:grid-cols-2">
         <a href="{{ route('ads.guide') }}"
-            class="group relative block min-h-[300px] overflow-hidden rounded-xl bg-gray-900 text-left shadow transition hover:shadow-xl">
-            <img src="{{ asset('images/thumbnail_properti.png') }}" alt="Daftar sebagai agen"
-                class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105">
+            class="group relative block aspect-[3/1] overflow-hidden rounded-xl bg-slate-900 text-left shadow transition hover:shadow-xl">
+            <img src="{{ asset('images/222.png') }}" alt="Daftar sebagai agen"
+                class="absolute inset-0 h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]">
 
-            <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+            <div class="absolute inset-y-0 left-0 w-[78%] bg-gradient-to-r from-white via-white/92 to-white/0 sm:w-[70%]"></div>
 
-            <div class="relative flex min-h-[300px] items-center py-10">
-                <div class="max-w-xl px-6 text-white md:px-10">
-                    <p class="mb-3 inline-flex rounded-full border border-white/40 px-4 py-1 text-xs font-semibold uppercase">
-                        Peluang Mitra Arsantara
-                    </p>
+            <div class="relative flex h-full items-center px-6">
+                <div class="max-w-[17rem] text-slate-950 sm:max-w-sm lg:max-w-[18rem] xl:max-w-sm">
 
-                    <h2 class="text-3xl font-extrabold leading-tight md:text-4xl">
-                        Daftar Sebagai Agen
+                    <h2 class="text-2xl font-extrabold leading-tight sm:text-3xl xl:text-4xl">
+                        Jadi Mitra Agen Arsantara
                     </h2>
 
-                    <p class="mt-3 max-w-md text-sm text-white/85 md:text-base">
-                        Jangkau lebih banyak calon pembeli dan pasarkan listing terbaik Anda bersama Arsantara.
+                    <p class="mt-3 max-w-[16rem] text-sm font-medium leading-6 text-slate-700 sm:max-w-xs xl:text-base">
+                        Perluas jaringan, pasarkan listing berkualitas, dan dapatkan dukungan tim dalam satu ekosistem.
                     </p>
 
-                    <span class="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700">
-                        Mulai Bergabung Sekarang
+                    <span class="mt-6 inline-flex max-w-full items-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700 sm:px-5">
+                        Mulai Bergabung
                     </span>
                 </div>
             </div>
         </a>
 
         <a href="{{ route('careers.index') }}"
-            class="group relative block min-h-[300px] overflow-hidden rounded-xl bg-gray-900 text-left shadow transition hover:shadow-xl">
-            <img src="{{ asset('images/thumbnail_properti.png') }}" alt="Lowongan pekerjaan"
-                class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105">
+            class="group relative block min-h-[340px] overflow-hidden rounded-xl bg-slate-900 text-left shadow transition hover:shadow-xl sm:min-h-[360px] lg:min-h-[340px] xl:min-h-[380px]">
+            <img src="{{ asset('images/111.png') }}" alt="Lowongan pekerjaan"
+                class="absolute inset-0 h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]">
 
-            <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+            <div class="absolute inset-y-0 left-0 w-[80%] bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/0 sm:w-[72%]"></div>
 
-            <div class="relative flex min-h-[300px] items-center py-10">
-                <div class="max-w-xl px-6 text-white md:px-10">
-                    <p class="mb-3 inline-flex rounded-full border border-white/40 px-4 py-1 text-xs font-semibold uppercase">
-                        Peluang Karir
-                    </p>
+            <div class="relative flex min-h-[340px] items-center px-5 py-10 sm:min-h-[360px] sm:px-8 lg:min-h-[340px] lg:px-7 xl:min-h-[380px] xl:px-10">
+                <div class="max-w-[17rem] text-white sm:max-w-sm lg:max-w-[18rem] xl:max-w-sm">
 
-                    <h2 class="text-3xl font-extrabold leading-tight md:text-4xl">
-                        Temukan Lowongan Pekerjaan
+                    <h2 class="text-2xl font-extrabold leading-tight sm:text-3xl xl:text-4xl">
+                        Bertumbuh Bersama Arsantara
                     </h2>
 
-                    <p class="mt-3 max-w-md text-sm text-white/85 md:text-base">
-                        Jelajahi posisi terbaru dan bergabung bersama tim yang terus bertumbuh.
+                    <p class="mt-3 max-w-[16rem] text-sm font-medium leading-6 text-white/85 sm:max-w-xs xl:text-base">
+                        Jelajahi peluang karier untuk berkembang, berkontribusi, dan membangun dampak bersama tim.
                     </p>
 
-                    <span class="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700">
-                        Lihat Lowongan Tersedia
+                    <span class="mt-6 inline-flex max-w-full items-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700 sm:px-5">
+                        Lihat Lowongan
                     </span>
                 </div>
             </div>
