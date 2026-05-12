@@ -34,7 +34,7 @@
 
 <div class="relative z-20 -mt-14 px-6">
     <form method="GET" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-6">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-6">
             <x-price-filter-input name="min_price" :value="request('min_price')" placeholder="Harga Min" />
             <x-price-filter-input name="max_price" :value="request('max_price')" placeholder="Harga Max" />
             <input type="text" name="location" value="{{ request('location') }}" placeholder="Lokasi"
@@ -68,7 +68,7 @@
                     Tampilkan Semua
                 </a>
             </div>
-            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:pb-0 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
                 @forelse($kpr as $listing)
                     <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
                         <x-card-listing :listing="$listing" />
@@ -87,7 +87,7 @@
                     Tampilkan Semua
                 </a>
             </div>
-            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:grid-cols-4 lg:gap-6">
+            <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:pb-0 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
                 @forelse($nonKpr as $listing)
                     <div class="w-[74vw] max-w-[280px] shrink-0 snap-start sm:w-auto sm:max-w-none">
                         <x-card-listing :listing="$listing" />

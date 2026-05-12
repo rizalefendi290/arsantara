@@ -28,7 +28,7 @@
 
 <div class="relative z-20 -mt-14 px-6">
     <form method="GET" action="{{ route('search') }}" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
             <input type="text" name="keyword" value="{{ $keyword }}"
                 class="md:col-span-2 rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500"
                 placeholder="Cari judul, kode produk, lokasi, merk, kategori, atau berita">
@@ -68,7 +68,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
                 @forelse($listings as $listing)
                     <x-card-listing :listing="$listing" />
                 @empty

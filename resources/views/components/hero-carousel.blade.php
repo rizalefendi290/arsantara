@@ -5,6 +5,7 @@
     'contentWidth' => 'max-w-2xl',
     'overlay' => 'bg-gradient-to-r from-slate-950 via-slate-950/75 to-slate-950/10',
     'sectionClass' => '',
+    'contentClass' => '',
     'pageKey' => null,
 ])
 
@@ -67,8 +68,8 @@
         <div class="absolute inset-0 {{ $overlay }}"></div>
     </div>
 
-    <div class="relative z-10 mx-auto grid {{ $innerHeight }} max-w-7xl grid-cols-1 items-center gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:py-16">
-        <div class="{{ $contentWidth }} w-full min-w-0 max-w-full">
+    <div class="relative z-10 mx-auto grid {{ $innerHeight }} max-w-7xl grid-cols-1 items-center justify-items-start gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:py-16">
+        <div class="{{ $contentWidth }} {{ $contentClass }} ml-0 mr-auto w-full min-w-0 max-w-[calc(100vw-2rem)] justify-self-start sm:max-w-[calc(100vw-3rem)] lg:max-w-3xl">
             @if($heroSlides->count() > 1)
                 <div class="mb-6 flex gap-3">
                     @foreach($heroSlides as $index => $slide)
@@ -85,12 +86,12 @@
                 {{ $firstSlide['label'] }}
             </p>
 
-            <h1 class="hero-carousel-title max-w-full break-words text-2xl font-extrabold leading-tight sm:text-4xl md:text-5xl lg:text-6xl"
+            <h1 class="hero-carousel-title max-w-[42rem] whitespace-normal break-words text-left text-2xl font-extrabold leading-tight [overflow-wrap:anywhere] sm:text-4xl md:text-3xl lg:text-6xl"
                 style="color: {{ $firstSlide['title_color'] }};">
                 {{ $firstSlide['title'] }}
             </h1>
 
-            <p class="hero-carousel-text mt-4 max-w-full break-words text-sm leading-7 text-slate-200 sm:max-w-xl sm:text-base md:text-lg md:leading-8"
+            <p class="hero-carousel-text mt-4 max-w-full whitespace-normal break-words text-left text-sm leading-7 text-slate-200 [overflow-wrap:anywhere] sm:max-w-xl sm:text-base md:text-lg md:leading-8"
                 style="color: {{ $firstSlide['text_color'] }};">
                 {{ $firstSlide['text'] }}
             </p>

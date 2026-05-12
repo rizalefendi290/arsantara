@@ -34,7 +34,7 @@
 
 <div class="relative z-20 -mt-14 px-6">
     <form method="GET" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-6">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-6">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari mobil..."
                 class="md:col-span-2 rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
             <input type="text" name="brand" value="{{ request('brand') }}" placeholder="Merk"
@@ -66,7 +66,7 @@
             <h2 class="text-3xl font-bold text-gray-800">Mobil Tersedia</h2>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
             @forelse($listings as $listing)
                 <x-card-listing :listing="$listing" />
             @empty

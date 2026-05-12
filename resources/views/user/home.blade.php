@@ -37,7 +37,7 @@ $vehicleSearchCategories = $categories
 @endphp
 
 <x-hero-carousel :slides="$homeHeroSlides" height="min-h-screen" inner-height="min-h-[calc(100vh-6rem)]"
-    content-width="max-w-2xl" />
+    content-width="max-w-2xl" content-class="md:-translate-x-[17rem] lg:translate-x-0" />
 
 <!-- SEARCH BOX FLOAT -->
 <div class="relative -mt-20 z-20 px-6 flex justify-center">
@@ -61,7 +61,7 @@ $vehicleSearchCategories = $categories
         </div>
 
         <!-- INPUT -->
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
             <input type="text" name="keyword" placeholder="Cari properti atau kendaraan..."
                 class="md:col-span-2 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
@@ -145,7 +145,7 @@ $vehicleSearchCategories = $categories
                     class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
 
-            <div data-filter-panel="vehicle" class="category-filter hidden grid grid-cols-1 gap-3 md:grid-cols-5">
+            <div data-filter-panel="vehicle" class="category-filter hidden grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
                 <div class="relative md:col-span-2">
                     <button type="button" data-vehicle-dropdown-toggle disabled
                         class="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-gray-700 outline-none transition hover:border-blue-300 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50">
@@ -493,69 +493,6 @@ $vehicleSearchCategories = $categories
     </section>
     @endif
 
-    @if($careerVacancies->count())
-    <section data-aos="fade-up" class="mb-14">
-        <div class="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-                <p class="text-sm font-bold uppercase tracking-wide text-blue-600">Karir Arsantara</p>
-                <h2 class="mt-1 text-3xl font-black italic text-gray-950">Recent Vacancy</h2>
-            </div>
-
-            <a href="{{ route('careers.index') }}"
-                class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-md transition hover:bg-blue-700">
-                Lihat Semua Lowongan
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </a>
-        </div>
-
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            @foreach($careerVacancies as $vacancy)
-                <article class="flex min-h-[320px] flex-col rounded-2xl border-2 border-gray-200 bg-white p-6 shadow-sm transition hover:border-blue-200 hover:shadow-lg">
-                    <h3 class="text-xl font-extrabold leading-snug text-gray-950">
-                        {{ $vacancy->title }}
-                    </h3>
-
-                    <div class="mt-6 space-y-4 text-gray-700">
-                        <div class="flex items-center gap-3">
-                            <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1M4 8h16v11H4z" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                            <span>{{ $vacancy->employment_type ?: 'Staff' }}</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path d="M8 3v3M16 3v3M4 9h16M5 5h14v16H5z" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                            <span>{{ $vacancy->deadline ? $vacancy->deadline->translatedFormat('l, d M Y') : 'Dibuka sampai terpenuhi' }}</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
-                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2.8a7 7 0 0 0-7 7c0 5.2 7 11.4 7 11.4s7-6.2 7-11.4a7 7 0 0 0-7-7Zm0 9.8a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6Z" />
-                                </svg>
-                            </span>
-                            <span>{{ $vacancy->location ?: 'Fleksibel' }}</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-auto flex justify-end pt-8">
-                        <a href="{{ route('careers.show', $vacancy->id) }}"
-                            class="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">
-                            Details
-                        </a>
-                    </div>
-                </article>
-            @endforeach
-        </div>
-    </section>
-    @endif
-
     <!-- MARKETPLACE -->
     <h1 data-aos="fade-up" class="text-3xl font-bold mb-8 text-gray-800">
         Marketplace
@@ -688,38 +625,63 @@ $vehicleSearchCategories = $categories
 
     @endforeach
 
-    <section data-aos="fade-up" class="mt-12 mb-16">
+    <section data-aos="fade-up" class="mt-24 mb-24 grid gap-8 lg:grid-cols-2">
         <a href="{{ route('ads.guide') }}"
-            class="group relative block w-full overflow-hidden rounded-xl bg-gray-900 text-left shadow hover:shadow-xl transition">
+            class="group relative block min-h-[300px] overflow-hidden rounded-xl bg-gray-900 text-left shadow transition hover:shadow-xl">
             <img src="{{ asset('images/thumbnail_properti.png') }}" alt="Daftar sebagai agen"
-                class="h-60 md:h-72 w-full object-cover transition duration-700 group-hover:scale-105">
+                class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105">
 
             <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
 
-            <div class="absolute inset-0 flex items-center">
-                <div class="max-w-xl px-6 md:px-10 text-white">
-                    <p
-                        class="mb-3 inline-flex rounded-full border border-white/40 px-4 py-1 text-xs font-semibold uppercase">
+            <div class="relative flex min-h-[300px] items-center py-10">
+                <div class="max-w-xl px-6 text-white md:px-10">
+                    <p class="mb-3 inline-flex rounded-full border border-white/40 px-4 py-1 text-xs font-semibold uppercase">
                         Peluang Mitra Arsantara
                     </p>
 
-                    <h2 class="text-3xl md:text-5xl font-extrabold leading-tight">
+                    <h2 class="text-3xl font-extrabold leading-tight md:text-4xl">
                         Daftar Sebagai Agen
                     </h2>
 
-                    <p class="mt-3 max-w-md text-sm md:text-base text-white/85">
+                    <p class="mt-3 max-w-md text-sm text-white/85 md:text-base">
                         Jangkau lebih banyak calon pembeli dan pasarkan listing terbaik Anda bersama Arsantara.
                     </p>
 
-                    <span
-                        class="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700">
+                    <span class="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700">
                         Mulai Bergabung Sekarang
                     </span>
                 </div>
             </div>
         </a>
-    </section>
 
+        <a href="{{ route('careers.index') }}"
+            class="group relative block min-h-[300px] overflow-hidden rounded-xl bg-gray-900 text-left shadow transition hover:shadow-xl">
+            <img src="{{ asset('images/thumbnail_properti.png') }}" alt="Lowongan pekerjaan"
+                class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105">
+
+            <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+
+            <div class="relative flex min-h-[300px] items-center py-10">
+                <div class="max-w-xl px-6 text-white md:px-10">
+                    <p class="mb-3 inline-flex rounded-full border border-white/40 px-4 py-1 text-xs font-semibold uppercase">
+                        Peluang Karir
+                    </p>
+
+                    <h2 class="text-3xl font-extrabold leading-tight md:text-4xl">
+                        Temukan Lowongan Pekerjaan
+                    </h2>
+
+                    <p class="mt-3 max-w-md text-sm text-white/85 md:text-base">
+                        Jelajahi posisi terbaru dan bergabung bersama tim yang terus bertumbuh.
+                    </p>
+
+                    <span class="mt-6 inline-flex items-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700">
+                        Lihat Lowongan Tersedia
+                    </span>
+                </div>
+            </div>
+        </a>
+    </section>
     <section>
         <div class="mt-16" data-aos="fade-up">
             <h2 class="text-2xl font-bold mb-6">Berita Terbaru</h2>
@@ -846,6 +808,7 @@ $vehicleSearchCategories = $categories
 
         </div>
     </section>
+
 </div>
 
 @endsection

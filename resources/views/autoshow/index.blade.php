@@ -34,7 +34,7 @@
 
 <div class="relative z-20 -mt-16 px-6">
     <form id="filterForm" class="mx-auto max-w-6xl rounded-2xl border border-white/40 bg-white p-5 shadow-2xl">
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-6">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-6">
             <input type="text" name="keyword" value="{{ request('keyword') }}"
                 placeholder="Cari mobil, motor, merk..."
                 class="md:col-span-2 rounded-xl border-gray-200 px-4 py-3 focus:border-blue-500 focus:ring-blue-500">
