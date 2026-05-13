@@ -17,6 +17,7 @@ use App\Models\Testimonial;
 use App\Models\ListingView;
 use App\Models\JobVacancy;
 use App\Services\ImageWatermarkService;
+use Illuminate\Validation\Rule;
 
 class ListingController extends Controller
 {
@@ -278,34 +279,41 @@ class ListingController extends Controller
 
     public function store(Request $request, ImageWatermarkService $watermarkService)
     {
+        $category = Category::active()->find($request->input('category_id'));
+
         $request->validate([
             'title' => 'required',
-            'category_id' => 'required|in:1,2,3,4,5,6,7,8,9',
+            'category_id' => [
+                'required',
+                'integer',
+                Rule::exists('categories', 'id')->where(fn ($query) => $query->where('is_active', true)),
+            ],
             'price' => 'required|numeric',
             'discount_price' => 'nullable|numeric|min:0|lt:price',
             'location' => 'required',
             'condition' => 'required|in:baru,bekas',
             'description' => 'nullable|string',
-            'house_type' => 'required_if:category_id,1|nullable|string|max:255',
-            'land_area' => 'required_if:category_id,1,2,5,6,7,8|nullable|numeric',
-            'building_area' => 'required_if:category_id,1|nullable|numeric',
-            'bedrooms' => 'required_if:category_id,1|nullable|integer',
-            'bathrooms' => 'required_if:category_id,1|nullable|integer',
-            'floors' => 'required_if:category_id,1|nullable|integer',
-            'certificate' => 'required_if:category_id,1,2,5,6,7,8|nullable|string|max:255',
-            'is_kpr' => 'required_if:category_id,1|nullable|boolean',
+            'house_type' => [Rule::requiredIf(fn () => $category?->isHouse()), 'nullable', 'string', 'max:255'],
+            'land_area' => [Rule::requiredIf(fn () => $category?->isProperty()), 'nullable', 'numeric'],
+            'building_area' => [Rule::requiredIf(fn () => $category?->isHouse()), 'nullable', 'numeric'],
+            'bedrooms' => [Rule::requiredIf(fn () => $category?->isHouse()), 'nullable', 'integer'],
+            'bathrooms' => [Rule::requiredIf(fn () => $category?->isHouse()), 'nullable', 'integer'],
+            'floors' => [Rule::requiredIf(fn () => $category?->isHouse()), 'nullable', 'integer'],
+            'certificate' => [Rule::requiredIf(fn () => $category?->isProperty()), 'nullable', 'string', 'max:255'],
+            'is_kpr' => [Rule::requiredIf(fn () => $category?->isHouse()), 'nullable', 'boolean'],
             'facilities' => 'nullable|string',
-            'brand' => 'required_if:category_id,3,4,9|nullable|string|max:100',
-            'model' => 'required_if:category_id,3,4,9|nullable|string|max:100',
-            'year' => 'required_if:category_id,3,4,9|nullable|integer|between:1901,2155',
-            'engine' => 'required_if:category_id,3,4,9|nullable|integer',
-            'transmission' => 'required_if:category_id,3,4,9|nullable|in:manual,matic',
+            'brand' => [Rule::requiredIf(fn () => $category?->isVehicle()), 'nullable', 'string', 'max:100'],
+            'model' => [Rule::requiredIf(fn () => $category?->isVehicle()), 'nullable', 'string', 'max:100'],
+            'year' => [Rule::requiredIf(fn () => $category?->isVehicle()), 'nullable', 'integer', 'between:1901,2155'],
+            'engine' => [Rule::requiredIf(fn () => $category?->isVehicle()), 'nullable', 'integer'],
+            'transmission' => [Rule::requiredIf(fn () => $category?->isVehicle()), 'nullable', 'in:manual,matic'],
             'fuel_type' => 'nullable|in:bensin,diesel,listrik,hybrid',
             'color' => 'nullable|string|max:100',
             'kilometer' => 'nullable|integer',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
-        abort_unless(Category::whereKey($request->category_id)->where('is_active', true)->exists(), 422);
+
+        $category = Category::active()->findOrFail($request->category_id);
 
         // SIMPAN LISTING UTAMA
         $listing = Listing::create([
@@ -322,7 +330,7 @@ class ListingController extends Controller
         $listing->assignProductCode();
 
         // ================= RUMAH =================
-        if ($request->category_id == 1) {
+        if ($category->isHouse()) {
             PropertyDetail::create([
                 'listing_id' => $listing->id,
                 'house_type' => $request->house_type,
@@ -338,7 +346,7 @@ class ListingController extends Controller
         }
 
         // ================= TANAH =================
-        if ($request->category_id == 2) {
+        if ($category->isLand()) {
             PropertyDetail::create([
                 'listing_id' => $listing->id,
                 'land_area' => $request->land_area,
@@ -346,7 +354,7 @@ class ListingController extends Controller
             ]);
         }
 
-        if (in_array((int) $request->category_id, [5, 6, 7, 8], true)) {
+        if ($category->isCommercialProperty()) {
             PropertyDetail::create([
                 'listing_id' => $listing->id,
                 'house_type' => $request->house_type,
@@ -361,7 +369,7 @@ class ListingController extends Controller
         }
 
         // ================= MOBIL =================
-        if (in_array((int) $request->category_id, [3, 9], true)) {
+        if ($category->isCarLike()) {
             CarDetail::create([
                 'listing_id' => $listing->id,
                 'brand' => $request->brand,
@@ -376,7 +384,7 @@ class ListingController extends Controller
         }
 
         // ================= MOTOR =================
-        if ($request->category_id == 4) {
+        if ($category->isMotorcycle()) {
             MotorcycleDetail::create([
                 'listing_id' => $listing->id,
                 'brand' => $request->brand,

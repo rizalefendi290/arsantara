@@ -57,18 +57,7 @@ class Listing extends Model
 
     public function productCodePrefix(): string
     {
-        return match ((int) $this->category_id) {
-            1 => 'RMH',
-            2 => 'TNH',
-            3 => 'MBL',
-            4 => 'MTR',
-            5 => 'RKO',
-            6 => 'PKT',
-            7 => 'GDG',
-            8 => 'KOS',
-            9 => 'TRK',
-            default => 'PRD',
-        };
+        return $this->category?->productCodePrefix() ?? 'PRD';
     }
 
     public function buildProductCode(): string

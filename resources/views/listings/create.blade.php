@@ -2,7 +2,13 @@
 
 @section('admin_content')
 @php
-    $commercialCategoryIds = [5, 6, 7, 8];
+    $selectedCategory = (string) old('category_id', '');
+    $categoryId = fn (string $slug) => optional($categories->firstWhere('slug', $slug))->id;
+    $houseCategoryId = $categoryId(\App\Models\Category::HOUSE_SLUG);
+    $landCategoryId = $categoryId(\App\Models\Category::LAND_SLUG);
+    $motorcycleCategoryId = $categoryId(\App\Models\Category::MOTORCYCLE_SLUG);
+    $commercialCategoryIds = $categories->whereIn('slug', \App\Models\Category::COMMERCIAL_PROPERTY_SLUGS)->pluck('id')->map(fn ($id) => (string) $id)->all();
+    $carLikeCategoryIds = $categories->whereIn('slug', \App\Models\Category::CAR_LIKE_SLUGS)->pluck('id')->map(fn ($id) => (string) $id)->all();
 @endphp
 <div>
 
@@ -67,7 +73,7 @@
 </div>
 
 {{-- ================= RUMAH ================= --}}
-<div id="rumah-fields" class="mt-6 category-section {{ old('category_id') == 1 ? '' : 'hidden' }}" data-category="1">
+<div id="rumah-fields" class="mt-6 category-section {{ $houseCategoryId && $selectedCategory === (string) $houseCategoryId ? '' : 'hidden' }}" data-category="{{ $houseCategoryId }}">
 <h3 class="font-bold mb-3">Detail Rumah</h3>
 
 <div class="grid grid-cols-3 gap-4">
@@ -95,7 +101,7 @@
 </div>
 
 {{-- ================= TANAH ================= --}}
-<div id="tanah-fields" class="mt-6 category-section {{ old('category_id') == 2 ? '' : 'hidden' }}" data-category="2">
+<div id="tanah-fields" class="mt-6 category-section {{ $landCategoryId && $selectedCategory === (string) $landCategoryId ? '' : 'hidden' }}" data-category="{{ $landCategoryId }}">
 <h3 class="font-bold mb-3">Detail Tanah</h3>
 
 <div class="grid grid-cols-3 gap-4">
@@ -105,7 +111,7 @@
 </div>
 
 {{-- ================= PROPERTI KOMERSIAL ================= --}}
-<div id="komersial-fields" class="mt-6 category-section {{ in_array((int) old('category_id'), $commercialCategoryIds, true) ? '' : 'hidden' }}" data-categories="5,6,7,8">
+<div id="komersial-fields" class="mt-6 category-section {{ in_array($selectedCategory, $commercialCategoryIds, true) ? '' : 'hidden' }}" data-categories="{{ implode(',', $commercialCategoryIds) }}">
 <h3 class="font-bold mb-3">Detail Properti Komersial</h3>
 
 <div class="grid grid-cols-3 gap-4">
@@ -124,7 +130,7 @@
 </div>
 
 {{-- ================= MOBIL ================= --}}
-<div id="mobil-fields" class="mt-6 category-section {{ in_array((int) old('category_id'), [3, 9], true) ? '' : 'hidden' }}" data-categories="3,9">
+<div id="mobil-fields" class="mt-6 category-section {{ in_array($selectedCategory, $carLikeCategoryIds, true) ? '' : 'hidden' }}" data-categories="{{ implode(',', $carLikeCategoryIds) }}">
     <h3 class="font-bold mb-3">Detail Kendaraan</h3>
 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -183,7 +189,7 @@
 </div>
 
 {{-- ================= MOTOR ================= --}}
-<div id="motor-fields" class="mt-6 category-section {{ old('category_id') == 4 ? '' : 'hidden' }}" data-category="4">
+<div id="motor-fields" class="mt-6 category-section {{ $motorcycleCategoryId && $selectedCategory === (string) $motorcycleCategoryId ? '' : 'hidden' }}" data-category="{{ $motorcycleCategoryId }}">
 <h3 class="font-bold mb-3">Detail Motor</h3>
 
 <div class="grid grid-cols-3 gap-4">
@@ -257,7 +263,7 @@ function toggleCategoryFields(value) {
         let el = document.getElementById(section + '-fields');
         if (!el) return;
 
-        let categories = (el.dataset.categories || el.dataset.category || '').split(',');
+        let categories = (el.dataset.categories || el.dataset.category || '').split(',').filter(Boolean);
         let active = categories.includes(String(value));
         el.classList.toggle('hidden', !active);
 
