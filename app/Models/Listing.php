@@ -13,18 +13,52 @@ class Listing extends Model
         'description',
         'price',
         'discount_price',
+        'seller_price',
+        'offer_price',
+        'sold_price',
+        'minimum_dp',
+        'minimum_nego_price',
+        'showroom_dp_in',
+        'installment',
+        'tenor',
+        'commission',
         'location',
+        'contact_name',
+        'contact_phone',
+        'ownership_name',
+        'document_status',
+        'annual_tax_status',
+        'five_year_tax_status',
+        'ownership_status',
+        'plate_number',
         'condition',
         'status',
         'is_featured',
         'product_code',
+        'notes',
+        'progress_status',
     ];
 
     protected $casts = [
         'is_featured' => 'boolean',
         'price' => 'integer',
         'discount_price' => 'integer',
+        'seller_price' => 'integer',
+        'offer_price' => 'integer',
+        'sold_price' => 'integer',
+        'minimum_dp' => 'integer',
+        'minimum_nego_price' => 'integer',
+        'showroom_dp_in' => 'integer',
+        'installment' => 'integer',
+        'commission' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Listing $listing) {
+            $listing->images()->get()->each->delete();
+        });
+    }
 
     public function scopeActive($query)
     {

@@ -64,6 +64,36 @@
                 <option value="1" {{ request('is_kpr') === '1' ? 'selected' : '' }}>Rumah KPR</option>
                 <option value="0" {{ request('is_kpr') === '0' ? 'selected' : '' }}>Rumah Non KPR</option>
             </select>
+
+            <select name="owner_role" class="rounded border-gray-300">
+                <option value="">Semua sumber katalog</option>
+                @foreach($ownerRoles as $value => $label)
+                    <option value="{{ $value }}" {{ request('owner_role') === $value ? 'selected' : '' }}>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            </select>
+
+            <select name="owner_id" class="rounded border-gray-300 md:col-span-2">
+                <option value="">Semua agen / pemilik</option>
+                @foreach($owners as $owner)
+                    <option value="{{ $owner->id }}" data-owner-role="{{ $owner->role }}" {{ (string) request('owner_id') === (string) $owner->id ? 'selected' : '' }}>
+                        {{ ['agen' => 'Agen', 'pemilik' => 'Pemilik Produk'][$owner->role] ?? ucfirst($owner->role) }} - {{ $owner->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <label class="flex flex-col gap-1 text-xs font-semibold text-gray-500">
+                Dari Bulan Masuk
+                <input type="month" name="month_start" value="{{ request('month_start') }}"
+                    class="rounded border-gray-300 text-sm font-normal text-gray-900">
+            </label>
+
+            <label class="flex flex-col gap-1 text-xs font-semibold text-gray-500">
+                Sampai Bulan Masuk
+                <input type="month" name="month_end" value="{{ request('month_end') }}"
+                    class="rounded border-gray-300 text-sm font-normal text-gray-900">
+            </label>
         </div>
 
         <div class="mt-3 flex flex-wrap gap-2">
@@ -81,13 +111,36 @@
             <table class="w-full text-sm">
                 <thead class="bg-gray-100 text-gray-600">
                     <tr>
-                        <th class="p-3 text-left">Gambar</th>
+                        <th class="p-3 text-left">No.</th>
                         <th class="p-3 text-left">Kode</th>
-                        <th class="p-3 text-left">Judul</th>
-                        <th class="p-3 text-left">Pemilik</th>
+                        <th class="p-3 text-left">Tanggal Masuk</th>
+                        <th class="p-3 text-left">Sumber</th>
                         <th class="p-3 text-left">Kategori</th>
-                        <th class="p-3">Harga</th>
-                        <th class="p-3">Status</th>
+                        <th class="p-3 text-left">Nama Unit</th>
+                        <th class="p-3 text-left">Tipe / Tahun</th>
+                        <th class="p-3 text-left">Atas Nama Dihubungi</th>
+                        <th class="p-3 text-left">Nomor Dihubungi</th>
+                        <th class="p-3 text-left">Atas Nama Kepemilikan</th>
+                        <th class="p-3 text-left">Kelengkapan Surat</th>
+                        <th class="p-3 text-left">Pajak Tahunan</th>
+                        <th class="p-3 text-left">Pajak 5 Tahunan</th>
+                        <th class="p-3 text-left">Status Kepemilikan</th>
+                        <th class="p-3 text-left">TNKB</th>
+                        <th class="p-3 text-left">Luas Tanah</th>
+                        <th class="p-3 text-left">Luas Bangunan</th>
+                        <th class="p-3 text-left">KT / KM / Lantai</th>
+                        <th class="p-3 text-left">Fasilitas</th>
+                        <th class="p-3 text-left">Lokasi</th>
+                        <th class="p-3 text-left">Harga</th>
+                        <th class="p-3 text-left">Minimal DP</th>
+                        <th class="p-3 text-left">Minimal Nego</th>
+                        <th class="p-3 text-left">DP Masuk</th>
+                        <th class="p-3 text-left">Angsuran</th>
+                        <th class="p-3 text-left">Tenor</th>
+                        <th class="p-3 text-left">Komisi</th>
+                        <th class="p-3 text-left">Keterangan</th>
+                        <th class="p-3 text-left">Progress Status</th>
+                        <th class="p-3 text-left">Status</th>
                         <th class="p-3">Beranda</th>
                         <th class="p-3 text-center">Aksi</th>
                     </tr>
@@ -95,24 +148,60 @@
 
                 <tbody>
                     @forelse($listings as $listing)
+                        @php
+                            $vehicle = $listing->carDetail ?: $listing->motorcycleDetail;
+                            $property = $listing->propertyDetail;
+                            $typeParts = collect([$vehicle?->brand, $vehicle?->model, $property?->house_type])->filter()->implode(' ');
+                            $typeYear = collect([$typeParts, $vehicle?->year])->filter()->implode(' / ');
+                            $roomSummary = collect([
+                                filled($property?->bedrooms) ? $property->bedrooms.' KT' : null,
+                                filled($property?->bathrooms) ? $property->bathrooms.' KM' : null,
+                                filled($property?->floors) ? $property->floors.' Lt' : null,
+                            ])->filter()->implode(' / ');
+                            $money = fn ($value) => filled($value) ? 'Rp '.number_format((int) $value, 0, ',', '.') : '-';
+                        @endphp
                         <tr class="border-t hover:bg-gray-50">
                             <td class="p-3">
-                                <img src="{{ $listing->images->count() ? asset('storage/'.$listing->images->first()->image) : 'https://via.placeholder.com/80' }}"
-                                    class="w-16 h-12 object-cover rounded" alt="{{ $listing->title }}">
+                                {{ $listings->firstItem() + $loop->index }}
                             </td>
-                            <td class="p-3">
+                            <td class="p-3 whitespace-nowrap">
                                 <span class="rounded bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700">
                                     {{ $listing->product_code ?: $listing->buildProductCode() }}
                                 </span>
                             </td>
-                            <td class="p-3">
-                                <p class="font-semibold text-gray-900">{{ $listing->title }}</p>
-                                <p class="text-gray-500">{{ $listing->location }}</p>
+                            <td class="p-3 whitespace-nowrap">{{ optional($listing->created_at)->format('d/m/Y') }}</td>
+                            <td class="p-3 whitespace-nowrap">
+                                {{ ['agen' => 'Agen', 'pemilik' => 'Pemilik Produk'][$listing->user->role ?? ''] ?? ucfirst($listing->user->role ?? '-') }}
                             </td>
-                            <td class="p-3">{{ $listing->user->name ?? '-' }}</td>
-                            <td class="p-3">{{ $listing->category->name ?? '-' }}</td>
-                            <td class="p-3"><x-listing-price :listing="$listing" /></td>
-                            <td class="p-3 text-center">
+                            <td class="p-3 whitespace-nowrap">{{ $listing->category->name ?? '-' }}</td>
+                            <td class="p-3 min-w-56">
+                                <p class="font-semibold text-gray-900">{{ $listing->title }}</p>
+                                <p class="text-gray-500">{{ \Illuminate\Support\Str::limit($listing->description, 60) }}</p>
+                            </td>
+                            <td class="p-3 whitespace-nowrap">{{ $typeYear ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->contact_name ?: ($listing->user->name ?? '-') }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->contact_phone ?: ($listing->user->phone ?? '-') }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->ownership_name ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->document_status ?: ($property->certificate ?? '-') }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->annual_tax_status ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->five_year_tax_status ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->ownership_status ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->plate_number ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ filled($property?->land_area) ? $property->land_area.' m2' : '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ filled($property?->building_area) ? $property->building_area.' m2' : '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $roomSummary ?: '-' }}</td>
+                            <td class="p-3 min-w-48">{{ $property->facilities ?? '-' }}</td>
+                            <td class="p-3 min-w-48">{{ $listing->location }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $money($listing->price) }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $money($listing->minimum_dp) }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $money($listing->minimum_nego_price ?? $listing->discount_price) }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $money($listing->showroom_dp_in) }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $money($listing->installment) }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->tenor ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $money($listing->commission) }}</td>
+                            <td class="p-3 min-w-48">{{ $listing->notes ?: '-' }}</td>
+                            <td class="p-3 whitespace-nowrap">{{ $listing->progress_status ?: ucfirst($listing->status) }}</td>
+                            <td class="p-3 whitespace-nowrap">
                                 @php
                                     $statusClass = [
                                         'pending' => 'bg-yellow-100 text-yellow-700',
@@ -187,7 +276,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="p-8 text-center text-gray-500">Belum ada listing.</td>
+                            <td colspan="32" class="p-8 text-center text-gray-500">Belum ada listing.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -199,4 +288,36 @@
         {{ $listings->links() }}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleFilter = document.querySelector('select[name="owner_role"]');
+    const ownerFilter = document.querySelector('select[name="owner_id"]');
+
+    if (!roleFilter || !ownerFilter) {
+        return;
+    }
+
+    function syncOwnerOptions() {
+        const role = roleFilter.value;
+        let selectedOptionHidden = false;
+
+        ownerFilter.querySelectorAll('option[data-owner-role]').forEach(function(option) {
+            const hidden = role && option.dataset.ownerRole !== role;
+            option.hidden = hidden;
+
+            if (option.selected && hidden) {
+                selectedOptionHidden = true;
+            }
+        });
+
+        if (selectedOptionHidden) {
+            ownerFilter.value = '';
+        }
+    }
+
+    roleFilter.addEventListener('change', syncOwnerOptions);
+    syncOwnerOptions();
+});
+</script>
 @endsection

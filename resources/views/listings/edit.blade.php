@@ -78,6 +78,35 @@
                 rows="4">{{ $listing->description }}</textarea>
         </div>
 
+        <div class="mt-6 rounded border border-emerald-100 bg-emerald-50/40 p-4">
+            <h3 class="font-bold mb-3">Data Administrasi Excel</h3>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <input type="text" name="contact_name" value="{{ old('contact_name', $listing->contact_name) }}" placeholder="Atas Nama Yang Dihubungi" class="border p-2 rounded">
+                <input type="text" name="contact_phone" value="{{ old('contact_phone', $listing->contact_phone) }}" placeholder="Nomor Yang Dihubungi" class="border p-2 rounded">
+                <input type="text" name="ownership_name" value="{{ old('ownership_name', $listing->ownership_name) }}" placeholder="Atas Nama Kepemilikan Unit" class="border p-2 rounded">
+                <input type="text" name="document_status" value="{{ old('document_status', $listing->document_status) }}" placeholder="Kelengkapan Surat" class="border p-2 rounded">
+                <input type="text" name="annual_tax_status" value="{{ old('annual_tax_status', $listing->annual_tax_status) }}" placeholder="Status Pajak Tahunan" class="border p-2 rounded">
+                <input type="text" name="five_year_tax_status" value="{{ old('five_year_tax_status', $listing->five_year_tax_status) }}" placeholder="Status Pajak 5 Tahunan" class="border p-2 rounded">
+                <input type="text" name="ownership_status" value="{{ old('ownership_status', $listing->ownership_status) }}" placeholder="Status Kepemilikan" class="border p-2 rounded">
+                <input type="text" name="plate_number" value="{{ old('plate_number', $listing->plate_number) }}" placeholder="TNKB / Plat Nomor" class="border p-2 rounded">
+                <input type="number" name="seller_price" value="{{ old('seller_price', $listing->seller_price) }}" placeholder="Harga Penjual" class="border p-2 rounded">
+                <input type="number" name="offer_price" value="{{ old('offer_price', $listing->offer_price) }}" placeholder="Harga Penawaran" class="border p-2 rounded">
+                <input type="number" name="sold_price" value="{{ old('sold_price', $listing->sold_price) }}" placeholder="Harga Terjual" class="border p-2 rounded">
+                <input type="number" name="minimum_dp" value="{{ old('minimum_dp', $listing->minimum_dp) }}" placeholder="Minimal DP" class="border p-2 rounded">
+                <input type="number" name="minimum_nego_price" value="{{ old('minimum_nego_price', $listing->minimum_nego_price) }}" placeholder="Minimal Nego / Minimal Harga" class="border p-2 rounded">
+                <input type="number" name="showroom_dp_in" value="{{ old('showroom_dp_in', $listing->showroom_dp_in) }}" placeholder="DP Masuk" class="border p-2 rounded">
+                <input type="number" name="installment" value="{{ old('installment', $listing->installment) }}" placeholder="Angsuran" class="border p-2 rounded">
+                <input type="text" name="tenor" value="{{ old('tenor', $listing->tenor) }}" placeholder="Tenor" class="border p-2 rounded">
+                <input type="number" name="commission" value="{{ old('commission', $listing->commission) }}" placeholder="Komisi" class="border p-2 rounded">
+                <input type="text" name="progress_status" value="{{ old('progress_status', $listing->progress_status) }}" placeholder="Progress Status" class="border p-2 rounded">
+            </div>
+
+            <div class="mt-3">
+                <textarea name="notes" class="w-full border p-2 rounded" rows="3" placeholder="Keterangan">{{ old('notes', $listing->notes) }}</textarea>
+            </div>
+        </div>
+
         <!-- Gambar lama -->
         <div class="mt-6">
             <h3 class="font-bold mb-2">Gambar Saat Ini</h3>

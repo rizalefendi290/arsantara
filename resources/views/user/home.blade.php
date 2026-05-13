@@ -631,52 +631,62 @@ $vehicleSearchCategories = $categories
 
     @endforeach
 
-    <section data-aos="fade-up" class="mt-20 mb-20 grid gap-6 md:mt-24 md:mb-24 md:gap-8 lg:grid-cols-2">
+    <section data-aos="fade-up" class="my-20 grid gap-5 md:my-24 md:gap-6 lg:grid-cols-2">
         <a href="{{ route('ads.guide') }}"
-            class="group relative block aspect-[3/1] overflow-hidden rounded-xl bg-slate-900 text-left shadow transition hover:shadow-xl">
+            class="group relative isolate flex min-h-[360px] overflow-hidden rounded-2xl bg-slate-950 text-left shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-200 sm:min-h-[380px] lg:min-h-[420px]">
             <img src="{{ asset('images/222.png') }}" alt="Daftar sebagai agen"
-                class="absolute inset-0 h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]">
+                class="absolute inset-0 h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.04]">
 
-            <div class="absolute inset-y-0 left-0 w-[78%] bg-gradient-to-r from-white via-white/92 to-white/0 sm:w-[70%]"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-white/20 sm:bg-gradient-to-r sm:from-white sm:via-white/92 sm:to-white/10"></div>
+            <div class="absolute inset-x-0 bottom-0 h-20 bg-white/70 blur-2xl sm:hidden"></div>
 
-            <div class="relative flex h-full items-center px-6">
-                <div class="max-w-[17rem] text-slate-950 sm:max-w-sm lg:max-w-[18rem] xl:max-w-sm">
+            <div class="relative z-10 flex min-h-full w-full items-end p-6 sm:items-center sm:p-8 xl:p-10">
+                <div class="max-w-md text-slate-950">
+                    <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-blue-700">
+                        Kemitraan
+                    </span>
 
-                    <h2 class="text-2xl font-extrabold leading-tight sm:text-3xl xl:text-4xl">
+                    <h2 class="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl">
                         Jadi Mitra Agen Arsantara
                     </h2>
 
-                    <p class="mt-3 max-w-[16rem] text-sm font-medium leading-6 text-slate-700 sm:max-w-xs xl:text-base">
+                    <p class="mt-3 max-w-sm text-sm font-medium leading-6 text-slate-700 sm:text-base">
                         Perluas jaringan, pasarkan listing berkualitas, dan dapatkan dukungan tim dalam satu ekosistem.
                     </p>
 
-                    <span class="mt-6 inline-flex max-w-full items-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700 sm:px-5">
+                    <span class="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md transition group-hover:bg-blue-700">
                         Mulai Bergabung
+                        <span aria-hidden="true">&rarr;</span>
                     </span>
                 </div>
             </div>
         </a>
 
         <a href="{{ route('careers.index') }}"
-            class="group relative block min-h-[340px] overflow-hidden rounded-xl bg-slate-900 text-left shadow transition hover:shadow-xl sm:min-h-[360px] lg:min-h-[340px] xl:min-h-[380px]">
+            class="group relative isolate flex min-h-[360px] overflow-hidden rounded-2xl bg-slate-950 text-left shadow-lg transition duration-300 hover:-translate-y-1 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-200 sm:min-h-[380px] lg:min-h-[420px]">
             <img src="{{ asset('images/111.png') }}" alt="Lowongan pekerjaan"
-                class="absolute inset-0 h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]">
+                class="absolute inset-0 h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.04]">
 
-            <div class="absolute inset-y-0 left-0 w-[80%] bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/0 sm:w-[72%]"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/82 to-slate-950/20 sm:bg-gradient-to-r sm:from-slate-950 sm:via-slate-950/86 sm:to-slate-950/10"></div>
+            <div class="absolute inset-x-0 bottom-0 h-20 bg-slate-950/70 blur-2xl sm:hidden"></div>
 
-            <div class="relative flex min-h-[340px] items-center px-5 py-10 sm:min-h-[360px] sm:px-8 lg:min-h-[340px] lg:px-7 xl:min-h-[380px] xl:px-10">
-                <div class="max-w-[17rem] text-white sm:max-w-sm lg:max-w-[18rem] xl:max-w-sm">
+            <div class="relative z-10 flex min-h-full w-full items-end p-6 sm:items-center sm:p-8 xl:p-10">
+                <div class="max-w-md text-white">
+                    <span class="inline-flex rounded-full bg-white/12 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white ring-1 ring-white/20">
+                        Karier
+                    </span>
 
-                    <h2 class="text-2xl font-extrabold leading-tight sm:text-3xl xl:text-4xl">
+                    <h2 class="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl">
                         Bertumbuh Bersama Arsantara
                     </h2>
 
-                    <p class="mt-3 max-w-[16rem] text-sm font-medium leading-6 text-white/85 sm:max-w-xs xl:text-base">
+                    <p class="mt-3 max-w-sm text-sm font-medium leading-6 text-white/85 sm:text-base">
                         Jelajahi peluang karier untuk berkembang, berkontribusi, dan membangun dampak bersama tim.
                     </p>
 
-                    <span class="mt-6 inline-flex max-w-full items-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition group-hover:bg-blue-700 sm:px-5">
+                    <span class="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-md transition group-hover:bg-blue-700">
                         Lihat Lowongan
+                        <span aria-hidden="true">&rarr;</span>
                     </span>
                 </div>
             </div>

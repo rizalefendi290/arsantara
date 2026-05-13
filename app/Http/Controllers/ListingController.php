@@ -16,7 +16,10 @@ use App\Models\Post;
 use App\Models\Testimonial;
 use App\Models\ListingView;
 use App\Models\JobVacancy;
+use App\Models\User;
 use App\Services\ImageWatermarkService;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ListingController extends Controller
@@ -31,6 +34,11 @@ class ListingController extends Controller
         'sold' => 'Terjual',
     ];
 
+    private array $adminListingOwnerRoles = [
+        'agen' => 'Agen',
+        'pemilik' => 'Pemilik Produk',
+    ];
+
     public function index(Request $request)
     {
         $listings = $this->adminListingQuery($request)
@@ -39,14 +47,19 @@ class ListingController extends Controller
 
         $categories = Category::orderBy('name')->get();
         $statuses = $this->adminListingStatuses;
+        $ownerRoles = $this->adminListingOwnerRoles;
+        $owners = User::whereIn('role', array_keys($this->adminListingOwnerRoles))
+            ->orderBy('role')
+            ->orderBy('name')
+            ->get(['id', 'name', 'role']);
 
-        return view('admin.listings.index', compact('listings', 'categories', 'statuses'));
+        return view('admin.listings.index', compact('listings', 'categories', 'statuses', 'ownerRoles', 'owners'));
     }
 
     public function exportExcel(Request $request)
     {
         $listings = $this->adminListingQuery($request)->get();
-        $filename = 'katalog-listing-'.now()->format('Ymd-His').'.xls';
+        $filename = $this->adminListingExportFilename($request, 'xls');
 
         return response($this->buildExcelTable($listings), 200, [
             'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
@@ -57,7 +70,7 @@ class ListingController extends Controller
     public function exportPdf(Request $request)
     {
         $listings = $this->adminListingQuery($request)->get();
-        $filename = 'katalog-listing-'.now()->format('Ymd-His').'.pdf';
+        $filename = $this->adminListingExportFilename($request, 'pdf');
 
         return response($this->buildSimplePdf($listings), 200, [
             'Content-Type' => 'application/pdf',
@@ -71,6 +84,26 @@ class ListingController extends Controller
             ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->category_id))
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
             ->when($request->filled('condition'), fn ($query) => $query->where('condition', $request->condition))
+            ->when($request->filled('owner_role') && array_key_exists($request->owner_role, $this->adminListingOwnerRoles), function ($query) use ($request) {
+                $query->whereHas('user', fn ($user) => $user->where('role', $request->owner_role));
+            })
+            ->when($request->filled('owner_id'), function ($query) use ($request) {
+                $query->whereHas('user', function ($user) use ($request) {
+                    $user->whereKey($request->owner_id)
+                        ->whereIn('role', array_keys($this->adminListingOwnerRoles));
+                });
+            })
+            ->when($request->filled('month_start') || $request->filled('month_end'), function ($query) use ($request) {
+                [$startDate, $endDate] = $this->adminListingMonthRange($request);
+
+                if ($startDate && $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                } elseif ($startDate) {
+                    $query->where('created_at', '>=', $startDate);
+                } elseif ($endDate) {
+                    $query->where('created_at', '<=', $endDate);
+                }
+            })
             ->when($request->filled('is_kpr'), function ($query) use ($request) {
                 $query->inCategorySlug(Category::HOUSE_SLUG)
                     ->whereHas('propertyDetail', fn ($property) => $property->where('is_kpr', $request->is_kpr));
@@ -89,32 +122,319 @@ class ListingController extends Controller
             ->latest();
     }
 
+    private function adminListingExportFilename(Request $request, string $extension): string
+    {
+        $parts = ['katalog-arsantara'];
+
+        if ($request->filled('owner_role') && isset($this->adminListingOwnerRoles[$request->owner_role])) {
+            $parts[] = Str::slug($this->adminListingOwnerRoles[$request->owner_role]);
+        } else {
+            $parts[] = 'semua-sumber';
+        }
+
+        if ($request->filled('owner_id')) {
+            $owner = User::whereIn('role', array_keys($this->adminListingOwnerRoles))->find($request->owner_id);
+            if ($owner) {
+                $parts[] = Str::slug($owner->name);
+            }
+        }
+
+        if ($request->filled('category_id')) {
+            $category = Category::find($request->category_id);
+            $parts[] = $category ? Str::slug($category->name) : 'kategori';
+        } else {
+            $parts[] = 'semua-kategori';
+        }
+
+        $parts[] = $this->adminListingExportPeriodLabel($request);
+        $parts[] = 'export-'.now()->format('Ymd-His');
+
+        return implode('-', array_filter($parts)).'.'.$extension;
+    }
+
+    private function adminListingExportPeriodLabel(Request $request): string
+    {
+        $start = $request->input('month_start');
+        $end = $request->input('month_end');
+
+        $validStart = is_string($start) && preg_match('/^\d{4}-\d{2}$/', $start);
+        $validEnd = is_string($end) && preg_match('/^\d{4}-\d{2}$/', $end);
+
+        if ($validStart && $validEnd) {
+            return $start === $end ? 'periode-'.$start : 'periode-'.$start.'-sd-'.$end;
+        }
+
+        if ($validStart) {
+            return 'periode-'.$start;
+        }
+
+        if ($validEnd) {
+            return 'sampai-'.$end;
+        }
+
+        return 'semua-periode';
+    }
+
+    private function adminListingMonthRange(Request $request): array
+    {
+        $startDate = $this->adminListingMonthDate($request->input('month_start'), true);
+        $endDate = $this->adminListingMonthDate($request->input('month_end'), false);
+
+        if ($startDate && ! $endDate) {
+            $endDate = $startDate->copy()->endOfMonth();
+        }
+
+        if ($startDate && $endDate && $startDate->gt($endDate)) {
+            return [$endDate->copy()->startOfMonth(), $startDate->copy()->endOfMonth()];
+        }
+
+        return [$startDate, $endDate];
+    }
+
+    private function adminListingMonthDate(?string $month, bool $startOfMonth): ?Carbon
+    {
+        if (! is_string($month) || ! preg_match('/^\d{4}-\d{2}$/', $month)) {
+            return null;
+        }
+
+        $date = Carbon::createFromFormat('!Y-m', $month);
+
+        return $startOfMonth ? $date->startOfMonth() : $date->endOfMonth();
+    }
+
     private function buildExcelTable($listings): string
     {
-        $rows = $listings->map(fn ($listing) => $this->exportRow($listing));
-        $headers = ['ID', 'Kode Produk', 'Judul', 'Pemilik', 'Kategori', 'Status', 'Kondisi', 'Harga', 'Harga Diskon', 'Harga Final', 'Lokasi', 'Jenis Properti', 'Detail', 'Tanggal Dibuat'];
+        $sections = [
+            'Data Katalog Motor' => [
+                'listings' => $listings->filter(fn ($listing) => $listing->category?->isMotorcycle()),
+                'headers' => $this->motorExportHeaders(),
+                'row' => fn ($listing, $index) => $this->motorExportRow($listing, $index),
+            ],
+            'Data Mitra Showroom' => [
+                'listings' => $listings->filter(fn ($listing) => $listing->category?->isCarLike() && $listing->user?->role === 'agen'),
+                'headers' => $this->showroomVehicleExportHeaders(),
+                'row' => fn ($listing, $index) => $this->showroomVehicleExportRow($listing, $index),
+            ],
+            'Data Katalog Mobil' => [
+                'listings' => $listings->filter(fn ($listing) => $listing->category?->isCarLike() && $listing->user?->role !== 'agen'),
+                'headers' => $this->vehicleExportHeaders(),
+                'row' => fn ($listing, $index) => $this->vehicleExportRow($listing, $index),
+            ],
+            'Data Katalog Rumah' => [
+                'listings' => $listings->filter(fn ($listing) => $listing->category?->isHouse()),
+                'headers' => $this->houseExportHeaders(),
+                'row' => fn ($listing, $index) => $this->houseExportRow($listing, $index),
+            ],
+            'Data Katalog Tanah' => [
+                'listings' => $listings->filter(fn ($listing) => $listing->category?->isLand()),
+                'headers' => $this->landExportHeaders(),
+                'row' => fn ($listing, $index) => $this->landExportRow($listing, $index),
+            ],
+        ];
 
         $html = '<html><head><meta charset="UTF-8"></head><body>';
         $html .= '<h2>Katalog Listing Arsantara</h2>';
-        $html .= '<table border="1"><thead><tr>';
 
-        foreach ($headers as $header) {
-            $html .= '<th style="background:#dbeafe;font-weight:bold;">'.e($header).'</th>';
-        }
+        foreach ($sections as $title => $section) {
+            $sectionListings = $section['listings']->values();
 
-        $html .= '</tr></thead><tbody>';
-
-        foreach ($rows as $row) {
-            $html .= '<tr>';
-            foreach ($row as $value) {
-                $html .= '<td>'.e((string) $value).'</td>';
+            if ($sectionListings->isEmpty()) {
+                continue;
             }
-            $html .= '</tr>';
+
+            $html .= '<h3>'.e($title).'</h3>';
+            $html .= '<table border="1"><thead><tr>';
+
+            foreach ($section['headers'] as $header) {
+                $html .= '<th style="background:#0b6623;color:#ffffff;font-weight:bold;">'.e($header).'</th>';
+            }
+
+            $html .= '</tr></thead><tbody>';
+
+            foreach ($sectionListings as $index => $listing) {
+                $html .= '<tr>';
+                foreach ($section['row']($listing, $index) as $value) {
+                    $html .= '<td>'.e((string) $value).'</td>';
+                }
+                $html .= '</tr>';
+            }
+
+            $html .= '</tbody></table><br>';
         }
 
-        $html .= '</tbody></table></body></html>';
+        if (! collect($sections)->contains(fn ($section) => $section['listings']->isNotEmpty())) {
+            $html .= '<p>Belum ada data listing sesuai filter.</p>';
+        }
+
+        $html .= '</body></html>';
 
         return "\xEF\xBB\xBF".$html;
+    }
+
+    private function motorExportHeaders(): array
+    {
+        return ['No.', 'Nama Kendaraan', 'Tahun Kendaraan', 'Atas Nama Kepemilikan Unit', 'Kelengkapan Surat', 'Status Pajak Tahunan', 'Status Pajak 5 Tahunan', 'Status Kepemilikan', 'TNKB (Plat Nomor)', 'Deskripsi', 'Harga Penjual', 'Harga Penawaran', 'Harga Terjual', 'Komisi', 'Keterangan', 'Progress Status'];
+    }
+
+    private function vehicleExportHeaders(): array
+    {
+        return ['No.', 'Nama Kendaraan', 'Tipe Kendaraan', 'Tahun Kendaraan', 'Atas Nama Kepemilikan Unit', 'Kelengkapan Surat', 'Status Pajak Tahunan', 'Status Pajak 5 Tahunan', 'Status Kepemilikan', 'TNKB (Plat Nomor)', 'Deskripsi', 'Harga Penjual', 'Harga Penawaran', 'Harga Terjual', 'Komisi', 'Keterangan', 'Progress Status'];
+    }
+
+    private function showroomVehicleExportHeaders(): array
+    {
+        return ['No.', 'Nama Kendaraan', 'Tipe Kendaraan', 'Tahun Kendaraan', 'Atas Nama Kepemilikan Unit', 'Kelengkapan Surat', 'Status Pajak Tahunan', 'Status Pajak 5 Tahunan', 'Minimal DP Dari Showroom', 'DP Masuk', 'Harga', 'Harga Nego (Max)', 'Angsuran', 'Tenor', 'Komisi', 'Keterangan', 'Progres Status'];
+    }
+
+    private function houseExportHeaders(): array
+    {
+        return ['No.', 'Nama Mitra', 'Atas Nama Yang Dihubungi', 'Atas Nama Kepemilikan unit', 'Nomor Yang Dihubungi', 'Status Unit (KPR/NON-KPR)', 'Kelengkapan Surat', 'Luas Tanah', 'Luas Bangunan', 'Jumlah Lantai', 'Jumlah Kamar Tidur', 'Jumlah Kamar Mandi', 'Fasilitas', 'Lokasi', 'Detail Lokasi', 'Harga', 'Minimal DP', 'Minimal Nego Harga / Minimal Harga', 'Angsuran', 'Tenor', 'Keterangan', 'Status', 'Komisi'];
+    }
+
+    private function landExportHeaders(): array
+    {
+        return ['No.', 'Atas Nama yang Dihubungi', 'Atas Nama Kepemilikan Unit', 'Nomor yang dihubungi', 'Kelengkapan Surat', 'Luas Tanah', 'Lokasi', 'Harga', 'Minimal DP', 'Minimal Nego Harga / Minimal Harga', 'Keterangan', 'Status', 'Komisi'];
+    }
+
+    private function motorExportRow(Listing $listing, int $index): array
+    {
+        $detail = $listing->motorcycleDetail;
+
+        return [
+            $index + 1,
+            $listing->title,
+            $detail?->year,
+            $this->valueOrDash($listing->ownership_name),
+            $this->valueOrDash($listing->document_status),
+            $this->valueOrDash($listing->annual_tax_status),
+            $this->valueOrDash($listing->five_year_tax_status),
+            $this->valueOrDash($listing->ownership_status),
+            $this->valueOrDash($listing->plate_number),
+            $this->valueOrDash($listing->description),
+            $this->exportMoney($listing->seller_price ?? $listing->price),
+            $this->exportMoney($listing->offer_price ?? $listing->discount_price),
+            $this->exportMoney($listing->sold_price),
+            $this->exportMoney($listing->commission),
+            $this->valueOrDash($listing->notes),
+            $this->valueOrDash($listing->progress_status ?? ucfirst($listing->status)),
+        ];
+    }
+
+    private function vehicleExportRow(Listing $listing, int $index): array
+    {
+        $detail = $listing->carDetail;
+
+        return [
+            $index + 1,
+            $listing->title,
+            $this->vehicleType($detail),
+            $detail?->year,
+            $this->valueOrDash($listing->ownership_name),
+            $this->valueOrDash($listing->document_status),
+            $this->valueOrDash($listing->annual_tax_status),
+            $this->valueOrDash($listing->five_year_tax_status),
+            $this->valueOrDash($listing->ownership_status),
+            $this->valueOrDash($listing->plate_number),
+            $this->valueOrDash($listing->description),
+            $this->exportMoney($listing->seller_price ?? $listing->price),
+            $this->exportMoney($listing->offer_price ?? $listing->discount_price),
+            $this->exportMoney($listing->sold_price),
+            $this->exportMoney($listing->commission),
+            $this->valueOrDash($listing->notes),
+            $this->valueOrDash($listing->progress_status ?? ucfirst($listing->status)),
+        ];
+    }
+
+    private function showroomVehicleExportRow(Listing $listing, int $index): array
+    {
+        $detail = $listing->carDetail;
+
+        return [
+            $index + 1,
+            $listing->title,
+            $this->vehicleType($detail),
+            $detail?->year,
+            $this->valueOrDash($listing->ownership_name),
+            $this->valueOrDash($listing->document_status),
+            $this->valueOrDash($listing->annual_tax_status),
+            $this->valueOrDash($listing->five_year_tax_status),
+            $this->exportMoney($listing->minimum_dp),
+            $this->exportMoney($listing->showroom_dp_in),
+            $this->exportMoney($listing->price),
+            $this->exportMoney($listing->minimum_nego_price ?? $listing->offer_price ?? $listing->discount_price),
+            $this->exportMoney($listing->installment),
+            $this->valueOrDash($listing->tenor),
+            $this->exportMoney($listing->commission),
+            $this->valueOrDash($listing->notes),
+            $this->valueOrDash($listing->progress_status ?? ucfirst($listing->status)),
+        ];
+    }
+
+    private function houseExportRow(Listing $listing, int $index): array
+    {
+        $detail = $listing->propertyDetail;
+
+        return [
+            $index + 1,
+            $listing->user?->role === 'agen' ? $this->valueOrDash($listing->user?->name) : '-',
+            $this->valueOrDash($listing->contact_name ?? $listing->user?->name),
+            $this->valueOrDash($listing->ownership_name),
+            $this->valueOrDash($listing->contact_phone ?? $listing->user?->phone),
+            $detail?->is_kpr ? 'KPR' : 'NON-KPR',
+            $this->valueOrDash($listing->document_status ?? $detail?->certificate),
+            $this->valueOrDash($detail?->land_area),
+            $this->valueOrDash($detail?->building_area),
+            $this->valueOrDash($detail?->floors),
+            $this->valueOrDash($detail?->bedrooms),
+            $this->valueOrDash($detail?->bathrooms),
+            $this->valueOrDash($detail?->facilities),
+            $this->valueOrDash($listing->location),
+            $this->valueOrDash($listing->description),
+            $this->exportMoney($listing->price),
+            $this->exportMoney($listing->minimum_dp),
+            $this->exportMoney($listing->minimum_nego_price ?? $listing->discount_price),
+            $this->exportMoney($listing->installment),
+            $this->valueOrDash($listing->tenor),
+            $this->valueOrDash($listing->notes),
+            $this->valueOrDash($listing->progress_status ?? ucfirst($listing->status)),
+            $this->exportMoney($listing->commission),
+        ];
+    }
+
+    private function landExportRow(Listing $listing, int $index): array
+    {
+        $detail = $listing->propertyDetail;
+
+        return [
+            $index + 1,
+            $this->valueOrDash($listing->contact_name ?? $listing->user?->name),
+            $this->valueOrDash($listing->ownership_name),
+            $this->valueOrDash($listing->contact_phone ?? $listing->user?->phone),
+            $this->valueOrDash($listing->document_status ?? $detail?->certificate),
+            $this->valueOrDash($detail?->land_area),
+            $this->valueOrDash($listing->location),
+            $this->exportMoney($listing->price),
+            $this->exportMoney($listing->minimum_dp),
+            $this->exportMoney($listing->minimum_nego_price ?? $listing->discount_price),
+            $this->valueOrDash($listing->notes),
+            $this->valueOrDash($listing->progress_status ?? ucfirst($listing->status)),
+            $this->exportMoney($listing->commission),
+        ];
+    }
+
+    private function vehicleType(?CarDetail $detail): string
+    {
+        return $this->valueOrDash(collect([$detail?->brand, $detail?->model])->filter()->implode(' '));
+    }
+
+    private function valueOrDash($value): string
+    {
+        return filled($value) ? (string) $value : '-';
+    }
+
+    private function exportMoney($value): string
+    {
+        return filled($value) ? (string) $value : '-';
     }
 
     private function exportRow(Listing $listing): array
@@ -309,6 +629,25 @@ class ListingController extends Controller
             'fuel_type' => 'nullable|in:bensin,diesel,listrik,hybrid',
             'color' => 'nullable|string|max:100',
             'kilometer' => 'nullable|integer',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:50',
+            'ownership_name' => 'nullable|string|max:255',
+            'document_status' => 'nullable|string|max:255',
+            'annual_tax_status' => 'nullable|string|max:255',
+            'five_year_tax_status' => 'nullable|string|max:255',
+            'ownership_status' => 'nullable|string|max:255',
+            'plate_number' => 'nullable|string|max:50',
+            'seller_price' => 'nullable|numeric|min:0',
+            'offer_price' => 'nullable|numeric|min:0',
+            'sold_price' => 'nullable|numeric|min:0',
+            'minimum_dp' => 'nullable|numeric|min:0',
+            'minimum_nego_price' => 'nullable|numeric|min:0',
+            'showroom_dp_in' => 'nullable|numeric|min:0',
+            'installment' => 'nullable|numeric|min:0',
+            'tenor' => 'nullable|string|max:100',
+            'commission' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string',
+            'progress_status' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
@@ -322,9 +661,28 @@ class ListingController extends Controller
             'description' => $request->description,
             'price' => $request->price,
             'discount_price' => $request->discount_price,
+            'seller_price' => $request->seller_price,
+            'offer_price' => $request->offer_price,
+            'sold_price' => $request->sold_price,
+            'minimum_dp' => $request->minimum_dp,
+            'minimum_nego_price' => $request->minimum_nego_price,
+            'showroom_dp_in' => $request->showroom_dp_in,
+            'installment' => $request->installment,
+            'tenor' => $request->tenor,
+            'commission' => $request->commission,
             'location' => $request->location,
+            'contact_name' => $request->contact_name,
+            'contact_phone' => $request->contact_phone,
+            'ownership_name' => $request->ownership_name,
+            'document_status' => $request->document_status,
+            'annual_tax_status' => $request->annual_tax_status,
+            'five_year_tax_status' => $request->five_year_tax_status,
+            'ownership_status' => $request->ownership_status,
+            'plate_number' => $request->plate_number,
             'condition' => $request->condition,
-            'status' => 'aktif'
+            'status' => 'aktif',
+            'notes' => $request->notes,
+            'progress_status' => $request->progress_status,
         ]);
         $listing->assignProductCode();
 
@@ -465,6 +823,25 @@ class ListingController extends Controller
 
         $request->validate([
             'discount_price' => 'nullable|numeric|min:0|lt:price',
+            'seller_price' => 'nullable|numeric|min:0',
+            'offer_price' => 'nullable|numeric|min:0',
+            'sold_price' => 'nullable|numeric|min:0',
+            'minimum_dp' => 'nullable|numeric|min:0',
+            'minimum_nego_price' => 'nullable|numeric|min:0',
+            'showroom_dp_in' => 'nullable|numeric|min:0',
+            'installment' => 'nullable|numeric|min:0',
+            'tenor' => 'nullable|string|max:100',
+            'commission' => 'nullable|numeric|min:0',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:50',
+            'ownership_name' => 'nullable|string|max:255',
+            'document_status' => 'nullable|string|max:255',
+            'annual_tax_status' => 'nullable|string|max:255',
+            'five_year_tax_status' => 'nullable|string|max:255',
+            'ownership_status' => 'nullable|string|max:255',
+            'plate_number' => 'nullable|string|max:50',
+            'notes' => 'nullable|string',
+            'progress_status' => 'nullable|string|max:255',
         ]);
 
         $listing->update($request->except('images'));

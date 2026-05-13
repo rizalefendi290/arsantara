@@ -25,6 +25,13 @@ class JobVacancy extends Model
         'sort_order' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::deleting(function (JobVacancy $vacancy) {
+            $vacancy->applications()->get()->each->delete();
+        });
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

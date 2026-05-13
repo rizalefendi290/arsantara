@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class OrganizationMember extends Model
 {
@@ -19,4 +20,13 @@ class OrganizationMember extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (OrganizationMember $member) {
+            if ($member->photo) {
+                Storage::disk('public')->delete($member->photo);
+            }
+        });
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class JobApplication extends Model
 {
@@ -42,6 +43,15 @@ class JobApplication extends Model
         'privacy_accepted' => 'boolean',
         'reviewed_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (JobApplication $application) {
+            if ($application->cv_path) {
+                Storage::delete($application->cv_path);
+            }
+        });
+    }
 
     public function jobVacancy(): BelongsTo
     {
