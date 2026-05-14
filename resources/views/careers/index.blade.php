@@ -4,7 +4,7 @@
 @php
     $heroSlides = [
         [
-            'image' => asset('images/hero.png'),
+            'image' => asset('images/karir.png'),
             'label' => 'Karir Arsantara',
             'title' => 'Bergabung dan tumbuh bersama Arsantara.',
             'text' => 'Temukan peluang kerja terbaru dan jadilah bagian dari ekosistem properti, kendaraan, dan layanan pelanggan yang terus berkembang.',

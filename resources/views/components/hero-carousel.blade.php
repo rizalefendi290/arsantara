@@ -3,7 +3,7 @@
     'height' => 'min-h-[520px]',
     'innerHeight' => 'min-h-[520px]',
     'contentWidth' => 'max-w-2xl',
-    'overlay' => 'bg-gradient-to-r from-slate-950 via-slate-950/75 to-slate-950/10',
+    'overlay' => '',
     'sectionClass' => '',
     'contentClass' => '',
     'pageKey' => null,

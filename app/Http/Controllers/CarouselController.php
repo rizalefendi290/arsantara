@@ -25,6 +25,7 @@ class CarouselController extends Controller
         'testimoni.index' => 'Testimoni',
         'testimoni.create' => 'Buat Testimoni',
         'profile.edit' => 'Profil',
+        'careers.index' => 'Karir',
     ];
 
     public function index()

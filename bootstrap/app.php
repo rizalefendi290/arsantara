@@ -9,6 +9,10 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            Route::middleware('web')
+                ->group(base_path('routes/auth.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
@@ -18,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'agent.owner' => \App\Http\Middleware\AgentOrOwnerMiddleware::class,
+            'marketing' => \App\Http\Middleware\MarketingMiddleware::class,
             'approved' => \App\Http\Middleware\CheckApproved::class,
         ]);
     })

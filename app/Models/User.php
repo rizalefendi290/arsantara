@@ -28,6 +28,7 @@ class User extends Authenticatable
         'password',
         'role',
         'status',
+        'is_active',
         'requested_role',
     ];
 
@@ -51,6 +52,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -65,9 +67,19 @@ class User extends Authenticatable
         });
     }
 
-        public function listings()
+    public function listings()
     {
         return $this->hasMany(Listing::class);
+    }
+
+    public function marketingSales()
+    {
+        return $this->hasMany(MarketingSale::class);
+    }
+
+    public function marketingTargets()
+    {
+        return $this->hasMany(MarketingTarget::class);
     }
 
     public function favorites()

@@ -462,6 +462,21 @@ class HomeController extends Controller
         return view('tanah.index', compact('listings'));
     }
 
+    public function about()
+    {
+        $posts = Post::with('images')->latest()->take(5)->get();
+        $organizationMembers = \App\Models\OrganizationMember::where('is_active', true)
+            ->orderBy('sort_order')
+            ->latest()
+            ->get();
+        $partners = \App\Models\Partner::where('is_active', true)
+            ->orderBy('sort_order')
+            ->latest()
+            ->get();
+
+        return view('about', compact('posts', 'organizationMembers', 'partners'));
+    }
+
     private function abortIfCategoryInactive(string $slug): void
     {
         abort_unless(Category::where('slug', $slug)->where('is_active', true)->exists(), 404);

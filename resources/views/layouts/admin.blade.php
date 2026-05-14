@@ -70,6 +70,12 @@
             'icon' => 'M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1 M4 8h16v11H4z M4 12h16',
         ],
         [
+            'label' => 'Sales CRM',
+            'route' => 'admin.sales.dashboard',
+            'active' => request()->routeIs('admin.sales.*'),
+            'icon' => 'M4 19V5m5 14V9m5 10V7m5 12v-8',
+        ],
+        [
             'label' => 'User',
             'route' => 'admin.users',
             'active' => request()->routeIs('admin.users*'),
