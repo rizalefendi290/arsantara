@@ -6,7 +6,7 @@
     $message = urlencode('Halo Admin Arsantara, saya ingin mengajukan pinjaman dana dengan jaminan BPKB. Mohon informasinya.');
     $waUrl = "https://wa.me/{$phone}?text={$message}";
 
-    $slides = [
+    $heroSlides = [
         [
             'image' => asset('images/thumbnail_pinjam_dana.png'),
             'label' => 'Proses Cepat',
@@ -35,54 +35,16 @@
 @endphp
 
 <main class="bg-white">
-    <section class="relative min-h-screen overflow-hidden bg-slate-950 text-white">
-        <div class="absolute inset-0">
-            @foreach($slides as $index => $slide)
-                <img src="{{ $slide['image'] }}"
-                    alt="{{ $slide['title'] }}"
-                    class="loan-slide absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}">
-            @endforeach
-            <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/75 to-slate-950/10"></div>
-        </div>
-
-        <div class="relative z-10 mx-auto grid min-h-[calc(100vh-6rem)] max-w-7xl grid-cols-1 items-center gap-10 px-6 py-16 lg:grid-cols-2">
-            <div class="max-w-2xl">
-                <div class="mb-6 flex gap-3">
-                    @foreach($slides as $index => $slide)
-                        <button type="button"
-                            onclick="showLoanSlide({{ $index }})"
-                            class="loan-dot h-1.5 w-16 rounded-full transition {{ $index === 0 ? 'bg-blue-500' : 'bg-white/40' }}"
-                            aria-label="Lihat slide {{ $index + 1 }}"></button>
-                    @endforeach
-                </div>
-
-                <p id="loanLabel" class="mb-4 inline-flex rounded-full border border-white/30 px-4 py-1 text-sm font-semibold uppercase text-blue-100">
-                    {{ $slides[0]['label'] }}
-                </p>
-
-                <h1 id="loanTitle" class="text-4xl font-extrabold leading-tight md:text-6xl">
-                    {{ $slides[0]['title'] }}
-                </h1>
-
-                <p id="loanText" class="mt-5 max-w-xl text-base leading-8 text-slate-200 md:text-lg">
-                    {{ $slides[0]['text'] }}
-                </p>
-
-                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <a href="{{ $waUrl }}" target="_blank"
-                        class="inline-flex items-center justify-center rounded-xl bg-green-500 px-6 py-3 font-bold text-white shadow-lg transition hover:bg-green-600">
-                        Ajukan via WhatsApp
-                    </a>
-                    <a href="#syarat"
-                        class="inline-flex items-center justify-center rounded-xl border border-white/30 px-6 py-3 font-semibold text-white transition hover:bg-white/10">
-                        Lihat Syarat
-                    </a>
-                </div>
-            </div>
-
-            <div class="hidden lg:block"></div>
-        </div>
-    </section>
+    <x-hero-carousel :slides="$heroSlides" content-width="max-w-2xl" overlay="bg-gradient-to-r from-slate-950/80 via-slate-950/35 to-slate-950/10">
+        <a href="{{ $waUrl }}" target="_blank"
+            class="inline-flex min-h-12 items-center justify-center rounded-lg bg-green-500 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-slate-950/20 transition hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-200">
+            Ajukan via WhatsApp
+        </a>
+        <a href="#syarat"
+            class="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/60 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/30">
+            Lihat Syarat
+        </a>
+    </x-hero-carousel>
 
     <section id="syarat" class="bg-gradient-to-b from-blue-50 via-white to-white py-20">
         <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-6 lg:grid-cols-2">
@@ -133,35 +95,4 @@
     </section>
 </main>
 
-<script>
-const loanSlides = @json($slides);
-let loanSlideIndex = 0;
-let loanSlideTimer = null;
-
-function showLoanSlide(index) {
-    loanSlideIndex = index;
-
-    document.querySelectorAll('.loan-slide').forEach(function(slide, slideIndex) {
-        slide.classList.toggle('opacity-100', slideIndex === index);
-        slide.classList.toggle('opacity-0', slideIndex !== index);
-    });
-
-    document.querySelectorAll('.loan-dot').forEach(function(dot, dotIndex) {
-        dot.classList.toggle('bg-blue-500', dotIndex === index);
-        dot.classList.toggle('bg-white/40', dotIndex !== index);
-    });
-
-    document.getElementById('loanLabel').textContent = loanSlides[index].label;
-    document.getElementById('loanTitle').textContent = loanSlides[index].title;
-    document.getElementById('loanText').textContent = loanSlides[index].text;
-}
-
-function startLoanSlider() {
-    loanSlideTimer = setInterval(function() {
-        showLoanSlide((loanSlideIndex + 1) % loanSlides.length);
-    }, 4500);
-}
-
-startLoanSlider();
-</script>
 @endsection

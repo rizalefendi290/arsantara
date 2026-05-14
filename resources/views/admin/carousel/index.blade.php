@@ -57,7 +57,7 @@
             <summary class="cursor-pointer font-semibold text-blue-900">Lihat penjelasan setiap isian</summary>
             <div class="mt-3 grid grid-cols-1 gap-3 text-blue-800 md:grid-cols-2">
                 <p><span class="font-semibold text-blue-900">Halaman:</span> menentukan lokasi hero yang akan diganti, misalnya Beranda, Mobil, FAQ, atau Tentang Kami.</p>
-                <p><span class="font-semibold text-blue-900">Gambar:</span> upload foto/banner landscape rasio 16:9, idealnya 1920 x 1080 agar tampil utuh.</p>
+                <p><span class="font-semibold text-blue-900">Gambar:</span> upload foto/banner landscape rasio 16:9, idealnya 1920 x 1080. Website akan menjaga gambar utama tetap utuh tanpa crop.</p>
                 <p><span class="font-semibold text-blue-900">Label:</span> teks kecil di atas judul hero, misalnya "Arsantara Properti".</p>
                 <p><span class="font-semibold text-blue-900">Judul dan teks:</span> kalimat utama yang dibaca pengunjung di hero section.</p>
                 <p><span class="font-semibold text-blue-900">Warna teks hero:</span> mengatur warna label, judul, dan deskripsi. Pilih warna yang kontras dengan gambar agar tetap mudah dibaca.</p>
@@ -86,7 +86,7 @@
                 <p class="text-xs text-gray-500">Pilih halaman yang gambar utamanya ingin diganti.</p>
 
                 <input type="file" name="image" class="w-full border p-2 rounded" required>
-                <p class="text-xs text-gray-500">Gunakan gambar 1920 x 1080 atau rasio 16:9 agar seluruh desain banner tampil utuh.</p>
+                <p class="text-xs text-gray-500">Gunakan gambar 1920 x 1080 atau rasio 16:9. Tampilan website menjaga gambar utama tetap utuh dan rasionya konsisten.</p>
                 <input type="text" name="label" placeholder="Label kecil, contoh: Arsantara Properti" class="w-full border p-2 rounded">
                 <input type="text" name="title" placeholder="Judul hero" class="w-full border p-2 rounded" required>
                 <textarea name="text" rows="3" placeholder="Teks deskripsi hero" class="w-full border p-2 rounded"></textarea>
@@ -181,7 +181,7 @@
                 @endphp
                 <div class="border rounded p-3">
                     <div class="mb-3 aspect-video w-full overflow-hidden rounded bg-gray-100">
-                        <img src="{{ asset('storage/'.$c->image) }}" class="h-full w-full object-cover" alt="{{ $c->title }}">
+                        <img src="{{ asset('storage/'.$c->image) }}" class="h-full w-full object-contain" alt="{{ $c->title }}">
                     </div>
 
                     <form action="{{ route('carousel.update',$c->id) }}" method="POST" enctype="multipart/form-data" class="space-y-2">

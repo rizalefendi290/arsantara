@@ -36,14 +36,14 @@ $vehicleSearchCategories = $categories
     ->sortBy(fn ($category) => array_search($category->slug, [\App\Models\Category::CAR_SLUG, \App\Models\Category::MOTORCYCLE_SLUG, \App\Models\Category::TRUCK_SLUG], true));
 @endphp
 
-<x-hero-carousel :slides="$homeHeroSlides" height="min-h-screen" inner-height="min-h-[calc(100vh-6rem)]"
-    content-width="max-w-2xl" content-class="md:-translate-x-[17rem] lg:translate-x-0" />
+<x-hero-carousel :slides="$homeHeroSlides"
+    content-width="max-w-2xl" content-class="xl:translate-x-0" />
 
 <!-- SEARCH BOX FLOAT -->
-<div class="relative -mt-20 z-20 px-6 flex justify-center">
+<div class="relative -mt-20 z-20 flex justify-center px-4 sm:px-6">
 
     <form data-aos="zoom-in" method="GET" action="{{ route('search') }}"
-        class="w-full max-w-5xl bg-white/95 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-2xl">
+        class="w-full max-w-5xl bg-white/95 backdrop-blur-xl border border-white/30 rounded-3xl p-4 shadow-2xl sm:p-6">
 
         <!-- TAB -->
         <div class="flex justify-center gap-3 mb-6">
@@ -83,7 +83,7 @@ $vehicleSearchCategories = $categories
                         </svg>
                     </button>
 
-                    <div data-property-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl md:w-[620px]">
+                    <div data-property-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden max-h-[70vh] overflow-y-auto rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl sm:w-[min(620px,calc(100vw-2rem))]">
                         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                             <button type="button" data-property-option="" onclick="selectPropertyCategory('', 'Semua Properti')"
                                 class="property-option flex min-h-20 flex-col justify-between rounded-xl border border-blue-600 bg-blue-50 p-3 text-left text-sm font-semibold text-blue-700 transition hover:border-blue-600">
@@ -155,7 +155,7 @@ $vehicleSearchCategories = $categories
                         </svg>
                     </button>
 
-                    <div data-vehicle-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl md:w-[620px]">
+                    <div data-vehicle-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden max-h-[70vh] overflow-y-auto rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl sm:w-[min(620px,calc(100vw-2rem))]">
                         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                             <button type="button" data-vehicle-option="" onclick="selectVehicleCategory('', 'Semua Kendaraan')"
                                 class="vehicle-option flex min-h-20 flex-col justify-between rounded-xl border border-blue-600 bg-blue-50 p-3 text-left text-sm font-semibold text-blue-700 transition hover:border-blue-600">
@@ -218,7 +218,7 @@ $vehicleSearchCategories = $categories
 
         <div class="mt-4 flex justify-end">
             <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold 
-                hover:bg-blue-700 transition shadow-md">
+                hover:bg-blue-700 transition shadow-md max-sm:w-full">
                 Cari
             </button>
         </div>
@@ -229,7 +229,7 @@ $vehicleSearchCategories = $categories
     </form>
 </div>
 
-<div class="relative mt-10 py-20 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
+<div class="relative mt-10 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white py-14 sm:py-20">
 
     <!-- WAVE ATAS (LEBIH HALUS) -->
     <div class="absolute top-0 left-0 w-full overflow-hidden leading-none z-0">
@@ -256,11 +256,11 @@ $vehicleSearchCategories = $categories
 
 <!-- CONTENT -->
 <div data-aos="fade-up"
-    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10 px-6 max-w-6xl mx-auto -mt-24">
+    class="relative z-10 mx-auto -mt-16 grid max-w-6xl grid-cols-1 gap-5 px-4 sm:px-6 md:-mt-24 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
 
     <!-- CARD 1 -->
     <a href="{{ route('properti') }}"
-        class="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px] bg-white focus:outline-none focus:ring-4 focus:ring-blue-300"
+        class="group relative block h-[380px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 sm:h-[440px] md:h-[480px]"
         aria-label="Lihat properti">
 
         <img src="{{ asset('images/11.png') }}"
@@ -288,7 +288,7 @@ $vehicleSearchCategories = $categories
 
     <!-- CARD 2 -->
     <a href="{{ route('autoshow') }}"
-        class="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px] bg-white focus:outline-none focus:ring-4 focus:ring-emerald-300"
+        class="group relative block h-[380px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-emerald-300 sm:h-[440px] md:h-[480px]"
         aria-label="Lihat mobil bekas">
 
         <img src="{{ asset('images/22.png') }}"
@@ -317,7 +317,7 @@ $vehicleSearchCategories = $categories
 
     <!-- CARD 3 -->
     <a href="{{ route('pinjaman.index') }}"
-        class="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 h-[480px] bg-white focus:outline-none focus:ring-4 focus:ring-amber-300"
+        class="group relative block h-[380px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-amber-300 sm:h-[440px] md:h-[480px]"
         aria-label="Ajukan pinjaman dana">
 
         <img src="{{ asset('images/33.png') }}"
@@ -418,7 +418,7 @@ $vehicleSearchCategories = $categories
     <section data-aos="fade-up" class="mb-14">
         <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between mb-6">
             <div>
-                <h2 class="text-3xl font-bold text-gray-800">Produk Rekomendasi</h2>
+                <h2 class="text-3xl font-bold text-gray-800">Rekomendasi</h2>
             </div>
             
             <div>
@@ -631,7 +631,7 @@ $vehicleSearchCategories = $categories
 
     @endforeach
 
-    <section data-aos="fade-up" class="my-20 grid gap-5 md:my-24 md:gap-6 lg:grid-cols-2">
+    <section data-aos="fade-up" class="my-10 grid gap-3 md:my-10 md:gap-6 lg:grid-cols-2">
         <a href="{{ route('ads.guide') }}"
             class="group relative isolate flex min-h-[360px] overflow-hidden rounded-2xl bg-transparent text-left transition duration-300 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-200 sm:min-h-[380px] lg:min-h-[420px]">
             <img src="{{ asset('images/222.png') }}" alt="Daftar sebagai agen"
@@ -647,7 +647,7 @@ $vehicleSearchCategories = $categories
 
     
     <section>
-        <div class="mt-16" data-aos="fade-up">
+        <div class="mt-10" data-aos="fade-up">
             <h2 class="text-2xl font-bold mb-6">Berita Terbaru</h2>
 
             <div data-aos="fade-up" class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-3">
