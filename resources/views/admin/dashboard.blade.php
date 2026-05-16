@@ -3,19 +3,19 @@
 @section('admin_content')
 <div>
 
-    <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between mb-6">
+    <div class="flex flex-col gap-2 mb-6 md:flex-row md:items-end md:justify-between">
         <div>
             <p class="text-sm text-gray-500">Dashboard Admin Analytics</p>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Ringkasan Performa Website</h1>
+            <h1 class="text-2xl font-bold text-gray-900 md:text-3xl">Ringkasan Performa Website</h1>
         </div>
 
-        <div class="bg-green-50 text-green-700 px-4 py-2 rounded-lg font-semibold">
+        <div class="px-4 py-2 font-semibold text-green-700 rounded-lg bg-green-50">
             {{ $activeVisitors }} pengunjung aktif sekarang
         </div>
     </div>
 
     @if(session('success'))
-        <div class="mb-5 rounded-lg bg-green-50 border border-green-200 text-green-700 px-4 py-3">
+        <div class="px-4 py-3 mb-5 text-green-700 border border-green-200 rounded-lg bg-green-50">
             {{ session('success') }}
         </div>
     @endif
@@ -30,55 +30,97 @@
     @endif
 
     <!-- ================= STATISTIK ================= -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 xl:grid-cols-4">
 
-        <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-            <p class="text-gray-500 text-sm">Total Listing</p>
-            <h2 class="text-3xl font-bold text-blue-600">{{ $totalListings }}</h2>
+        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
+            <p class="text-sm text-gray-500">Total Listing</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-blue-600">
+                    {{ $totalListings }}
+                </h2>
+                <div class="w-24 h-16">
+                    <canvas id="listingChart"></canvas>
+                </div>
+            </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-            <p class="text-gray-500 text-sm">Total User</p>
-            <h2 class="text-3xl font-bold text-green-600">{{ $totalUsers }}</h2>
+        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
+            <p class="text-sm text-gray-500">Total User</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-green-600">
+                    {{ $totalUsers }}
+                </h2>
+                <canvas id="userChart" class="w-24 h-16"></canvas>
+            </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-            <p class="text-gray-500 text-sm">Listing Aktif</p>
-            <h2 class="text-3xl font-bold text-purple-600">{{ $listingStatusCounts['aktif'] ?? 0 }}</h2>
+        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
+            <p class="text-sm text-gray-500">Listing Aktif</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-purple-600">
+                    {{ $listingStatusCounts['aktif'] ?? 0 }}
+                </h2>
+                <canvas id="activeListingChart" class="w-24 h-16"></canvas>
+            </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
-            <p class="text-gray-500 text-sm">Listing Pending</p>
-            <h2 class="text-3xl font-bold text-yellow-600">{{ $listingStatusCounts['pending'] ?? 0 }}</h2>
+        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
+            <p class="text-sm text-gray-500">Listing Pending</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-yellow-600">
+                    {{ $listingStatusCounts['pending'] ?? 0 }}
+                </h2>
+                <canvas id="pendingListingChart" class="w-24 h-16"></canvas>
+            </div>
         </div>
 
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white p-5 rounded-xl shadow">
-            <p class="text-gray-500 text-sm">Pengunjung Hari Ini</p>
-            <h2 class="text-3xl font-bold text-blue-600">{{ $visitorStats['today'] }}</h2>
+    <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="p-5 bg-white shadow rounded-xl">
+            <p class="text-sm text-gray-500">Pengunjung Hari Ini</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-blue-600">
+                    {{ $visitorStats['today'] }}
+                </h2>
+                <canvas id="todayVisitorChart" class="w-24 h-16"></canvas>
+            </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow">
-            <p class="text-gray-500 text-sm">Pengunjung Minggu Ini</p>
-            <h2 class="text-3xl font-bold text-indigo-600">{{ $visitorStats['week'] }}</h2>
+        <div class="p-5 bg-white shadow rounded-xl">
+            <p class="text-sm text-gray-500">Pengunjung Minggu Ini</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-indigo-600">
+                    {{ $visitorStats['week'] }}
+                </h2>
+                <canvas id="weekVisitorChart" class="w-24 h-16"></canvas>
+            </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow">
-            <p class="text-gray-500 text-sm">Pengunjung Bulan Ini</p>
-            <h2 class="text-3xl font-bold text-orange-600">{{ $visitorStats['month'] }}</h2>
+        <div class="p-5 bg-white shadow rounded-xl">
+            <p class="text-sm text-gray-500">Pengunjung Bulan Ini</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-orange-600">
+                    {{ $visitorStats['month'] }}
+                </h2>
+                <canvas id="monthVisitorChart" class="w-24 h-16"></canvas>
+            </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow">
-            <p class="text-gray-500 text-sm">Total Pengunjung</p>
-            <h2 class="text-3xl font-bold text-gray-900">{{ $visitorStats['total'] }}</h2>
+        <div class="p-5 bg-white shadow rounded-xl">
+            <p class="text-sm text-gray-500">Total Pengunjung</p>
+            <div class="flex items-end justify-between">
+                <h2 class="text-3xl font-bold text-gray-900">
+                    {{ $visitorStats['total'] }}
+                </h2>
+                <canvas id="totalVisitorChart" class="w-24 h-16"></canvas>
+            </div>
         </div>
 
     </div>
 
-    <div class="bg-white rounded-xl shadow overflow-hidden mb-8">
-        <div class="p-4 border-b flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+    <div class="mb-8 overflow-hidden bg-white shadow rounded-xl">
+        <div class="flex flex-col gap-1 p-4 border-b md:flex-row md:items-center md:justify-between">
             <div>
                 <h2 class="font-semibold text-gray-700">Status Kategori</h2>
                 <p class="text-sm text-gray-500">Nonaktifkan kategori sementara tanpa menghapus data listing.</p>
@@ -87,7 +129,7 @@
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-100 text-gray-600">
+                <thead class="text-gray-600 bg-gray-100">
                     <tr>
                         <th class="p-3 text-left">Kategori</th>
                         <th class="p-3 text-center">Jumlah Listing</th>
@@ -122,14 +164,14 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow overflow-hidden xl:col-span-2">
+    <div class="grid grid-cols-1 gap-6 mb-8 xl:grid-cols-3">
+        <div class="overflow-hidden bg-white shadow rounded-xl xl:col-span-2">
             <div class="p-4 border-b">
                 <h2 class="font-semibold text-gray-700">Produk Paling Banyak Diklik</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-gray-100 text-gray-600">
+                    <thead class="text-gray-600 bg-gray-100">
                         <tr>
                             <th class="p-3 text-left">Produk</th>
                             <th class="p-3 text-left">Kategori</th>
@@ -143,7 +185,7 @@
                                 <td class="p-3">
                                     <div class="flex items-center gap-3">
                                         <img src="{{ $listing->images->count() ? asset('storage/'.$listing->images->first()->image) : 'https://via.placeholder.com/80' }}"
-                                            class="w-14 h-10 rounded object-cover" alt="{{ $listing->title }}">
+                                            class="object-cover h-10 rounded w-14" alt="{{ $listing->title }}">
                                         <div>
                                             <p class="font-semibold text-gray-900">{{ $listing->title }}</p>
                                             <p class="text-gray-500">{{ $listing->location }}</p>
@@ -152,7 +194,7 @@
                                 </td>
                                 <td class="p-3">{{ $listing->category->name ?? '-' }}</td>
                                 <td class="p-3">{{ $listing->user->name ?? '-' }}</td>
-                                <td class="p-3 text-center font-bold text-blue-600">{{ $listing->views_count }}</td>
+                                <td class="p-3 font-bold text-center text-blue-600">{{ $listing->views_count }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -164,13 +206,13 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="overflow-hidden bg-white shadow rounded-xl">
             <div class="p-4 border-b">
                 <h2 class="font-semibold text-gray-700">Agen/Pemilik Paling Aktif</h2>
             </div>
             <div class="divide-y">
                 @forelse($activeAgents as $agent)
-                    <div class="p-4 flex items-center justify-between gap-3">
+                    <div class="flex items-center justify-between gap-3 p-4">
                         <div>
                             <p class="font-semibold text-gray-900">{{ $agent->name }}</p>
                             <p class="text-sm text-gray-500">{{ ucfirst($agent->role) }} • {{ $agent->email }}</p>
@@ -187,37 +229,37 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow overflow-hidden mb-8">
+    <div class="mb-8 overflow-hidden bg-white shadow rounded-xl">
         <div class="p-4 border-b">
             <h2 class="font-semibold text-gray-700">Pengunjung 7 Hari Terakhir</h2>
         </div>
-        <div class="p-4 grid grid-cols-1 md:grid-cols-7 gap-3">
+        <div class="grid grid-cols-1 gap-3 p-4 md:grid-cols-7">
             @forelse($dailyVisitors as $day)
                 @php
                     $height = max(18, min(120, ((int) $day->total) * 18));
                 @endphp
-                <div class="bg-gray-50 rounded-lg p-3 flex flex-col justify-end min-h-40">
+                <div class="flex flex-col justify-end p-3 rounded-lg bg-gray-50 min-h-40">
                     <div class="bg-blue-500 rounded-t" style="height: {{ $height }}px"></div>
-                    <p class="text-center font-bold text-gray-900 mt-2">{{ $day->total }}</p>
-                    <p class="text-center text-xs text-gray-500">{{ \Carbon\Carbon::parse($day->visit_date)->format('d M') }}</p>
+                    <p class="mt-2 font-bold text-center text-gray-900">{{ $day->total }}</p>
+                    <p class="text-xs text-center text-gray-500">{{ \Carbon\Carbon::parse($day->visit_date)->format('d M') }}</p>
                 </div>
             @empty
-                <div class="md:col-span-7 p-6 text-center text-gray-400">Belum ada data pengunjung.</div>
+                <div class="p-6 text-center text-gray-400 md:col-span-7">Belum ada data pengunjung.</div>
             @endforelse
         </div>
     </div>
 
     <!-- ================= TABLE ================= -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="overflow-hidden bg-white shadow rounded-xl">
 
-        <div class="p-4 border-b flex justify-between items-center">
+        <div class="flex items-center justify-between p-4 border-b">
             <h2 class="font-semibold text-gray-700">Listing Terbaru</h2>
         </div>
 
         <div class="overflow-x-auto">
 
             <table class="w-full text-sm">
-                <thead class="bg-gray-100 text-gray-600">
+                <thead class="text-gray-600 bg-gray-100">
                     <tr>
                         <th class="p-3 text-left">Gambar</th>
                         <th class="p-3 text-left">Judul</th>
@@ -234,9 +276,9 @@
 
                         <!-- IMAGE -->
                         <td class="p-3">
-                            <img src="{{ $listing->images->count() 
-                                        ? asset('storage/'.$listing->images->first()->image) 
-                                        : 'https://via.placeholder.com/80' }}" class="w-16 h-12 object-cover rounded">
+                            <img src="{{ $listing->images->count()
+                                        ? asset('storage/'.$listing->images->first()->image)
+                                        : 'https://via.placeholder.com/80' }}" class="object-cover w-16 h-12 rounded">
                         </td>
 
                         <!-- TITLE -->
@@ -273,13 +315,13 @@
 
                                 @if($listing->status === 'aktif')
                                     <a href="{{ route('listing.show',$listing->id) }}"
-                                        class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm">
+                                        class="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300">
                                         View
                                     </a>
                                 @endif
 
                                 <a href="{{ route('listings.edit',$listing->id) }}"
-                                    class="bg-yellow-400 hover:bg-yellow-500 px-3 py-1 rounded text-sm">
+                                    class="px-3 py-1 text-sm bg-yellow-400 rounded hover:bg-yellow-500">
                                     Edit
                                 </a>
 
@@ -287,7 +329,7 @@
                                     <form action="{{ route('admin.listings.approve',$listing->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                                        <button class="px-3 py-1 text-sm text-white bg-green-500 rounded hover:bg-green-600"
                                             data-swal-confirm="Publikasikan listing ini?"
                                             data-swal-confirm-button="Ya, publikasikan">
                                             Approve
@@ -298,7 +340,7 @@
                                 <form action="{{ route('listings.destroy',$listing->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                                    <button class="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600"
                                         data-swal-confirm="Yakin hapus data?"
                                         data-swal-confirm-button="Ya, hapus">
                                         Hapus
@@ -311,7 +353,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center p-6 text-gray-400">
+                        <td colspan="6" class="p-6 text-center text-gray-400">
                             Belum ada data listing
                         </td>
                     </tr>
@@ -322,6 +364,42 @@
 
         </div>
     </div>
-
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const listingCtx = document.getElementById('listingChart');
+
+new Chart(listingCtx, {
+    type: 'line',
+    data: {
+        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+        datasets: [{
+            data: [3, 5, 4, 7, 6, 9, 12],
+            borderColor: '#2563eb',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            tension: 0.4,
+            pointRadius: 0,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                display: false
+            },
+            y: {
+                display: false
+            }
+        }
+    }
+});
+</script>
 @endsection
