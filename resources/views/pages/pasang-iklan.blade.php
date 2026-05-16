@@ -35,7 +35,7 @@
             <button type="button" onclick="openUpgradeModal('agen')" class="rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-800 shadow hover:bg-blue-50">
                 Daftar Sebagai Agen
             </button>
-            <button type="button" onclick="openUpgradeModal('pemilik')" class="rounded-xl border border-white/40 px-5 py-3 text-sm font-bold text-white hover:bg-white/10">
+            <button type="button" onclick="openUpgradeModal('pemilik')" class="rounded-xl border bg-blue-800 border-blue-800 px-5 py-3 text-sm font-bold text-white hover:bg-blue-50 hover:text-blue-800 transition">
                 Daftar Pemilik Produk
             </button>
         @endif

@@ -3,7 +3,7 @@
     'height' => 'min-h-[520px]',
     'innerHeight' => 'min-h-[520px]',
     'contentWidth' => 'max-w-2xl',
-    'overlay' => 'bg-gradient-to-r from-slate-950 via-slate-950/75 to-slate-950/10',
+    'overlay' => '',
     'sectionClass' => '',
     'contentClass' => '',
     'pageKey' => null,
@@ -58,18 +58,24 @@
 @endphp
 
 <section id="{{ $heroId }}" data-slides='@json($heroSlides)'
-    {{ $attributes->merge(['class' => "relative md:aspect-[16/9] {$height} overflow-hidden bg-slate-950 text-white {$sectionClass}"]) }}>
+    {{ $attributes->merge(['class' => "ars-hero-frame relative overflow-hidden bg-slate-950 text-white {$sectionClass}"]) }}>
     <div class="absolute inset-0">
         @foreach($heroSlides as $index => $slide)
-            <img src="{{ $slide['image'] }}"
-                alt="{{ $slide['title'] }}"
-                class="hero-carousel-slide absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 md:object-contain {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}">
+            <div class="hero-carousel-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}">
+                <img src="{{ $slide['image'] }}"
+                    alt=""
+                    aria-hidden="true"
+                    class="absolute inset-0 h-full w-full scale-105 object-cover opacity-70 blur-xl">
+                <img src="{{ $slide['image'] }}"
+                    alt="{{ $slide['title'] }}"
+                    class="absolute inset-0 h-full w-full object-contain">
+            </div>
         @endforeach
         <div class="absolute inset-0 {{ $overlay }}"></div>
     </div>
 
-    <div class="relative z-10 mx-auto grid {{ $innerHeight }} max-w-7xl grid-cols-1 items-center justify-items-start gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-2 lg:py-16">
-        <div class="{{ $contentWidth }} {{ $contentClass }} ml-0 mr-auto w-full min-w-0 max-w-[calc(100vw-2rem)] justify-self-start sm:max-w-[calc(100vw-3rem)] lg:max-w-3xl">
+    <div class="ars-hero-inner relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center justify-items-start gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:py-12 xl:grid-cols-2">
+        <div class="{{ $contentWidth }} {{ $contentClass }} ml-0 mr-auto w-full min-w-0 max-w-[calc(100vw-2rem)] justify-self-start overflow-hidden sm:max-w-[calc(100vw-3rem)] xl:max-w-3xl">
             @if($heroSlides->count() > 1)
                 <div class="mb-6 flex gap-3">
                     @foreach($heroSlides as $index => $slide)
@@ -86,12 +92,12 @@
                 {{ $firstSlide['label'] }}
             </p>
 
-            <h1 class="hero-carousel-title max-w-[42rem] whitespace-normal break-words text-left text-2xl font-extrabold leading-tight [overflow-wrap:anywhere] sm:text-4xl md:text-3xl lg:text-6xl"
+            <h1 class="hero-carousel-title max-w-[42rem] whitespace-normal break-words text-left text-[1.6rem] font-extrabold leading-tight [overflow-wrap:anywhere] sm:text-3xl md:max-w-[36rem] md:text-4xl xl:max-w-[42rem] xl:text-5xl"
                 style="color: {{ $firstSlide['title_color'] }};">
                 {{ $firstSlide['title'] }}
             </h1>
 
-            <p class="hero-carousel-text mt-4 max-w-full whitespace-normal break-words text-left text-sm leading-7 text-slate-200 [overflow-wrap:anywhere] sm:max-w-xl sm:text-base md:text-lg md:leading-8"
+            <p class="hero-carousel-text mt-3 max-w-full whitespace-normal break-words text-left text-sm leading-6 text-slate-200 [overflow-wrap:anywhere] sm:max-w-xl sm:text-base md:leading-7"
                 style="color: {{ $firstSlide['text_color'] }};">
                 {{ $firstSlide['text'] }}
             </p>
@@ -113,11 +119,42 @@
             @endif
         </div>
 
-        <div class="hidden lg:block"></div>
+        <div class="hidden xl:block"></div>
     </div>
 </section>
 
 @once
+    @push('styles')
+        <style>
+            .ars-hero-frame {
+                height: clamp(340px, 58vh, 520px);
+            }
+
+            .ars-hero-inner {
+                height: 100%;
+                min-height: 0;
+            }
+
+            @media (min-width: 640px) {
+                .ars-hero-frame {
+                    height: clamp(360px, 50vh, 560px);
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .ars-hero-frame {
+                    height: clamp(400px, 54vh, 620px);
+                }
+            }
+
+            @media (min-width: 1280px) {
+                .ars-hero-frame {
+                    height: clamp(460px, 62vh, 660px);
+                }
+            }
+        </style>
+    @endpush
+
     @push('scripts')
         <script>
         document.addEventListener('DOMContentLoaded', function () {

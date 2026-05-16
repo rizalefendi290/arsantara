@@ -112,7 +112,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', Rule::in(['user', 'admin', 'agen', 'pemilik'])],
+            'role' => ['required', Rule::in(['user', 'admin', 'agen', 'pemilik', 'marketing'])],
             'status' => ['required', Rule::in(['normal', 'pending', 'approved', 'rejected'])],
             'requested_role' => ['nullable', Rule::in(['agen', 'pemilik'])],
         ]);

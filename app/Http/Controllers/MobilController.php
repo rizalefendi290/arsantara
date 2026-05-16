@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Models\Listing;
 
 class MobilController extends Controller
 {
     public function index(Request $request)
     {
         $query = Listing::with(['images','car'])
-            ->where('category_id', 3); // mobil
+            ->inCategorySlug(Category::CAR_SLUG);
 
         // 🔍 FILTER HARGA
         if ($request->min_price) {

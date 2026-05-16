@@ -1,34 +1,74 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ListingController;
-use App\Http\Controllers\CarouselController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RumahController;
-use App\Http\Controllers\MobilController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\PostController;
-use App\Http\Controllers\TestimonialController;
-use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Admin\SalesManagementController;
+use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Agent\AgentDashboardController;
 use App\Http\Controllers\Agent\AgentListingController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\CareerController;
+use App\Http\Controllers\CarouselController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ListingController;
+use App\Http\Controllers\Marketing\SaleController;
 use App\Http\Controllers\OrganizationMemberController;
 use App\Http\Controllers\PartnerController;
-use App\Http\Controllers\CareerController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestimonialController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [ListingController::class, 'home'])->name('home');
+
+Route::get('/listing/{id}', [ListingController::class, 'show'])->name('listing.show');
+Route::get('/post/{id}', [PostController::class, 'show'])->name('post.show');
+
+Route::get('/autoshow', [HomeController::class, 'autoshow'])->name('autoshow');
+Route::get('/autoshow/filter', [HomeController::class, 'autoshowFilter'])->name('autoshow.filter');
+Route::get('/properti', [HomeController::class, 'properti'])->name('properti');
+Route::get('/properti/filter', [HomeController::class, 'propertiFilter'])->name('properti.filter');
+
+Route::get('/mobil', [HomeController::class, 'mobil'])->name('mobil.index');
+Route::get('/motor', [HomeController::class, 'motor'])->name('motor.index');
+Route::get('/rumah', [ListingController::class, 'rumah'])->name('rumah.index');
+Route::get('/tanah', [HomeController::class, 'tanah'])->name('tanah.index');
+Route::redirect('/kategori/mobil', '/mobil');
+Route::redirect('/kategori/tanah', '/tanah');
+Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
+
+Route::get('/search', [ListingController::class, 'search'])->name('search');
+
+Route::prefix('testimoni')->name('testimoni.')->group(function () {
+    Route::get('/', [TestimonialController::class, 'index'])->name('index');
+    Route::get('/create', [TestimonialController::class, 'create'])->name('create');
+    Route::post('/', [TestimonialController::class, 'store'])->name('store');
 });
 
-Route::middleware(['auth','admin'])->group(function () {
-    Route::get('/admin/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])
-        ->name('admin.dashboard');
-});
+Route::get('/about', [HomeController::class, 'about'])->name('about');
+Route::view('/syarat', 'pages.terms')->name('terms');
+Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
+Route::view('/faq', 'pages.faq')->name('faq');
+Route::view('/pasang-iklan', 'pages.pasang-iklan')->name('ads.guide');
+Route::view('/tentang', 'tentang.index')->name('tentang');
+Route::view('/pinjaman-dana', 'pinjaman.index')->name('pinjaman.index');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/api/wilayah/provinces', [CareerController::class, 'wilayahProvinces'])->name('wilayah.provinces');
+Route::get('/api/wilayah/regencies/{provinceCode}', [CareerController::class, 'wilayahRegencies'])->name('wilayah.regencies');
+Route::get('/api/wilayah/districts/{regencyCode}', [CareerController::class, 'wilayahDistricts'])->name('wilayah.districts');
+Route::get('/api/wilayah/villages/{districtCode}', [CareerController::class, 'wilayahVillages'])->name('wilayah.villages');
+
+Route::get('/karir', [CareerController::class, 'index'])->name('careers.index');
+Route::get('/karir/{jobVacancy}', [CareerController::class, 'show'])->name('careers.show');
+Route::get('/karir/{jobVacancy}/lamar', [CareerController::class, 'apply'])->name('careers.apply');
+Route::post('/karir/{jobVacancy}/lamar', [CareerController::class, 'submitApplication'])->name('careers.apply.submit');
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+
+Route::view('/dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -39,165 +79,79 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::resource('admin/listings', ListingController::class);
-});
-
-
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('posts', PostController::class);
-});
-
-
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::patch('/admin/categories/{category}/toggle', [App\Http\Controllers\AdminDashboardController::class, 'toggleCategory'])->name('admin.categories.toggle');
+    Route::resource('admin/listings', ListingController::class)->names('listings');
     Route::get('/admin/listing-exports/excel', [ListingController::class, 'exportExcel'])->name('admin.listings.export.excel');
     Route::get('/admin/listing-exports/pdf', [ListingController::class, 'exportPdf'])->name('admin.listings.export.pdf');
-    Route::resource('/admin/listings', App\Http\Controllers\ListingController::class);
-    Route::get('/admin', [ListingController::class, 'index']);
-    Route::get('/admin/create', [ListingController::class, 'create']);
-    Route::post('/admin/store', [ListingController::class, 'store']);
-    Route::get('/admin/edit/{id}', [ListingController::class, 'edit']);
-    Route::put('/admin/update/{id}', [ListingController::class, 'update']);
     Route::patch('/admin/listings/{id}/approve', [ListingController::class, 'approve'])->name('admin.listings.approve');
-    Route::get('/admin/recommendations', [ListingController::class, 'recommendations'])->name('admin.recommendations.index');
-    Route::patch('/admin/recommendations/{id}/toggle', [ListingController::class, 'toggleRecommendation'])->name('admin.recommendations.toggle');
-    Route::delete('/admin/delete/{id}', [ListingController::class, 'destroy']);
-    Route::get('/delete-image/{id}', [ListingController::class,'deleteImage'])->name('images.delete');
-    // Admin
-    Route::resource('admin/posts', PostController::class);
+    Route::delete('/delete-image/{id}', [ListingController::class, 'deleteImage'])->name('images.delete');
+
+    Route::resource('admin/posts', PostController::class)->names('posts');
     Route::delete('/admin/post-image/{id}', [PostController::class, 'deleteImage'])->name('post-image.delete');
-    Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
-    Route::get('/admin/role-requests', [AdminController::class, 'requests'])->name('admin.role-requests.index');
-    Route::patch('/admin/users/{id}', [AdminController::class, 'update'])->name('admin.users.update');
-    Route::delete('/admin/users/{id}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
-    Route::post('/admin/approve/{id}', [AdminController::class, 'approve'])->name('admin.users.approve');
-    Route::post('/admin/reject/{id}', [AdminController::class, 'reject'])->name('admin.users.reject');
-    Route::get('/admin/organization', [OrganizationMemberController::class, 'index'])->name('admin.organization.index');
-    Route::post('/admin/organization', [OrganizationMemberController::class, 'store'])->name('admin.organization.store');
-    Route::patch('/admin/organization/{organization}', [OrganizationMemberController::class, 'update'])->name('admin.organization.update');
-    Route::delete('/admin/organization/{organization}', [OrganizationMemberController::class, 'destroy'])->name('admin.organization.destroy');
-    Route::get('/admin/partners', [PartnerController::class, 'index'])->name('admin.partners.index');
-    Route::post('/admin/partners', [PartnerController::class, 'store'])->name('admin.partners.store');
-    Route::patch('/admin/partners/{partner}', [PartnerController::class, 'update'])->name('admin.partners.update');
-    Route::delete('/admin/partners/{partner}', [PartnerController::class, 'destroy'])->name('admin.partners.destroy');
-    Route::get('/admin/careers', [CareerController::class, 'adminIndex'])->name('admin.careers.index');
-    Route::get('/admin/careers/applications', [CareerController::class, 'adminApplications'])->name('admin.careers.applications');
-    Route::get('/admin/careers/applications/{jobApplication}', [CareerController::class, 'showApplication'])->name('admin.careers.applications.show');
-    Route::get('/admin/careers/applications/{jobApplication}/cv', [CareerController::class, 'downloadApplicationCv'])->name('admin.careers.applications.cv');
-    Route::patch('/admin/careers/applications/{jobApplication}/accept', [CareerController::class, 'acceptApplication'])->name('admin.careers.applications.accept');
-    Route::patch('/admin/careers/applications/{jobApplication}/reject', [CareerController::class, 'rejectApplication'])->name('admin.careers.applications.reject');
-    Route::delete('/admin/careers/applications/{jobApplication}', [CareerController::class, 'destroyApplication'])->name('admin.careers.applications.destroy');
-    Route::post('/admin/careers', [CareerController::class, 'store'])->name('admin.careers.store');
-    Route::patch('/admin/careers/{jobVacancy}', [CareerController::class, 'update'])->name('admin.careers.update');
-    Route::delete('/admin/careers/{jobVacancy}', [CareerController::class, 'destroy'])->name('admin.careers.destroy');
+
+    Route::get('/admin/carousel', [CarouselController::class, 'index'])->name('carousel.index');
+    Route::post('/admin/carousel', [CarouselController::class, 'store'])->name('carousel.store');
+    Route::patch('/admin/carousel/{id}', [CarouselController::class, 'update'])->name('carousel.update');
+    Route::delete('/admin/carousel/{id}', [CarouselController::class, 'destroy'])->name('carousel.delete');
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [ListingController::class, 'index'])->name('index');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::patch('/categories/{category}/toggle', [AdminDashboardController::class, 'toggleCategory'])->name('categories.toggle');
+
+        Route::get('/recommendations', [ListingController::class, 'recommendations'])->name('recommendations.index');
+        Route::patch('/recommendations/{id}/toggle', [ListingController::class, 'toggleRecommendation'])->name('recommendations.toggle');
+
+        Route::get('/users', [AdminController::class, 'index'])->name('users');
+        Route::get('/role-requests', [AdminController::class, 'requests'])->name('role-requests.index');
+        Route::patch('/users/{id}', [AdminController::class, 'update'])->name('users.update');
+        Route::delete('/users/{id}', [AdminController::class, 'destroy'])->name('users.destroy');
+        Route::post('/approve/{id}', [AdminController::class, 'approve'])->name('users.approve');
+        Route::post('/reject/{id}', [AdminController::class, 'reject'])->name('users.reject');
+
+        Route::get('/organization', [OrganizationMemberController::class, 'index'])->name('organization.index');
+        Route::post('/organization', [OrganizationMemberController::class, 'store'])->name('organization.store');
+        Route::patch('/organization/{organization}', [OrganizationMemberController::class, 'update'])->name('organization.update');
+        Route::delete('/organization/{organization}', [OrganizationMemberController::class, 'destroy'])->name('organization.destroy');
+
+        Route::get('/partners', [PartnerController::class, 'index'])->name('partners.index');
+        Route::post('/partners', [PartnerController::class, 'store'])->name('partners.store');
+        Route::patch('/partners/{partner}', [PartnerController::class, 'update'])->name('partners.update');
+        Route::delete('/partners/{partner}', [PartnerController::class, 'destroy'])->name('partners.destroy');
+
+        Route::get('/careers', [CareerController::class, 'adminIndex'])->name('careers.index');
+        Route::get('/careers/applications', [CareerController::class, 'adminApplications'])->name('careers.applications');
+        Route::get('/careers/applications/{jobApplication}', [CareerController::class, 'showApplication'])->name('careers.applications.show');
+        Route::get('/careers/applications/{jobApplication}/cv', [CareerController::class, 'downloadApplicationCv'])->name('careers.applications.cv');
+        Route::patch('/careers/applications/{jobApplication}/accept', [CareerController::class, 'acceptApplication'])->name('careers.applications.accept');
+        Route::patch('/careers/applications/{jobApplication}/reject', [CareerController::class, 'rejectApplication'])->name('careers.applications.reject');
+        Route::delete('/careers/applications/{jobApplication}', [CareerController::class, 'destroyApplication'])->name('careers.applications.destroy');
+        Route::post('/careers', [CareerController::class, 'store'])->name('careers.store');
+        Route::patch('/careers/{jobVacancy}', [CareerController::class, 'update'])->name('careers.update');
+        Route::delete('/careers/{jobVacancy}', [CareerController::class, 'destroy'])->name('careers.destroy');
+
+        Route::get('/testimonials', [AdminTestimonialController::class, 'index'])->name('testimonials.index');
+        Route::patch('/testimonials/{id}/toggle', [AdminTestimonialController::class, 'toggle'])->name('testimonials.toggle');
+        Route::delete('/testimonials/{id}', [AdminTestimonialController::class, 'destroy'])->name('testimonials.destroy');
+
+        Route::prefix('sales')->name('sales.')->group(function () {
+            Route::get('/', [SalesManagementController::class, 'dashboard'])->name('dashboard');
+            Route::get('/list', [SalesManagementController::class, 'sales'])->name('list');
+            Route::get('/export/excel', [SalesManagementController::class, 'exportExcel'])->name('export.excel');
+            Route::get('/export/pdf', [SalesManagementController::class, 'exportPdf'])->name('export.pdf');
+            Route::post('/{sale}/approve', [SalesManagementController::class, 'approve'])->name('approve');
+            Route::post('/{sale}/reject', [SalesManagementController::class, 'reject'])->name('reject');
+            Route::post('/{sale}/cancel', [SalesManagementController::class, 'cancel'])->name('cancel');
+            Route::get('/marketing', [SalesManagementController::class, 'marketing'])->name('marketing');
+            Route::post('/marketing', [SalesManagementController::class, 'storeMarketing'])->name('marketing.store');
+            Route::patch('/marketing/{user}', [SalesManagementController::class, 'updateMarketing'])->name('marketing.update');
+            Route::get('/commissions', [SalesManagementController::class, 'commissionRules'])->name('commissions');
+            Route::patch('/commissions', [SalesManagementController::class, 'updateCommissionRules'])->name('commissions.update');
+            Route::get('/targets', [SalesManagementController::class, 'targets'])->name('targets');
+            Route::post('/targets', [SalesManagementController::class, 'storeTarget'])->name('targets.store');
+            Route::delete('/targets/{target}', [SalesManagementController::class, 'destroyTarget'])->name('targets.destroy');
+        });
+    });
 });
-//edit carousel
-Route::middleware(['auth','admin'])->group(function(){
-    Route::get('/admin/carousel',[CarouselController::class,'index'])->name('carousel.index');
-    Route::post('/admin/carousel',[CarouselController::class,'store'])->name('carousel.store');
-    Route::patch('/admin/carousel/{id}',[CarouselController::class,'update'])->name('carousel.update');
-    Route::delete('/admin/carousel/{id}',[CarouselController::class,'destroy'])->name('carousel.delete');
-});
-//beranda user
-
-Route::get('/', [ListingController::class, 'home'])->name('home');
-Route::get('/listing/{id}', [ListingController::class, 'show'])
-    ->name('listing.show');
-Route::get('/', [ListingController::class, 'home'])->name('home');
-
-
-Route::get('/autoshow', [HomeController::class, 'autoshow'])->name('autoshow');
-Route::get('/autoshow/filter', [HomeController::class, 'autoshowFilter'])->name('autoshow.filter');
-
-Route::get('/properti', [HomeController::class, 'properti'])->name('properti');
-Route::get('/properti/filter', [HomeController::class, 'propertiFilter'])->name('properti.filter');
-
-//halaman kategori
-Route::get('/mobil', [HomeController::class, 'mobil'])->name('mobil.index');
-Route::get('/motor', [HomeController::class, 'motor'])->name('motor.index');
-Route::get('/rumah', [ListingController::class, 'rumah'])->name('rumah.index');
-Route::get('/tanah', [HomeController::class, 'tanah'])->name('tanah.index');
-
-// Remove conflicting route
-// Route::get('/rumah', [ListingController::class, 'index'])
-//     ->name('rumah.index');
-
-// Berita detail
-Route::get('/post/{id}', [PostController::class, 'show'])->name('post.show');
-
-//ulasan
-
-Route::prefix('testimoni')->name('testimoni.')->group(function () {
-    Route::get('/', [TestimonialController::class, 'index'])->name('index');
-    Route::get('/create', [TestimonialController::class, 'create'])->name('create');
-    Route::post('/', [TestimonialController::class, 'store'])->name('store');
-});
-
-Route::middleware(['auth','admin'])->group(function () {
-    Route::resource('admin/testimonials', TestimonialController::class)
-        ->except(['create','store','show']);
-});
-
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-
-    Route::get('/testimonials', [\App\Http\Controllers\Admin\TestimonialController::class, 'index'])
-        ->name('admin.testimonials.index');
-
-    Route::patch('/testimonials/{id}/toggle', [\App\Http\Controllers\Admin\TestimonialController::class, 'toggle'])
-        ->name('admin.testimonials.toggle');
-
-    Route::delete('/testimonials/{id}', [\App\Http\Controllers\Admin\TestimonialController::class, 'destroy'])
-        ->name('admin.testimonials.destroy');
-
-});
-
-Route::get('/about', function () {
-    $posts = \App\Models\Post::with('images')->latest()->take(5)->get();
-    $organizationMembers = \App\Models\OrganizationMember::where('is_active', true)
-        ->orderBy('sort_order')
-        ->latest()
-        ->get();
-    $partners = \App\Models\Partner::where('is_active', true)
-        ->orderBy('sort_order')
-        ->latest()
-        ->get();
-
-    return view('about', compact('posts', 'organizationMembers', 'partners'));
-})->name('about');
-
-Route::view('/syarat', 'pages.terms')->name('terms');
-Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
-Route::view('/faq', 'pages.faq')->name('faq');
-Route::view('/pasang-iklan', 'pages.pasang-iklan')->name('ads.guide');
-
-Route::prefix('kategori')->group(function () {
-    Route::get('/tanah', [ListingController::class, 'tanah'])->name('tanah.index');
-    Route::get('/mobil', [ListingController::class, 'mobil'])->name('mobil.index');
-});
-
-Route::get('/search', [ListingController::class, 'search'])->name('search');
-Route::get('/api/wilayah/provinces', [CareerController::class, 'wilayahProvinces'])->name('wilayah.provinces');
-Route::get('/api/wilayah/regencies/{provinceCode}', [CareerController::class, 'wilayahRegencies'])->name('wilayah.regencies');
-Route::get('/api/wilayah/districts/{regencyCode}', [CareerController::class, 'wilayahDistricts'])->name('wilayah.districts');
-Route::get('/api/wilayah/villages/{districtCode}', [CareerController::class, 'wilayahVillages'])->name('wilayah.villages');
-Route::get('/karir', [CareerController::class, 'index'])->name('careers.index');
-Route::get('/karir/{jobVacancy}', [CareerController::class, 'show'])->name('careers.show');
-Route::get('/karir/{jobVacancy}/lamar', [CareerController::class, 'apply'])->name('careers.apply');
-Route::post('/karir/{jobVacancy}/lamar', [CareerController::class, 'submitApplication'])->name('careers.apply.submit');
-
-Route::get('/tentang', function () {
-    return view('tentang.index');
-})->name('tentang');
-
-//pinjam dana
-Route::get('/pinjaman-dana', function () {
-    return view('pinjaman.index');
-})->name('pinjaman.index');
-
-Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
-Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
 
 Route::middleware(['auth', 'approved', 'agent.owner'])->group(function () {
     Route::get('/dashboard-agen', [AgentDashboardController::class, 'index'])->name('agent.dashboard');
@@ -210,4 +164,11 @@ Route::middleware(['auth', 'approved', 'agent.owner'])->group(function () {
     Route::patch('/agen/listings/{listing}/sold', [AgentListingController::class, 'markSold'])->name('agent.listings.sold');
     Route::delete('/agen/listing-images/{image}', [AgentListingController::class, 'deleteImage'])->name('agent.listings.images.destroy');
 });
-require __DIR__.'/auth.php';
+
+Route::middleware(['auth', 'approved', 'marketing'])->prefix('marketing')->name('marketing.')->group(function () {
+    Route::get('/dashboard', [SaleController::class, 'dashboard'])->name('dashboard');
+    Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+    Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
+    Route::post('/sales', [SaleController::class, 'store'])->name('sales.store');
+    Route::post('/sales/{sale}/cancel', [SaleController::class, 'cancel'])->name('sales.cancel');
+});

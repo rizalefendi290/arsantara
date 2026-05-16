@@ -18,6 +18,19 @@
         <style>
         html {
             scroll-behavior: smooth;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        @supports (overflow: clip) {
+            html,
+            body {
+                overflow-x: clip;
+            }
+        }
+
+        body {
+            max-width: 100%;
         }
 
         [x-cloak] {
@@ -61,6 +74,7 @@
             animation: fadeIn 0.5s ease;
         }
         </style>
+        @stack('styles')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-gradient-to-b from-white via-blue-50 to-blue-100 relative overflow-x-hidden">
@@ -199,10 +213,10 @@
             $whatsappMessage = rawurlencode('Halo admin Arsantara Management, saya ingin bertanya tentang produk yang tersedia.');
             $whatsappUrl = $whatsappNumber ? "https://wa.me/{$whatsappNumber}?text={$whatsappMessage}" : '#';
         @endphp
-        <div id="consultationWidget" class="fixed bottom-5 right-5 z-[70]">
+        <div id="consultationWidget" class="fixed bottom-4 right-4 z-[70] sm:bottom-5 sm:right-5">
             <button type="button" id="consultationOpenButton" aria-label="Buka konsultasi gratis"
-                class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#f3bd12] text-[#08234c] shadow-2xl shadow-slate-900/25 ring-[10px] ring-white transition hover:bg-[#e5ad05] focus:outline-none focus:ring-blue-100">
-                <svg class="h-9 w-9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#f3bd12] text-[#08234c] shadow-2xl shadow-slate-900/25 ring-8 ring-white transition hover:bg-[#e5ad05] focus:outline-none focus:ring-blue-100 sm:h-16 sm:w-16 sm:ring-[10px]">
+                <svg class="h-7 w-7 sm:h-9 sm:w-9" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M4 4.8C4 3.8 4.8 3 5.8 3h12.4c1 0 1.8.8 1.8 1.8v8.4c0 1-.8 1.8-1.8 1.8h-5.5l-4.8 3.7c-.6.5-1.5 0-1.5-.8V15h-.6c-1 0-1.8-.8-1.8-1.8V4.8Zm5 4.1a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm3.5 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm3.5 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z" />
                 </svg>
             </button>

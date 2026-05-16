@@ -24,6 +24,31 @@
     ];
 @endphp
 
+@push('styles')
+<style>
+    @keyframes partner-logo-marquee {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .partner-logo-track {
+        animation: partner-logo-marquee 10s linear infinite;
+    }
+
+
+    @media (prefers-reduced-motion: reduce) {
+        .partner-logo-track {
+            animation: none;
+        }
+    }
+</style>
+@endpush
+
 <x-hero-carousel :slides="$heroSlides" height="min-h-[560px]" inner-height="min-h-[560px]" content-width="max-w-3xl">
     <a href="{{ route('properti') }}" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow hover:bg-blue-700">
         Jelajahi Properti
@@ -187,9 +212,9 @@
     </section>
 
     @if($organizationMembers->count())
-        <section class="mx-auto max-w-6xl px-6 pb-16">
+        <section class="mx-auto max-w-7xl px-6 pb-16">
             <div class="mb-10 text-center">
-                <p class="text-sm font-semibold uppercase text-blue-600">Kepemimpinan</p>
+                <p class="text-sm font-semibold uppercase text-blue-600">Tim Kami</p>
                 <h2 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
                     Struktur Organisasi Arsantara
                 </h2>
@@ -198,27 +223,28 @@
                 </p>
             </div>
 
-            <div class="space-y-14">
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach($organizationMembers as $member)
-                    <article class="grid items-center gap-8 md:grid-cols-[1fr_280px] {{ $loop->even ? 'md:grid-cols-[280px_1fr]' : '' }}">
-                        <div class="{{ $loop->even ? 'md:order-2' : '' }}">
-                            <p class="text-sm font-bold uppercase text-blue-600">{{ $member->position }}</p>
-                            <h3 class="mt-2 text-2xl font-extrabold text-gray-950">{{ $member->name }}</h3>
-                            @if($member->profile)
-                                <p class="mt-4 text-sm leading-7 text-gray-600 md:text-base">{{ $member->profile }}</p>
-                            @else
-                                <p class="mt-4 text-sm leading-7 text-gray-600 md:text-base">
-                                    Berperan dalam memastikan layanan Arsantara berjalan profesional, responsif, dan selaras dengan kebutuhan pengguna.
-                                </p>
-                            @endif
-                        </div>
-
-                        <div class="{{ $loop->even ? 'md:order-1' : '' }} mx-auto">
-                            <div class="h-64 w-64 overflow-hidden rounded-full bg-gray-100 ring-8 ring-blue-50 md:h-72 md:w-72">
+                    <article class="group overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+                        <div class="relative bg-gradient-to-br from-blue-50 via-white to-green-50 px-6 pt-6">
+                            <div class="absolute inset-x-0 bottom-0 h-16 bg-white"></div>
+                            <div class="relative mx-auto h-36 w-36 overflow-hidden rounded-full bg-gray-100 ring-8 ring-white shadow-lg">
                                 <img src="{{ $member->photo ? asset('storage/'.$member->photo) : asset('images/logo.png') }}"
                                     alt="{{ $member->name }}"
                                     class="h-full w-full object-cover">
                             </div>
+                        </div>
+
+                        <div class="px-6 pb-6 pt-5 text-center">
+                            <p class="mx-auto inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-blue-700">
+                                {{ $member->position }}
+                            </p>
+                            <h3 class="mt-4 text-xl font-extrabold text-gray-950">
+                                {{ $member->name }}
+                            </h3>
+                            <p class="mt-3 text-sm leading-6 text-gray-600">
+                                {{ $member->profile ?: 'Berperan dalam memastikan layanan Arsantara berjalan profesional, responsif, dan selaras dengan kebutuhan pengguna.' }}
+                            </p>
                         </div>
                     </article>
                 @endforeach
@@ -227,52 +253,47 @@
     @endif
 
     @if($partners->count())
-        <section class="mx-auto max-w-7xl px-6 pb-20">
-            <div class="mb-8 text-center">
-                <p class="text-sm font-semibold uppercase text-blue-600">Mitra</p>
-                <h2 class="mt-2 text-3xl font-bold text-gray-900 md:text-4xl">
-                    Mitra Arsantara
-                </h2>
-                <p class="mx-auto mt-4 max-w-3xl leading-7 text-gray-600">
-                    Kolaborasi dengan mitra membantu Arsantara memperluas layanan properti, kendaraan, pembiayaan, dan dukungan transaksi.
-                </p>
-            </div>
+        <section class="overflow-hidden bg-white px-6 pb-20 pt-4">
+            <div class="mx-auto max-w-7xl">
+                <div class="mb-10 text-center">
+                    <h2 class="text-4xl font-extrabold leading-tight text-blue-600 md:text-5xl">
+                        Mitra Kami
+                    </h2>
+                    <p class="mx-auto mt-4 max-w-3xl text-sm leading-7 text-gray-500 md:text-base">
+                        Arsantara berkolaborasi dengan mitra pembiayaan untuk memperluas pilihan layanan bagi pelanggan.
+                    </p>
+                </div>
 
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach($partners as $partner)
-                    @if($partner->website_url)
-                        <a href="{{ $partner->website_url }}" target="_blank" rel="noopener noreferrer"
-                            class="group block rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-                            <div class="mx-auto flex h-24 w-full items-center justify-center rounded-xl bg-gray-50 p-4">
-                                <img src="{{ $partner->logo ? asset('storage/'.$partner->logo) : asset('images/logo.png') }}"
-                                    alt="{{ $partner->name }}"
-                                    class="max-h-full max-w-full object-contain">
-                            </div>
-                            <h3 class="mt-4 text-lg font-extrabold text-gray-950 group-hover:text-blue-700">{{ $partner->name }}</h3>
-                            @if($partner->category)
-                                <p class="mt-1 text-sm font-semibold text-blue-700">{{ $partner->category }}</p>
-                            @endif
-                            @if($partner->description)
-                                <p class="mt-3 text-sm leading-6 text-gray-600">{{ $partner->description }}</p>
-                            @endif
-                        </a>
-                    @else
-                        <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
-                            <div class="mx-auto flex h-24 w-full items-center justify-center rounded-xl bg-gray-50 p-4">
-                                <img src="{{ $partner->logo ? asset('storage/'.$partner->logo) : asset('images/logo.png') }}"
-                                    alt="{{ $partner->name }}"
-                                    class="max-h-full max-w-full object-contain">
-                            </div>
-                            <h3 class="mt-4 text-lg font-extrabold text-gray-950">{{ $partner->name }}</h3>
-                            @if($partner->category)
-                                <p class="mt-1 text-sm font-semibold text-blue-700">{{ $partner->category }}</p>
-                            @endif
-                            @if($partner->description)
-                                <p class="mt-3 text-sm leading-6 text-gray-600">{{ $partner->description }}</p>
-                            @endif
-                        </div>
-                    @endif
-                @endforeach
+                <div class="partner-logo-marquee relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-white/0 md:w-28"></div>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-white/0 md:w-28"></div>
+
+                    <div class="partner-logo-track flex w-max items-center gap-10 py-8 md:gap-16">
+                        @foreach(range(1, 2) as $loopIndex)
+                            @foreach($partners as $partner)
+                                @php
+                                    $partnerLogo = $partner->logo ? asset('storage/'.$partner->logo) : asset('images/logo.png');
+                                @endphp
+
+                                @if($partner->website_url)
+                                    <a href="{{ $partner->website_url }}" target="_blank" rel="noopener noreferrer"
+                                        class="flex h-20 w-44 shrink-0 items-center justify-center px-4 transition duration-300 hover:scale-105 sm:w-52 md:h-24 md:w-60"
+                                        aria-label="{{ $partner->name }}">
+                                        <img src="{{ $partnerLogo }}"
+                                            alt="{{ $partner->name }}"
+                                            class="max-h-14 max-w-full object-contain  transition duration-300 hover:grayscale-0 hover:opacity-100 md:max-h-16">
+                                    </a>
+                                @else
+                                    <div class="flex h-20 w-44 shrink-0 items-center justify-center px-4 sm:w-52 md:h-24 md:w-60">
+                                        <img src="{{ $partnerLogo }}"
+                                            alt="{{ $partner->name }}"
+                                            class="max-h-14 max-w-full object-contain  transition duration-300 hover:grayscale-0 hover:opacity-100 md:max-h-16">
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </section>
     @endif

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Carousel extends Model
 {
@@ -27,6 +28,15 @@ class Carousel extends Model
         'sort_order' => 'integer',
         'buttons' => 'array',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Carousel $carousel) {
+            if ($carousel->image) {
+                Storage::disk('public')->delete($carousel->image);
+            }
+        });
+    }
 
     public function scopeContent($query)
     {

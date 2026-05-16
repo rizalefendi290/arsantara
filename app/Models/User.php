@@ -7,8 +7,12 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+<<<<<<< HEAD
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+=======
+use Illuminate\Support\Facades\Storage;
+>>>>>>> 67282a1cdfb22467e1841b52ff2a42dba364cc34
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -29,6 +33,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'role',
         'status',
+        'is_active',
         'requested_role',
     ];
 
@@ -52,12 +57,34 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
-        public function listings()
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user) {
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $user->listings()->get()->each->delete();
+        });
+    }
+
+    public function listings()
     {
         return $this->hasMany(Listing::class);
+    }
+
+    public function marketingSales()
+    {
+        return $this->hasMany(MarketingSale::class);
+    }
+
+    public function marketingTargets()
+    {
+        return $this->hasMany(MarketingTarget::class);
     }
 
     public function favorites()

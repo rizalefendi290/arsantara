@@ -57,7 +57,7 @@
 
             <select name="role" class="px-3 py-2 border rounded-lg">
                 <option value="">Semua role</option>
-                @foreach(['user' => 'User', 'admin' => 'Admin', 'agen' => 'Agen', 'pemilik' => 'Pemilik'] as $value => $label)
+                @foreach(['user' => 'User', 'admin' => 'Admin', 'agen' => 'Agen', 'pemilik' => 'Pemilik', 'marketing' => 'Marketing'] as $value => $label)
                     <option value="{{ $value }}" {{ request('role') === $value ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
@@ -113,7 +113,7 @@
                                 <select form="update-user-{{ $user->id }}" name="role"
                                     class="w-full px-2 py-1 border rounded"
                                     {{ auth()->id() === $user->id ? 'disabled' : '' }}>
-                                    @foreach(['user' => 'User', 'admin' => 'Admin', 'agen' => 'Agen', 'pemilik' => 'Pemilik'] as $value => $label)
+                                    @foreach(['user' => 'User', 'admin' => 'Admin', 'agen' => 'Agen', 'pemilik' => 'Pemilik', 'marketing' => 'Marketing'] as $value => $label)
                                         <option value="{{ $value }}" {{ $user->role === $value ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>

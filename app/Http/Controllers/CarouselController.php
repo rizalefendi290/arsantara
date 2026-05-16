@@ -18,6 +18,7 @@ class CarouselController extends Controller
         'mobil.index' => 'Mobil',
         'motor.index' => 'Motor',
         'about' => 'Tentang Kami',
+        'pinjaman.index' => 'Pinjaman Dana',
         'ads.guide' => 'Pasang Iklan',
         'faq' => 'FAQ',
         'terms' => 'Syarat & Ketentuan',
@@ -25,6 +26,7 @@ class CarouselController extends Controller
         'testimoni.index' => 'Testimoni',
         'testimoni.create' => 'Buat Testimoni',
         'profile.edit' => 'Profil',
+        'careers.index' => 'Karir',
     ];
 
     public function index()

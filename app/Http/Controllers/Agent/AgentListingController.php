@@ -16,10 +16,6 @@ use Illuminate\Validation\Rule;
 
 class AgentListingController extends Controller
 {
-    private const PROPERTY_CATEGORY_IDS = [1, 2, 5, 6, 7, 8];
-    private const COMMERCIAL_PROPERTY_CATEGORY_IDS = [5, 6, 7, 8];
-    private const CAR_LIKE_CATEGORY_IDS = [3, 9];
-
     public function create()
     {
         $categories = Category::active()->get();

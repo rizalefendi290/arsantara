@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Partner extends Model
 {
@@ -20,4 +21,13 @@ class Partner extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Partner $partner) {
+            if ($partner->logo) {
+                Storage::disk('public')->delete($partner->logo);
+            }
+        });
+    }
 }

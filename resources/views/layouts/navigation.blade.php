@@ -94,6 +94,12 @@
                     </a>
                     @endif
 
+                    @if(auth()->user()->role === 'marketing')
+                    <a href="{{ route('marketing.dashboard') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">
+                        Dashboard Marketing
+                    </a>
+                    @endif
+
                     <!-- LOGOUT -->
                     <form method="POST" action="{{ route('logout') }}" data-swal-confirm="Keluar dari akun sekarang?">
                         @csrf
@@ -323,6 +329,10 @@
                     @if(auth()->user()->role === 'pemilik')
                         <a href="{{ route('owner.dashboard') }}" onclick="closeMobileMenu()"
                             class="block rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700">Dashboard Pemilik</a>
+                    @endif
+                    @if(auth()->user()->role === 'marketing')
+                        <a href="{{ route('marketing.dashboard') }}" onclick="closeMobileMenu()"
+                            class="block rounded-xl px-4 py-3 text-sm font-semibold text-gray-800 hover:bg-blue-50 hover:text-blue-700">Dashboard Marketing</a>
                     @endif
                     @if(auth()->user()->role === 'user')
                         <button type="button" onclick="closeMobileMenu(); openUpgradeModal('agen')"
