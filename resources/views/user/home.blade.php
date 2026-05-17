@@ -40,21 +40,21 @@ $vehicleSearchCategories = $categories
     content-width="max-w-2xl" content-class="xl:translate-x-0" />
 
 <!-- SEARCH BOX FLOAT -->
-<div class="relative -mt-20 z-20 flex justify-center px-4 sm:px-6">
+<div class="relative z-20 flex justify-center px-4 -mt-20 sm:px-6">
+<div class="relative z-20 flex justify-center px-6 -mt-20">
 
     <form data-aos="zoom-in" method="GET" action="{{ route('search') }}"
-        class="w-full max-w-5xl bg-white/95 backdrop-blur-xl border border-white/30 rounded-3xl p-4 shadow-2xl sm:p-6">
+        class="w-full max-w-5xl p-4 border shadow-2xl bg-white/95 backdrop-blur-xl border-white/30 rounded-3xl sm:p-6">
+        class="w-full max-w-5xl p-6 border shadow-2xl bg-white/95 backdrop-blur-xl border-white/30 rounded-3xl">
 
         <!-- TAB -->
         <div class="flex justify-center gap-3 mb-6">
 
-            <button type="button" data-search-tab="property" onclick="setSearchType('property')" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
-                bg-blue-600 text-white shadow-md hover:bg-blue-700">
+            <button type="button" data-search-tab="property" onclick="setSearchType('property')" class="px-5 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-full shadow-md tab-btn hover:bg-blue-700">
                 Properti
             </button>
 
-            <button type="button" data-search-tab="vehicle" onclick="setSearchType('vehicle')" class="tab-btn px-5 py-2 rounded-full text-sm font-medium transition 
-                bg-blue-100 text-blue-700 hover:bg-blue-200">
+            <button type="button" data-search-tab="vehicle" onclick="setSearchType('vehicle')" class="px-5 py-2 text-sm font-medium text-blue-700 transition bg-blue-100 rounded-full tab-btn hover:bg-blue-200">
                 Kendaraan
             </button>
 
@@ -64,7 +64,7 @@ $vehicleSearchCategories = $categories
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 
             <input type="text" name="keyword" placeholder="Cari properti atau kendaraan..."
-                class="md:col-span-2 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                class="px-4 py-3 border border-gray-200 outline-none md:col-span-2 rounded-xl focus:ring-2 focus:ring-blue-500">
 
             <x-price-filter-input name="min_price" placeholder="Harga minimum" />
 
@@ -73,12 +73,12 @@ $vehicleSearchCategories = $categories
         </div>
 
         <div class="mt-4">
-            <div data-filter-panel="property" class="category-filter grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div data-filter-panel="property" class="grid grid-cols-1 gap-3 category-filter md:grid-cols-2">
                 <div class="relative md:col-span-1">
                     <button type="button" data-property-dropdown-toggle
-                        class="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-gray-700 outline-none transition hover:border-blue-300 focus:ring-2 focus:ring-blue-500">
+                        class="flex items-center justify-between w-full px-4 py-3 text-left text-gray-700 transition bg-white border border-gray-200 outline-none rounded-xl hover:border-blue-300 focus:ring-2 focus:ring-blue-500">
                         <span data-property-category-label>Semua Properti</span>
-                        <svg class="h-4 w-4 text-blue-600 transition" data-property-dropdown-icon fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-blue-600 transition" data-property-dropdown-icon fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
@@ -86,9 +86,9 @@ $vehicleSearchCategories = $categories
                     <div data-property-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden max-h-[70vh] overflow-y-auto rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl sm:w-[min(620px,calc(100vw-2rem))]">
                         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                             <button type="button" data-property-option="" onclick="selectPropertyCategory('', 'Semua Properti')"
-                                class="property-option flex min-h-20 flex-col justify-between rounded-xl border border-blue-600 bg-blue-50 p-3 text-left text-sm font-semibold text-blue-700 transition hover:border-blue-600">
-                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                class="flex flex-col justify-between p-3 text-sm font-semibold text-left text-blue-700 transition border border-blue-600 property-option min-h-20 rounded-xl bg-blue-50 hover:border-blue-600">
+                                <span class="inline-flex items-center justify-center w-8 h-8 text-blue-700 bg-blue-100 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path d="M4 10.5 12 4l8 6.5" stroke-linecap="round" stroke-linejoin="round" />
                                         <path d="M6 10v9h12v-9" stroke-linecap="round" stroke-linejoin="round" />
                                         <path d="M9 19v-5h6v5" stroke-linecap="round" stroke-linejoin="round" />
@@ -99,36 +99,48 @@ $vehicleSearchCategories = $categories
 
                             @foreach($propertySearchCategories as $category)
                                 <button type="button" data-property-option="{{ $category->id }}" onclick="selectPropertyCategory('{{ $category->id }}', '{{ $category->name }}')"
-                                    class="property-option flex min-h-20 flex-col justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm font-semibold text-gray-700 transition hover:border-blue-500 hover:text-blue-700">
-                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                                    class="flex flex-col justify-between p-3 text-sm font-semibold text-left text-gray-700 transition bg-white border border-gray-200 property-option min-h-20 rounded-xl hover:border-blue-500 hover:text-blue-700">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 text-blue-700 rounded-lg bg-blue-50">
                                         @if($category->slug === \App\Models\Category::HOUSE_SLUG)
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    class="flex flex-col justify-between p-3 text-sm font-semibold text-left text-gray-700 transition bg-white border border-gray-200 property-option min-h-20 rounded-xl hover:border-blue-500 hover:text-blue-700">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 text-blue-700 rounded-lg bg-blue-50">
+                                        @if($category->id == 1)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M3 11 12 4l9 7" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M9 20v-6h6v6" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         @elseif($category->slug === \App\Models\Category::LAND_SLUG)
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        @elseif($category->id == 2)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M4 6h16M4 18h16M7 6v12M17 6v12" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="m7 12 5-3 5 3-5 3-5-3Z" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         @elseif($category->slug === 'ruko')
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        @elseif($category->id == 5)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M4 20h16V8L12 4 4 8v12Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M8 12h2M14 12h2M8 16h2M14 16h2" stroke-linecap="round" />
                                             </svg>
                                         @elseif($category->slug === 'perkantoran')
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        @elseif($category->id == 6)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M5 20V4h14v16" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M9 8h2M13 8h2M9 12h2M13 12h2M9 16h2M13 16h2" stroke-linecap="round" />
                                             </svg>
                                         @elseif($category->slug === 'gudang')
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        @elseif($category->id == 7)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M3 20h18V9l-9-5-9 5v11Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M7 20v-7h10v7M7 13h10" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         @else
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M5 8h14v12H5V8Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M8 8V5h8v3M8 12h8M8 16h5" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
@@ -142,15 +154,15 @@ $vehicleSearchCategories = $categories
                 </div>
 
                 <input type="text" name="location" placeholder="Lokasi properti"
-                    class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                    class="px-4 py-3 border border-gray-200 outline-none rounded-xl focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <div data-filter-panel="vehicle" class="category-filter hidden grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
+            <div data-filter-panel="vehicle" class="grid hidden grid-cols-1 gap-3 category-filter md:grid-cols-2 lg:grid-cols-5">
                 <div class="relative md:col-span-2">
                     <button type="button" data-vehicle-dropdown-toggle disabled
-                        class="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-gray-700 outline-none transition hover:border-blue-300 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50">
+                        class="flex items-center justify-between w-full px-4 py-3 text-left text-gray-700 transition bg-white border border-gray-200 outline-none rounded-xl hover:border-blue-300 focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50">
                         <span data-vehicle-category-label>Semua Kendaraan</span>
-                        <svg class="h-4 w-4 text-blue-600 transition" data-vehicle-dropdown-icon fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-blue-600 transition" data-vehicle-dropdown-icon fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
@@ -158,9 +170,9 @@ $vehicleSearchCategories = $categories
                     <div data-vehicle-dropdown class="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-30 hidden max-h-[70vh] overflow-y-auto rounded-2xl border border-gray-100 bg-white p-3 shadow-2xl sm:w-[min(620px,calc(100vw-2rem))]">
                         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                             <button type="button" data-vehicle-option="" onclick="selectVehicleCategory('', 'Semua Kendaraan')"
-                                class="vehicle-option flex min-h-20 flex-col justify-between rounded-xl border border-blue-600 bg-blue-50 p-3 text-left text-sm font-semibold text-blue-700 transition hover:border-blue-600">
-                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                class="flex flex-col justify-between p-3 text-sm font-semibold text-left text-blue-700 transition border border-blue-600 vehicle-option min-h-20 rounded-xl bg-blue-50 hover:border-blue-600">
+                                <span class="inline-flex items-center justify-center w-8 h-8 text-blue-700 bg-blue-100 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path d="M3 13h2l2-4h10l2 4h2" stroke-linecap="round" stroke-linejoin="round" />
                                         <path d="M5 13v5h14v-5" stroke-linecap="round" stroke-linejoin="round" />
                                         <path d="M7 18h.01M17 18h.01" stroke-linecap="round" stroke-linejoin="round" />
@@ -171,21 +183,27 @@ $vehicleSearchCategories = $categories
 
                             @foreach($vehicleSearchCategories as $category)
                                 <button type="button" data-vehicle-option="{{ $category->id }}" onclick="selectVehicleCategory('{{ $category->id }}', @js($category->name))"
-                                    class="vehicle-option flex min-h-20 flex-col justify-between rounded-xl border border-gray-200 bg-white p-3 text-left text-sm font-semibold text-gray-700 transition hover:border-blue-500 hover:text-blue-700">
-                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                                    class="flex flex-col justify-between p-3 text-sm font-semibold text-left text-gray-700 transition bg-white border border-gray-200 vehicle-option min-h-20 rounded-xl hover:border-blue-500 hover:text-blue-700">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 text-blue-700 rounded-lg bg-blue-50">
                                         @if($category->slug === \App\Models\Category::CAR_SLUG)
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    class="flex flex-col justify-between p-3 text-sm font-semibold text-left text-gray-700 transition bg-white border border-gray-200 vehicle-option min-h-20 rounded-xl hover:border-blue-500 hover:text-blue-700">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 text-blue-700 rounded-lg bg-blue-50">
+                                        @if($category->id == 3)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M4 13h2l2-4h8l2 4h2" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M5 13v5h14v-5" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M7 18h.01M17 18h.01" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         @elseif($category->slug === \App\Models\Category::MOTORCYCLE_SLUG)
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        @elseif($category->id == 4)
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M5 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0ZM16 17a3 3 0 1 0 6 0 3 3 0 0 0-6 0Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M11 17h5l-2-6h-3l-3 3M13 8h3" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
                                         @else
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M3 8h11v10H3V8Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M14 12h4l3 3v3h-7v-6Z" stroke-linecap="round" stroke-linejoin="round" />
                                                 <path d="M6 18h.01M17 18h.01" stroke-linecap="round" stroke-linejoin="round" />
@@ -200,15 +218,15 @@ $vehicleSearchCategories = $categories
                 </div>
 
                 <input type="text" name="brand" placeholder="Merk kendaraan" disabled
-                    class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                    class="px-4 py-3 border border-gray-200 outline-none rounded-xl focus:ring-2 focus:ring-blue-500">
 
-                <select name="transmission" disabled class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                <select name="transmission" disabled class="px-4 py-3 border border-gray-200 outline-none rounded-xl focus:ring-2 focus:ring-blue-500">
                     <option value="">Transmisi</option>
                     <option value="manual">Manual</option>
                     <option value="matic">Matic</option>
                 </select>
 
-                <select name="condition" disabled class="px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                <select name="condition" disabled class="px-4 py-3 border border-gray-200 outline-none rounded-xl focus:ring-2 focus:ring-blue-500">
                     <option value="">Kondisi</option>
                     <option value="baru">Baru</option>
                     <option value="bekas">Bekas</option>
@@ -216,9 +234,10 @@ $vehicleSearchCategories = $categories
             </div>
         </div>
 
-        <div class="mt-4 flex justify-end">
-            <button type="submit" class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold 
-                hover:bg-blue-700 transition shadow-md max-sm:w-full">
+        <div class="flex justify-end mt-4">
+            <button type="submit" class="px-6 py-3 font-semibold text-white transition bg-blue-600 shadow-md rounded-xl hover:bg-blue-700 max-sm:w-full">
+        <div class="flex justify-end mt-4">
+            <button type="submit" class="px-6 py-3 font-semibold text-white transition bg-blue-600 shadow-md rounded-xl hover:bg-blue-700">
                 Cari
             </button>
         </div>
@@ -230,9 +249,10 @@ $vehicleSearchCategories = $categories
 </div>
 
 <div class="relative mt-10 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white py-14 sm:py-20">
+<div class="relative py-20 mt-10 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
 
     <!-- WAVE ATAS (LEBIH HALUS) -->
-    <div class="absolute top-0 left-0 w-full overflow-hidden leading-none z-0">
+    <div class="absolute top-0 left-0 z-0 w-full overflow-hidden leading-none">
         <svg class="relative block w-full h-[140px]" viewBox="0 0 1440 320">
             <path fill="#e0f2fe" d="M0,160C240,80,480,80,720,160C960,240,1200,240,1440,160L1440,0L0,0Z">
             </path>
@@ -245,14 +265,14 @@ $vehicleSearchCategories = $categories
     </div>
 
     <!-- DOT PATTERN (LEBIH HALUS) -->
-    <div class="absolute top-24 right-16 grid grid-cols-6 gap-2 opacity-10">
+    <div class="absolute grid grid-cols-6 gap-2 top-24 right-16 opacity-10">
         @for ($i = 0; $i < 24; $i++) <div class="w-2 h-2 bg-blue-500 rounded-full">
     </div>
     @endfor
 </div>
 
 <!-- CIRCLE LINE -->
-<div class="absolute bottom-16 left-16 w-48 h-48 border border-blue-200 rounded-full opacity-20"></div>
+<div class="absolute w-48 h-48 border border-blue-200 rounded-full bottom-16 left-16 opacity-20"></div>
 
 <!-- CONTENT -->
 <div data-aos="fade-up"
@@ -347,26 +367,27 @@ $vehicleSearchCategories = $categories
 </div>
 </div>
 
-<div data-aos="fade-up" class="container -mt-20 mx-auto p-6">
+<div data-aos="fade-up" class="container p-6 mx-auto -mt-20">
+
     <!-- CAROUSEL -->
     @if($carousels->count())
     <div data-aos="fade-up" id="default-carousel"
-        class="relative mx-auto my-8 w-full max-w-6xl overflow-hidden rounded-2xl" data-carousel="slide">
+        class="relative w-full max-w-6xl mx-auto my-8 overflow-hidden rounded-2xl" data-carousel="slide">
         <!-- WRAPPER -->
         <div class="relative h-[450px] w-full overflow-hidden rounded-2xl">
             @foreach($carousels as $index => $item)
             <div class="{{ $index == 0 ? '' : 'hidden' }} absolute inset-0 h-full w-full overflow-hidden rounded-2xl duration-700 ease-in-out"
                 data-carousel-item>
                 @if($item->link_url)
-                <a href="{{ $item->link_url }}" class="absolute inset-0 bg-black/20 block overflow-hidden rounded-2xl"
+                <a href="{{ $item->link_url }}" class="absolute inset-0 block overflow-hidden bg-black/20 rounded-2xl"
                     aria-label="{{ $item->title ?: 'Buka halaman carousel' }}">
                     <img src="{{ asset('storage/'.$item->image) }}"
-                        class="absolute inset-0 block h-full w-full rounded-2xl object-cover object-center"
+                        class="absolute inset-0 block object-cover object-center w-full h-full rounded-2xl"
                         alt="{{ $item->title ?: 'Carousel' }}">
                 </a>
                 @else
                 <img src="{{ asset('storage/'.$item->image) }}"
-                    class="absolute inset-0 block h-full w-full rounded-2xl object-contain object-center"
+                    class="absolute inset-0 block object-contain object-center w-full h-full rounded-2xl"
                     alt="{{ $item->title ?: 'Carousel' }}">
                 @endif
             </div>
@@ -374,7 +395,7 @@ $vehicleSearchCategories = $categories
         </div>
 
         <!-- INDICATOR -->
-        <div class="absolute z-30 flex -translate-x-1/2 bottom-3 left-1/2 space-x-2 sm:bottom-4 sm:space-x-3">
+        <div class="absolute z-30 flex space-x-2 -translate-x-1/2 bottom-3 left-1/2 sm:bottom-4 sm:space-x-3">
             @foreach($carousels as $index => $item)
             <button type="button" class="h-2.5 w-2.5 rounded-full bg-white/70 ring-1 ring-black/10 sm:h-3 sm:w-3"
                 aria-current="{{ $index == 0 ? 'true' : 'false' }}" data-carousel-slide-to="{{ $index }}">
@@ -384,10 +405,10 @@ $vehicleSearchCategories = $categories
 
         <!-- PREV BUTTON -->
         <button type="button"
-            class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-2 sm:px-4 cursor-pointer group"
+            class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-2 cursor-pointer sm:px-4 group"
             data-carousel-prev>
             <span
-                class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-sm text-white group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
+                class="inline-flex items-center justify-center w-8 h-8 text-sm text-white rounded-full bg-black/30 group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -399,10 +420,10 @@ $vehicleSearchCategories = $categories
 
         <!-- NEXT BUTTON -->
         <button type="button"
-            class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-2 sm:px-4 cursor-pointer group"
+            class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-2 cursor-pointer sm:px-4 group"
             data-carousel-next>
             <span
-                class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-sm text-white group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
+                class="inline-flex items-center justify-center w-8 h-8 text-sm text-white rounded-full bg-black/30 group-hover:bg-black/50 sm:h-10 sm:w-10 sm:text-base">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                     width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -416,35 +437,39 @@ $vehicleSearchCategories = $categories
 
     @if($recommendedListings->count())
     <section data-aos="fade-up" class="mb-14">
-        <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between mb-6">
+        <div class="flex flex-col gap-2 mb-6 md:flex-row md:items-end md:justify-between">
             <div>
                 <h2 class="text-3xl font-bold text-gray-800">Rekomendasi</h2>
             </div>
-            
+
             <div>
-                <a href="{{ route('search') }}" class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-md transition hover:bg-blue-700">
+                <a href="{{ route('search') }}" class="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-full shadow-md hover:bg-blue-700">
                     Lihat Semua
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </a>
             </div>
 
+
+            <a href="{{ route('search') }}" class="font-semibold text-blue-600 hover:underline">
+                Lihat Semua
+            </a>
         </div>
 
-        <div class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4">
+        <div class="flex gap-4 pb-4 overflow-x-auto snap-x scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4">
             @foreach($recommendedListings as $listing)
             <div data-aos="fade-up"
                 class="w-[74vw] max-w-[280px] shrink-0 snap-start bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer md:w-auto md:max-w-none"
                 onclick="window.location='{{ route('listing.show',$listing->id) }}'">
 
                 <div class="relative">
-                    <div class="relative h-36 overflow-hidden sm:h-40 md:h-48">
+                    <div class="relative overflow-hidden h-36 sm:h-40 md:h-48">
                         @forelse($listing->images as $index => $img)
                         <img src="{{ asset('storage/'.$img->image) }}"
                             class="card-slide absolute inset-0 w-full h-full object-cover transition duration-300 {{ $index == 0 ? '' : 'hidden' }}">
                         @empty
-                        <img src="https://via.placeholder.com/300x200" class="w-full h-full object-cover">
+                        <img src="https://via.placeholder.com/300x200" class="object-cover w-full h-full">
                         @endforelse
                     </div>
 
@@ -454,8 +479,8 @@ $vehicleSearchCategories = $categories
 
                     @if($listing->images->count() > 1)
                     <button onclick="event.stopPropagation(); prevSlide(this)"
-                        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
-                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
+                        class="absolute -translate-y-1/2 rounded-full left-2 top-1/2 bg-white/70 w-7 h-7 sm:h-8 sm:w-8">
+                        <svg class="w-5 h-5 mx-auto text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m15 19-7-7 7-7" />
@@ -463,8 +488,8 @@ $vehicleSearchCategories = $categories
                     </button>
 
                     <button onclick="event.stopPropagation(); nextSlide(this)"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
-                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
+                        class="absolute -translate-y-1/2 rounded-full right-2 top-1/2 bg-white/70 w-7 h-7 sm:h-8 sm:w-8">
+                        <svg class="w-5 h-5 mx-auto text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m9 5 7 7-7 7" />
@@ -478,7 +503,7 @@ $vehicleSearchCategories = $categories
                         {{ $listing->product_code ?: $listing->buildProductCode() }}
                     </p>
                     <h3 class="text-sm font-semibold line-clamp-1 sm:text-base">{{ $listing->title }}</h3>
-                    <p class="text-gray-500 text-xs line-clamp-1 sm:text-sm">{{ $listing->location }}</p>
+                    <p class="text-xs text-gray-500 line-clamp-1 sm:text-sm">{{ $listing->location }}</p>
                     <div class="mt-1">
                         <x-listing-price :listing="$listing" />
                     </div>
@@ -500,7 +525,7 @@ $vehicleSearchCategories = $categories
     @endif
 
     <!-- MARKETPLACE -->
-    <h1 data-aos="fade-up" class="text-3xl font-bold mb-8 text-gray-800">
+    <h1 data-aos="fade-up" class="mb-8 text-3xl font-bold text-gray-800">
         Marketplace
     </h1>
 
@@ -524,15 +549,15 @@ $vehicleSearchCategories = $categories
     <div data-aos="fade-up" class="mb-10">
 
         <!-- HEADER -->
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold text-gray-800">
                 {{ $category->name }}
             </h2>
 
             <div>
-                <a href="{{ $routeUrl }}" class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-medium text-white shadow-md transition hover:bg-blue-700">
+                <a href="{{ $routeUrl }}" class="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-full shadow-md hover:bg-blue-700">
                     Lihat Semua
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </a>
@@ -540,7 +565,7 @@ $vehicleSearchCategories = $categories
         </div>
 
         <!-- LISTING -->
-        <div data-aos="fade-up" class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4">
+        <div data-aos="fade-up" class="flex gap-4 pb-4 overflow-x-auto snap-x scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4">
 
             @forelse($category->listings->take(4) as $listing)
             <div data-aos="fade-up"
@@ -554,21 +579,21 @@ $vehicleSearchCategories = $categories
                     $images = $listing->images;
                     @endphp
 
-                    <div class="relative h-36 overflow-hidden sm:h-40 md:h-48">
+                    <div class="relative overflow-hidden h-36 sm:h-40 md:h-48">
 
                         @forelse($images as $index => $img)
                         <img src="{{ asset('storage/'.$img->image) }}"
                             class="card-slide absolute inset-0 w-full h-full object-cover transition duration-300 {{ $index == 0 ? '' : 'hidden' }}">
                         @empty
-                        <img src="https://via.placeholder.com/300x200" class="w-full h-full object-cover">
+                        <img src="https://via.placeholder.com/300x200" class="object-cover w-full h-full">
                         @endforelse
 
                     </div>
 
                     <!-- BUTTON -->
                     <button onclick="event.stopPropagation(); prevSlide(this)"
-                        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
-                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
+                        class="absolute -translate-y-1/2 rounded-full left-2 top-1/2 bg-white/70 w-7 h-7 sm:h-8 sm:w-8">
+                        <svg class="w-5 h-5 mx-auto text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m15 19-7-7 7-7" />
@@ -577,8 +602,8 @@ $vehicleSearchCategories = $categories
                     </button>
 
                     <button onclick="event.stopPropagation(); nextSlide(this)"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 w-7 h-7 rounded-full sm:h-8 sm:w-8">
-                        <svg class="mx-auto h-5 w-5 text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
+                        class="absolute -translate-y-1/2 rounded-full right-2 top-1/2 bg-white/70 w-7 h-7 sm:h-8 sm:w-8">
+                        <svg class="w-5 h-5 mx-auto text-gray-800 dark:text-white sm:h-6 sm:w-6" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="m9 5 7 7-7 7" />
@@ -599,7 +624,7 @@ $vehicleSearchCategories = $categories
                         {{ $listing->product_code ?: $listing->buildProductCode() }}
                     </p>
 
-                    <p class="line-clamp-1 text-xs text-gray-500 sm:text-sm">
+                    <p class="text-xs text-gray-500 line-clamp-1 sm:text-sm">
                         {{ $listing->location }}
                     </p>
 
@@ -631,46 +656,99 @@ $vehicleSearchCategories = $categories
 
     @endforeach
 
-    <section data-aos="fade-up" class="my-10 grid gap-3 md:my-10 md:gap-6 lg:grid-cols-2">
+    <section data-aos="fade-up" class="grid gap-3 my-10 md:my-10 md:gap-6 lg:grid-cols-2">
+    <section data-aos="fade-up" class="grid gap-8 mt-24 mb-24 lg:grid-cols-2">
         <a href="{{ route('ads.guide') }}"
             class="group relative isolate flex min-h-[360px] overflow-hidden rounded-2xl bg-transparent text-left transition duration-300 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-200 sm:min-h-[380px] lg:min-h-[420px]">
             <img src="{{ asset('images/222.png') }}" alt="Daftar sebagai agen"
                 class="absolute inset-0 h-full w-full object-contain sm:object-cover object-center transition duration-700 group-hover:scale-[1.04]">
+            class="group relative block min-h-[300px] overflow-hidden rounded-xl bg-gray-900 text-left shadow transition hover:shadow-xl">
+            <img src="{{ asset('images/thumbnail_properti.png') }}" alt="Daftar sebagai agen"
+                class="absolute inset-0 object-cover w-full h-full transition duration-700 group-hover:scale-105">
+
+            <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+
+            <div class="relative flex min-h-[300px] items-center py-10">
+                <div class="max-w-xl px-6 text-white md:px-10">
+                    <p class="inline-flex px-4 py-1 mb-3 text-xs font-semibold uppercase border rounded-full border-white/40">
+                        Peluang Mitra Arsantara
+                    </p>
+
+                    <h2 class="text-3xl font-extrabold leading-tight md:text-4xl">
+                        Daftar Sebagai Agen
+                    </h2>
+
+                    <p class="max-w-md mt-3 text-sm text-white/85 md:text-base">
+                        Jangkau lebih banyak calon pembeli dan pasarkan listing terbaik Anda bersama Arsantara.
+                    </p>
+
+                    <span class="inline-flex items-center px-5 py-3 mt-6 text-sm font-semibold text-white transition bg-blue-600 rounded-lg shadow-md group-hover:bg-blue-700">
+                        Mulai Bergabung Sekarang
+                    </span>
+                </div>
+            </div>
         </a>
 
         <a href="{{ route('careers.index') }}"
             class="group relative isolate flex min-h-[360px] overflow-hidden rounded-2xl bg-transparent text-left transition duration-300 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-200">
             <img src="{{ asset('images/111.png') }}" alt="Lowongan pekerjaan"
                 class="absolute inset-0 h-full w-full object-contain sm:object-cover object-center transition duration-700 group-hover:scale-[1.04]">
+            class="group relative block min-h-[300px] overflow-hidden rounded-xl bg-gray-900 text-left shadow transition hover:shadow-xl">
+            <img src="{{ asset('images/thumbnail_properti.png') }}" alt="Lowongan pekerjaan"
+                class="absolute inset-0 object-cover w-full h-full transition duration-700 group-hover:scale-105">
+
+            <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/10"></div>
+
+            <div class="relative flex min-h-[300px] items-center py-10">
+                <div class="max-w-xl px-6 text-white md:px-10">
+                    <p class="inline-flex px-4 py-1 mb-3 text-xs font-semibold uppercase border rounded-full border-white/40">
+                        Peluang Karir
+                    </p>
+
+                    <h2 class="text-3xl font-extrabold leading-tight md:text-4xl">
+                        Temukan Lowongan Pekerjaan
+                    </h2>
+
+                    <p class="max-w-md mt-3 text-sm text-white/85 md:text-base">
+                        Jelajahi posisi terbaru dan bergabung bersama tim yang terus bertumbuh.
+                    </p>
+
+                    <span class="inline-flex items-center px-5 py-3 mt-6 text-sm font-semibold text-white transition bg-blue-600 rounded-lg shadow-md group-hover:bg-blue-700">
+                        Lihat Lowongan Tersedia
+                    </span>
+                </div>
+            </div>
         </a>
     </section>
 
-    
+
     <section>
         <div class="mt-10" data-aos="fade-up">
-            <h2 class="text-2xl font-bold mb-6">Berita Terbaru</h2>
+            <h2 class="mb-6 text-2xl font-bold">Berita Terbaru</h2>
+        <div class="mt-16" data-aos="fade-up">
+            <h2 class="mb-6 text-2xl font-bold">Berita Terbaru</h2>
 
-            <div data-aos="fade-up" class="flex snap-x gap-4 overflow-x-auto pb-4 scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-3">
+            <div data-aos="fade-up" class="flex gap-4 pb-4 overflow-x-auto snap-x scroll-smooth no-scrollbar md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-3">
 
                 @foreach($posts as $post)
                 <div data-aos="fade-up"
                     class="w-[78vw] max-w-[300px] shrink-0 snap-start bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer md:w-auto md:max-w-none"
                     onclick="window.location='{{ route('post.show',$post->id) }}'">
 
-                    <img src="{{ $post->images->count() 
-                        ? asset('storage/'.$post->images->first()->image) 
-                        : 'https://via.placeholder.com/300x200' }}" class="w-full h-40 object-cover md:h-48">
+                    <img src="{{ $post->images->count()
+                        ? asset('storage/'.$post->images->first()->image)
+                        : 'https://via.placeholder.com/300x200' }}" class="object-cover w-full h-40 md:h-48">
 
                     <div class="p-3 sm:p-4">
                         <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 sm:text-base">
                             {{ $post->title }}
                         </h3>
 
-                        <p class="text-gray-500 text-xs mt-2 line-clamp-2 sm:text-sm">
+                        <p class="mt-2 text-xs text-gray-500 line-clamp-2 sm:text-sm">
                             {{ Str::limit(strip_tags($post->content), 80) }}
                         </p>
 
-                        <p class="text-xs text-gray-400 mt-2">
+                        <p class="mt-2 text-xs text-gray-400">
                             {{ $post->created_at->format('d M Y') }}
                         </p>
                     </div>

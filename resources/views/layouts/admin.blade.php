@@ -84,21 +84,21 @@
     ];
 @endphp
 
-<div class="min-h-screen bg-gray-50 py-4 lg:py-6">
-    <div class="mx-auto flex w-full max-w-screen-2xl gap-0 lg:gap-6 px-0 lg:px-6">
+<div class="min-h-screen bg-[#0f172a] py-4 lg:py-6 text-white">
+    <div class="flex w-full gap-0 px-0 mx-auto max-w-screen-2xl lg:gap-6 lg:px-6">
         <aside class="hidden lg:flex lg:w-72 lg:shrink-0">
-            <div class="sticky top-6 h-[calc(100vh-3rem)] w-full rounded-lg border bg-white shadow-sm">
-                <div class="border-b px-5 py-4">
-                    <p class="text-xs font-semibold uppercase text-gray-500">Panel Admin</p>
-                    <h2 class="text-lg font-bold text-gray-900">Arsantara</h2>
+            <div class="sticky top-6 h-[calc(100vh-3rem)] w-full rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
+                <div class="px-5 py-4 border-b">
+                    <p class="text-xs font-semibold uppercase text-slate-400">Admin Panel</p>
+                    <h2 class="text-lg font-bold text-white">Arsantara</h2>
                 </div>
 
                 <nav class="p-3 space-y-1">
                     @foreach($adminLinks as $link)
                         <a href="{{ route($link['route']) }}"
                             class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition
-                                {{ $link['active'] ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700' }}">
-                            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                                {{ $link['active'] ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-300 hover:bg-blue-50 hover:text-blue-700' }}">
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
                                 viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="{{ $link['icon'] }}" />
                             </svg>
@@ -107,8 +107,8 @@
                     @endforeach
                 </nav>
 
-                <div class="absolute bottom-0 left-0 right-0 border-t p-4">
-                    <a href="{{ route('home') }}" class="block rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200">
+                <div class="absolute bottom-0 left-0 right-0 p-4 border-t">
+                    <a href="{{ route('home') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
                         Lihat Website
                     </a>
                 </div>
@@ -116,7 +116,7 @@
         </aside>
 
         <div class="w-full min-w-0">
-            <div class="lg:hidden border-b bg-white px-4 py-3">
+            <div class="px-4 py-3 bg-white border-b lg:hidden">
                 <div class="flex gap-2 overflow-x-auto">
                     @foreach($adminLinks as $link)
                         <a href="{{ route($link['route']) }}"

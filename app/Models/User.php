@@ -7,9 +7,14 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+<<<<<<< HEAD
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+=======
 use Illuminate\Support\Facades\Storage;
+>>>>>>> 67282a1cdfb22467e1841b52ff2a42dba364cc34
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -88,6 +93,11 @@ class User extends Authenticatable
     }
 
         public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function canAccessPanel(Panel $panel): bool
     {
         return $this->role === 'admin';
     }
