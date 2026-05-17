@@ -256,30 +256,30 @@ $vehicleSearchCategories = $categories
 
 <!-- CONTENT -->
 <div data-aos="fade-up"
-    class="relative z-10 mx-auto -mt-16 grid max-w-6xl grid-cols-1 gap-5 px-4 sm:px-6 md:-mt-24 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+    class="relative z-10 mx-auto -mt-16 grid max-w-6xl grid-cols-1 justify-items-center gap-5 px-4 sm:px-6 md:-mt-24 md:grid-cols-3 md:gap-5 lg:gap-6">
 
     <!-- CARD 1 -->
     <a href="{{ route('properti') }}"
-        class="group relative block h-[380px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 sm:h-[440px] md:h-[480px]"
+        class="group relative block aspect-[1086/1448] w-full max-w-[320px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-blue-300 sm:max-w-[360px] md:max-w-none"
         aria-label="Lihat properti">
 
         <img src="{{ asset('images/11.png') }}"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             alt="Temukan properti impian Anda">
-        <div class="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-white via-white/95 to-white/0"></div>
+        <div class="absolute left-0 top-[68px] h-[35%] w-[88%] bg-[radial-gradient(ellipse_at_28%_45%,rgba(255,255,255,0.98),rgba(255,255,255,0.88)_48%,rgba(255,255,255,0)_82%)]"></div>
 
-        <div class="relative z-10 px-7 pt-10 mt-4">
-            <h2 class="text-[30px] font-bold leading-tight text-slate-950">
+        <div class="relative z-10 px-6 pt-[76px] md:px-5 md:pt-[64px] lg:px-6 lg:pt-[76px]">
+            <h2 class="text-[27px] font-bold leading-tight text-slate-950 md:text-[21px] lg:text-[26px] xl:text-[30px]">
                 Temukan
                 Properti <span class="text-blue-600">Impian Anda</span>
             </h2>
 
-            <p class="mt-4 max-w-[270px] text-sm font-medium leading-6 text-slate-700">
+            <p class="mt-3 max-w-[270px] text-sm font-semibold leading-6 text-slate-700 md:mt-2 md:text-[11px] md:leading-5 lg:mt-3 lg:text-sm lg:leading-6">
                 Pilihan rumah, apartemen, dan lokasi strategis dengan harga terbaik.
             </p>
 
             <span
-                class="mt-7 inline-flex items-center gap-3 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-blue-700">
+                class="mt-7 inline-flex items-center gap-3 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-blue-700 md:mt-4 md:px-4 md:py-2 md:text-xs lg:mt-7 lg:px-5 lg:py-3 lg:text-sm">
                 Lihat Properti <span aria-hidden="true">&rarr;</span>
             </span>
         </div>
@@ -288,27 +288,27 @@ $vehicleSearchCategories = $categories
 
     <!-- CARD 2 -->
     <a href="{{ route('autoshow') }}"
-        class="group relative block h-[380px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-emerald-300 sm:h-[440px] md:h-[480px]"
+        class="group relative block aspect-[1086/1448] w-full max-w-[320px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-emerald-300 sm:max-w-[360px] md:max-w-none"
         aria-label="Lihat mobil bekas">
 
         <img src="{{ asset('images/22.png') }}"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             alt="Mobil bekas berkualitas">
-        <div class="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-white via-white/95 to-white/0"></div>
+        <div class="absolute left-0 top-[68px] h-[35%] w-[88%] bg-[radial-gradient(ellipse_at_28%_45%,rgba(255,255,255,0.98),rgba(255,255,255,0.88)_48%,rgba(255,255,255,0)_82%)]"></div>
 
-        <div class="relative z-10 px-7 pt-10 mt-3">
-            <h2 class="text-[30px] font-bold leading-tight text-slate-950">
+        <div class="relative z-10 px-6 pt-[76px] md:px-5 md:pt-[64px] lg:px-6 lg:pt-[76px]">
+            <h2 class="text-[27px] font-bold leading-tight text-slate-950 md:text-[21px] lg:text-[26px] xl:text-[30px]">
                 Mobil Bekas <br>
                 <span class="text-emerald-600">Berkualitas</span>
             </h2>
 
-            <p class="mt-4 max-w-[270px] text-sm font-medium leading-6 text-slate-700">
+            <p class="mt-3 max-w-[270px] text-sm font-semibold leading-6 text-slate-700 md:mt-2 md:text-[11px] md:leading-5 lg:mt-3 lg:text-sm lg:leading-6">
                 Unit terpilih, kondisi prima, dan <br>
                 harga bersaing dengan garansi.
             </p>
 
             <span
-                class="mt-7 inline-flex items-center gap-3 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-emerald-700">
+                class="mt-7 inline-flex items-center gap-3 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-emerald-700 md:mt-4 md:px-4 md:py-2 md:text-xs lg:mt-7 lg:px-5 lg:py-3 lg:text-sm">
                 Lihat Mobil <span aria-hidden="true">&rarr;</span>
             </span>
         </div>
@@ -317,28 +317,28 @@ $vehicleSearchCategories = $categories
 
     <!-- CARD 3 -->
     <a href="{{ route('pinjaman.index') }}"
-        class="group relative block h-[380px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-amber-300 sm:h-[440px] md:h-[480px]"
+        class="group relative block aspect-[1086/1448] w-full max-w-[320px] overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-amber-300 sm:max-w-[360px] md:max-w-none"
         aria-label="Ajukan pinjaman dana">
 
         <img src="{{ asset('images/33.png') }}"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             alt="Pinjam dana jaminan BPKB motor dan mobil">
-        <div class="absolute inset-x-0 top-0 h-[58%] bg-gradient-to-b from-amber-50 via-amber-50/95 to-amber-50/0"></div>
+        <div class="absolute left-0 top-[68px] h-[40%] w-[90%] bg-[radial-gradient(ellipse_at_30%_44%,rgba(255,255,255,0.98),rgba(255,255,255,0.88)_50%,rgba(255,255,255,0)_84%)]"></div>
 
-        <div class="relative z-10 px-7 pt-10 mt-6">
-            <h2 class="text-[30px] font-bold leading-tight text-slate-950">
+        <div class="relative z-10 px-6 pt-[76px] md:px-5 md:pt-[64px] lg:px-6 lg:pt-[76px]">
+            <h2 class="text-[27px] font-bold leading-tight text-slate-950 md:text-[21px] lg:text-[26px] xl:text-[30px]">
                 Pinjam Dana <br>
                 Jaminan BPKB <br>
                 <span class="text-amber-500">Motor & Mobil</span>
             </h2>
 
-            <p class="mt-4 max-w-[270px] text-sm font-medium leading-3 text-slate-700">
+            <p class="mt-3 max-w-[270px] text-sm font-semibold leading-5 text-slate-700 md:mt-2 md:text-[11px] md:leading-4 lg:mt-3 lg:text-sm lg:leading-5">
                 Cair cepat, bunga kompetitif <br>
                 dan proses mudah & aman.
             </p>
 
             <span
-                class="mt-6 inline-flex items-center gap-3 rounded-xl bg-amber-400 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-amber-500">
+                class="mt-6 inline-flex items-center gap-3 rounded-xl bg-amber-400 px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-amber-500 md:mt-4 md:px-4 md:py-2 md:text-xs lg:mt-6 lg:px-5 lg:py-3 lg:text-sm">
                 Ajukan Sekarang <span aria-hidden="true">&rarr;</span>
             </span>
         </div>
@@ -682,94 +682,129 @@ $vehicleSearchCategories = $categories
         </div>
     </section>
 
-    <section class="mt-20">
-        <div data-aos="fade-up" class="flex items-center justify-between gap-4 mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 md:text-3xl">
-                Testimoni Mereka Tentang Arsantara
-            </h2>
-            <a href="{{ route('testimoni.index') }}" class="inline-flex shrink-0 items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-md transition hover:bg-blue-700 sm:px-5">
-                Lihat Semua
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </a>
+    <section id="testimoni-beranda" class="relative mt-20 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] overflow-hidden bg-sky-50 px-0 py-12 sm:py-14 md:py-16">
+        <img src="{{ asset('images/hero.png') }}" alt="" aria-hidden="true"
+            class="absolute inset-0 h-full w-full object-cover object-center opacity-35">
+        <div class="absolute inset-0 bg-gradient-to-b from-white/85 via-white/70 to-white/95"></div>
+        <div class="absolute -left-10 top-4 grid grid-cols-6 gap-3 opacity-35">
+            @for($i = 0; $i < 36; $i++)
+                <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+            @endfor
         </div>
+        <div class="absolute -bottom-20 -left-20 h-44 w-44 rounded-full bg-[#f4c20d]"></div>
+        <div class="absolute -bottom-24 -right-20 h-56 w-56 rounded-full bg-blue-100"></div>
 
-        <div class="relative" data-aos="fade-up">
-
-            <!-- LEFT -->
-            <button onclick="scrollTesti(-1)"
-                class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
-                <svg class="h-5 w-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="m15 19-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
-
-            <!-- SLIDER -->
-            <div id="testi-slider" class="flex snap-x gap-4 overflow-x-auto scroll-smooth pb-4 no-scrollbar md:gap-6">
-
-                @foreach($testimonials as $item)
-
-                @php
-                $initial = strtoupper(substr($item->name,0,1));
-                @endphp
-
-                <div data-aos="fade-up"
-                    class="w-[78vw] max-w-[300px] shrink-0 snap-start bg-white rounded-2xl p-5 shadow hover:shadow-lg transition relative md:w-[320px] md:max-w-[320px] md:p-6">
-
-                    <!-- AVATAR BULAT -->
-                    <img src="{{ $item->photo 
-                                ? asset('storage/'.$item->photo) 
-                                : 'https://ui-avatars.com/api/?name='.urlencode($item->name) }}"
-                        class="h-16 w-16 rounded-full object-cover md:h-20 md:w-20">
-
-                    <!-- QUOTE ICON -->
-                    <div class="absolute top-4 right-4 bg-yellow-400 w-8 h-8 flex items-center justify-center rounded">
-                        "
-                    </div>
-
-                    <!-- CONTENT -->
-                    <div class="mt-5 md:mt-6">
-
-                        <h3 class="font-bold text-gray-800 uppercase">
-                            {{ $item->name }}
-                        </h3>
-
-                        <!-- RATING -->
-                        <div class="mb-3 flex gap-1 text-yellow-400">
-                            @for($i=1; $i<=5; $i++)
-                                <svg class="h-4 w-4 {{ $i <= $item->rating ? 'fill-current' : 'fill-none text-gray-300' }}" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                    <path d="m12 3.5 2.6 5.26 5.8.84-4.2 4.1.99 5.78L12 16.75l-5.19 2.73.99-5.78-4.2-4.1 5.8-.84L12 3.5Z" stroke-linejoin="round" />
-                                </svg>
-                            @endfor
-                        </div>
-
-                        <!-- MESSAGE -->
-                        <p class="text-gray-600 text-sm leading-relaxed line-clamp-4">
-                            {{ $item->message }}
-                        </p>
-
-                        <p class="text-xs text-gray-400 mt-1">
-                            {{ $item->created_at->translatedFormat('d M Y') }} •
-                            {{ $item->created_at->diffForHumans() }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-                @endforeach
-
+        <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6">
+            <div data-aos="fade-up" class="mx-auto max-w-4xl text-center">
+                <span class="hidden items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-blue-500/25 ring-2 ring-[#f4c20d]/80">
+                    <svg class="h-5 w-5 text-[#f4c20d]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M4 4.8C4 3.8 4.8 3 5.8 3h12.4c1 0 1.8.8 1.8 1.8v8.4c0 1-.8 1.8-1.8 1.8h-5.5l-4.8 3.7c-.6.5-1.5 0-1.5-.8V15h-.6c-1 0-1.8-.8-1.8-1.8V4.8Z" />
+                    </svg>
+                    Ulasan Pelanggan
+                </span>
+                <h2 class="text-4xl font-black leading-tight text-slate-950 sm:text-5xl md:text-6xl lg:text-7xl">
+                    Apa kata <span class="relative inline-block text-blue-600">mereka?
+                        <span class="absolute -bottom-2 left-1/2 h-2 w-[92%] -translate-x-1/2 rounded-full bg-[#f4c20d] md:h-3"></span>
+                    </span>
+                </h2>
+                <p class="mx-auto mt-5 max-w-3xl text-base font-semibold leading-7 text-slate-600 md:text-lg md:leading-8">
+                    Pengalaman nyata dari pelanggan yang telah menemukan properti atau kendaraan melalui
+                    <span class="font-bold text-blue-600">Arsantara.</span>
+                </p>
             </div>
 
-            <!-- RIGHT -->
-            <button onclick="scrollTesti(1)"
-                class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow w-10 h-10 rounded-full items-center justify-center">
-                <svg class="h-5 w-5 text-gray-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="m9 5 7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-            </button>
+            <div class="relative mt-10 md:mt-12" data-aos="fade-up">
+                <button onclick="scrollTesti(-1)"
+                    class="hidden md:flex absolute left-2 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-blue-600 text-white shadow-xl shadow-blue-600/25 transition hover:bg-blue-700 lg:left-4">
+                    <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="m15 19-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
 
+                <div id="testi-slider" class="flex snap-x snap-mandatory items-center gap-4 overflow-x-auto scroll-smooth px-[9vw] pb-8 pt-4 no-scrollbar sm:px-[12vw] md:gap-0 md:px-6 md:pb-10 lg:px-16">
+                    @forelse($testimonials as $item)
+                        @php
+                            $isFeatured = $loop->index === min(1, max(0, $testimonials->count() - 1));
+                            $roleLabel = $loop->iteration % 2 === 0 ? 'Pengguna Arsantara' : 'Pelanggan Arsantara';
+                        @endphp
+
+                        <article
+                            data-testi-card
+                            data-testi-index="{{ $loop->index }}"
+                            class="relative flex h-[360px] w-[82vw] max-w-[410px] shrink-0 snap-center flex-col rounded-[1.6rem] bg-white p-7 shadow-2xl shadow-slate-900/10 ring-1 ring-slate-100 transition sm:w-[76vw] md:h-[330px] md:max-w-none md:rounded-[1.75rem] {{ $isFeatured ? 'z-10 ring-2 ring-[#f4c20d]/70 md:h-[410px] md:w-[38%] md:min-w-[38%] md:p-10' : 'md:w-[27%] md:min-w-[27%] md:p-8 md:scale-[0.96]' }}">
+                            <div data-testi-feature-badge class="absolute right-7 top-0 {{ $isFeatured ? 'hidden md:flex' : 'hidden' }} h-12 w-9 items-center justify-center rounded-b-xl bg-[#f4c20d] text-white md:right-10 md:h-20 md:w-14">
+                                <svg class="h-5 w-5 md:h-7 md:w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="m12 3.5 2.6 5.26 5.8.84-4.2 4.1.99 5.78L12 16.75l-5.19 2.73.99-5.78-4.2-4.1 5.8-.84L12 3.5Z" />
+                                </svg>
+                            </div>
+
+                            <div class="text-5xl font-black leading-none text-blue-500 md:text-6xl">“</div>
+                            <div class="mt-2 flex gap-1.5 text-[#f4c20d] md:mt-3">
+                                @for($i=1; $i<=5; $i++)
+                                    <svg class="h-5 w-5 {{ $i <= $item->rating ? 'fill-current' : 'fill-none text-slate-300' }}" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path d="m12 3.5 2.6 5.26 5.8.84-4.2 4.1.99 5.78L12 16.75l-5.19 2.73.99-5.78-4.2-4.1 5.8-.84L12 3.5Z" stroke-linejoin="round" />
+                                    </svg>
+                                @endfor
+                            </div>
+
+                            <p data-testi-message class="mt-5 line-clamp-4 break-words text-lg font-bold leading-7 text-slate-950 {{ $isFeatured ? 'md:text-2xl md:leading-9 lg:text-[27px] lg:leading-10' : 'md:text-lg md:leading-8' }}">
+                                “{{ Str::limit($item->message, $isFeatured ? 120 : 95) }}”
+                            </p>
+
+                            <div class="mt-auto pt-5">
+                                <div class="h-px bg-slate-200"></div>
+
+                                <div class="mt-5 flex items-center gap-4">
+                                    <img src="{{ $item->photo ? asset('storage/'.$item->photo) : 'https://ui-avatars.com/api/?name='.urlencode($item->name).'&background=2563eb&color=fff' }}"
+                                        class="h-14 w-14 shrink-0 rounded-full bg-slate-50 object-contain ring-2 ring-blue-100 md:h-16 md:w-16"
+                                        alt="{{ $item->name }}">
+                                    <div class="min-w-0">
+                                        <h3 class="break-words text-base font-black leading-snug text-slate-950 md:text-lg">{{ $item->name }}</h3>
+                                        <p class="break-words text-sm font-medium leading-snug text-slate-500">{{ $roleLabel }}</p>
+                                        <p class="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-500 md:text-sm">
+                                            <svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M8 7V3m8 4V3M4 11h16M5 5h14v16H5z" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            {{ $item->created_at->translatedFormat('d M Y') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    @empty
+                        <div class="mx-auto rounded-2xl bg-white px-6 py-8 text-center text-slate-500 shadow">
+                            Belum ada ulasan pelanggan.
+                        </div>
+                    @endforelse
+                </div>
+
+                <button onclick="scrollTesti(1)"
+                    class="hidden md:flex absolute right-2 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-blue-600 text-white shadow-xl shadow-blue-600/25 transition hover:bg-blue-700 lg:right-4">
+                    <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path d="m9 5 7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mt-2 flex justify-center gap-3" aria-label="Navigasi ulasan">
+                @foreach($testimonials as $item)
+                    <button type="button"
+                        data-testi-dot="{{ $loop->index }}"
+                        onclick="goToTesti({{ $loop->index }})"
+                        class="h-3 w-3 rounded-full transition {{ $loop->index === min(1, max(0, $testimonials->count() - 1)) ? 'bg-[#f4c20d]' : 'bg-blue-300' }}"
+                        aria-label="Lihat ulasan {{ $loop->iteration }}"></button>
+                @endforeach
+            </div>
+
+            <div class="mt-7 flex justify-center">
+                <a href="{{ route('testimoni.index') }}"
+                    class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200">
+                    Lihat semua ulasan
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+                        <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+            </div>
         </div>
     </section>
 
@@ -909,13 +944,130 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+let currentTestiIndex = 0;
+let isProgrammaticTestiScroll = false;
+
 function scrollTesti(direction) {
     const container = document.getElementById('testi-slider');
-    container.scrollBy({
-        left: direction * 340,
-        behavior: 'smooth'
+    const cards = Array.from(container?.querySelectorAll('[data-testi-card]') || []);
+    if (!container || cards.length === 0) return;
+
+    const nextIndex = Math.max(0, Math.min(cards.length - 1, currentTestiIndex + direction));
+    goToTesti(nextIndex);
+}
+
+function getActiveTestiIndex() {
+    const container = document.getElementById('testi-slider');
+    const cards = Array.from(container?.querySelectorAll('[data-testi-card]') || []);
+    if (!container || cards.length === 0) return 0;
+
+    const center = container.scrollLeft + (container.clientWidth / 2);
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    cards.forEach((card, index) => {
+        const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+        const distance = Math.abs(center - cardCenter);
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+        }
+    });
+
+    return closestIndex;
+}
+
+function updateTestiDots(index = getActiveTestiIndex()) {
+    currentTestiIndex = index;
+    updateTestiCards(index);
+
+    document.querySelectorAll('[data-testi-dot]').forEach((dot) => {
+        const isActive = Number(dot.dataset.testiDot) === index;
+        dot.classList.toggle('bg-[#f4c20d]', isActive);
+        dot.classList.toggle('bg-blue-300', !isActive);
+        dot.setAttribute('aria-current', isActive ? 'true' : 'false');
     });
 }
+
+function updateTestiCards(index) {
+    document.querySelectorAll('[data-testi-card]').forEach((card) => {
+        const isActive = Number(card.dataset.testiIndex) === index;
+        const badge = card.querySelector('[data-testi-feature-badge]');
+        const message = card.querySelector('[data-testi-message]');
+
+        card.classList.toggle('z-10', isActive);
+        card.classList.toggle('ring-2', isActive);
+        card.classList.toggle('ring-[#f4c20d]/70', isActive);
+        card.classList.toggle('md:h-[410px]', isActive);
+        card.classList.toggle('md:w-[38%]', isActive);
+        card.classList.toggle('md:min-w-[38%]', isActive);
+        card.classList.toggle('md:p-10', isActive);
+
+        card.classList.toggle('md:h-[330px]', !isActive);
+        card.classList.toggle('md:w-[27%]', !isActive);
+        card.classList.toggle('md:min-w-[27%]', !isActive);
+        card.classList.toggle('md:p-8', !isActive);
+        card.classList.toggle('md:scale-[0.96]', !isActive);
+
+        if (badge) {
+            badge.classList.add('hidden');
+            badge.classList.toggle('md:flex', isActive);
+        }
+
+        if (message) {
+            message.classList.toggle('md:text-2xl', isActive);
+            message.classList.toggle('md:leading-9', isActive);
+            message.classList.toggle('lg:text-[27px]', isActive);
+            message.classList.toggle('lg:leading-10', isActive);
+            message.classList.toggle('md:text-lg', !isActive);
+            message.classList.toggle('md:leading-8', !isActive);
+        }
+    });
+}
+
+function goToTesti(index) {
+    const container = document.getElementById('testi-slider');
+    const cards = Array.from(container?.querySelectorAll('[data-testi-card]') || []);
+    if (!container || !cards[index]) return;
+
+    isProgrammaticTestiScroll = true;
+    updateTestiDots(index);
+
+    window.requestAnimationFrame(() => {
+        const card = cards[index];
+        container.scrollTo({
+            left: card.offsetLeft - ((container.clientWidth - card.offsetWidth) / 2),
+            behavior: 'smooth'
+        });
+    });
+
+    window.clearTimeout(window.testiProgrammaticTimer);
+    window.testiProgrammaticTimer = window.setTimeout(() => {
+        isProgrammaticTestiScroll = false;
+        updateTestiDots(index);
+    }, 500);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('testi-slider');
+    if (!container) return;
+
+    let testiScrollTimer = null;
+    container.addEventListener('scroll', () => {
+        if (isProgrammaticTestiScroll) return;
+
+        window.clearTimeout(testiScrollTimer);
+        testiScrollTimer = window.setTimeout(() => updateTestiDots(), 80);
+    }, { passive: true });
+
+    const cards = Array.from(container.querySelectorAll('[data-testi-card]'));
+    if (cards.length > 1) {
+        currentTestiIndex = 1;
+        window.setTimeout(() => goToTesti(currentTestiIndex), 100);
+    } else {
+        updateTestiDots();
+    }
+});
 
 function nextSlide(btn) {
     const container = btn.closest('.relative');

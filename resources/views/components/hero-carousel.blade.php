@@ -59,7 +59,7 @@
 
 <section id="{{ $heroId }}" data-slides='@json($heroSlides)'
     {{ $attributes->merge(['class' => "ars-hero-frame relative overflow-hidden bg-slate-950 text-white {$sectionClass}"]) }}>
-    <div class="absolute inset-0">
+    <div class="absolute inset-0 bg-slate-950">
         @foreach($heroSlides as $index => $slide)
             <div class="hero-carousel-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}">
                 <img src="{{ $slide['image'] }}"
@@ -68,14 +68,16 @@
                     class="absolute inset-0 h-full w-full scale-105 object-cover opacity-70 blur-xl">
                 <img src="{{ $slide['image'] }}"
                     alt="{{ $slide['title'] }}"
-                    class="absolute inset-0 h-full w-full object-contain">
+                    class="absolute inset-0 h-full w-full object-cover">
             </div>
         @endforeach
-        <div class="absolute inset-0 {{ $overlay }}"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-white/78 via-white/34 to-transparent {{ $overlay }}"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-white/32 via-transparent to-white/10"></div>
+        <div class="absolute inset-y-0 left-0 w-[68%] bg-[radial-gradient(ellipse_at_24%_48%,rgba(255,255,255,0.82),rgba(255,255,255,0.5)_42%,rgba(255,255,255,0)_74%)]"></div>
     </div>
 
     <div class="ars-hero-inner relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center justify-items-start gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:py-12 xl:grid-cols-2">
-        <div class="{{ $contentWidth }} {{ $contentClass }} ml-0 mr-auto w-full min-w-0 max-w-[calc(100vw-2rem)] justify-self-start overflow-hidden sm:max-w-[calc(100vw-3rem)] xl:max-w-3xl">
+        <div class="ars-hero-copy {{ $contentWidth }} {{ $contentClass }} relative ml-0 mr-auto w-full min-w-0 max-w-[calc(100vw-2rem)] justify-self-start overflow-hidden py-5 sm:max-w-[calc(100vw-3rem)] sm:py-7 xl:max-w-3xl">
             @if($heroSlides->count() > 1)
                 <div class="mb-6 flex gap-3">
                     @foreach($heroSlides as $index => $slide)
@@ -87,18 +89,18 @@
                 </div>
             @endif
 
-            <p class="hero-carousel-label mb-4 inline-flex rounded-full border border-white/30 px-4 py-1 text-sm font-semibold uppercase text-blue-100"
-                style="color: {{ $firstSlide['label_color'] }};">
+            <p class="hero-carousel-label mb-4 inline-flex rounded-full border border-slate-950/10 bg-white/30 px-4 py-1 text-sm font-semibold uppercase text-slate-950 shadow-sm"
+                style="color: #0f172a;">
                 {{ $firstSlide['label'] }}
             </p>
 
             <h1 class="hero-carousel-title max-w-[42rem] whitespace-normal break-words text-left text-[1.6rem] font-extrabold leading-tight [overflow-wrap:anywhere] sm:text-3xl md:max-w-[36rem] md:text-4xl xl:max-w-[42rem] xl:text-5xl"
-                style="color: {{ $firstSlide['title_color'] }};">
+                style="color: #0f172a;">
                 {{ $firstSlide['title'] }}
             </h1>
 
-            <p class="hero-carousel-text mt-3 max-w-full whitespace-normal break-words text-left text-sm leading-6 text-slate-200 [overflow-wrap:anywhere] sm:max-w-xl sm:text-base md:leading-7"
-                style="color: {{ $firstSlide['text_color'] }};">
+            <p class="hero-carousel-text mt-3 max-w-full whitespace-normal break-words text-left text-sm font-medium leading-6 text-slate-200 [overflow-wrap:anywhere] sm:max-w-xl sm:text-base md:leading-7"
+                style="color: #1f2937;">
                 {{ $firstSlide['text'] }}
             </p>
 
@@ -198,17 +200,17 @@
                     if (slideData[index]) {
                         if (label) {
                             label.textContent = slideData[index].label;
-                            label.style.color = slideData[index].label_color;
+                            label.style.color = '#0f172a';
                         }
 
                         if (title) {
                             title.textContent = slideData[index].title;
-                            title.style.color = slideData[index].title_color;
+                            title.style.color = '#0f172a';
                         }
 
                         if (text) {
                             text.textContent = slideData[index].text;
-                            text.style.color = slideData[index].text_color;
+                            text.style.color = '#1f2937';
                         }
 
                         if (actions) {

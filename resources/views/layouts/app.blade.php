@@ -224,90 +224,90 @@
             <div id="consultationOverlay" class="fixed inset-0 hidden bg-slate-950/60 backdrop-blur-sm md:hidden" aria-hidden="true"></div>
 
             <section id="consultationModal" aria-hidden="true" aria-labelledby="consultationTitle"
-                class="fixed inset-x-3 bottom-4 hidden max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-[2rem] bg-[#f5f5f5] text-slate-950 shadow-2xl md:inset-auto md:bottom-20 md:right-5 md:w-[360px] md:max-h-[calc(100vh-6rem)] md:rounded-[1.5rem]">
-                <div class="relative min-h-[430px] overflow-hidden rounded-t-[2rem] bg-[#08234c] px-6 pb-28 pt-8 text-white md:min-h-[210px] md:rounded-t-[1.5rem] md:px-5 md:pb-5 md:pt-5">
+                class="fixed inset-x-5 bottom-5 mx-auto hidden max-h-[calc(100vh-2.5rem)] max-w-[340px] overflow-y-auto rounded-[1.5rem] bg-[#f5f5f5] text-slate-950 shadow-2xl md:inset-auto md:bottom-20 md:right-5 md:mx-0 md:w-[360px] md:max-w-none md:max-h-[calc(100vh-6rem)]">
+                <div class="relative min-h-[240px] overflow-hidden rounded-t-[1.5rem] bg-[#08234c] px-5 pb-5 pt-5 text-white md:min-h-[210px] md:px-5 md:pb-5 md:pt-5">
                     <button type="button" id="consultationCloseButton" aria-label="Tutup konsultasi"
-                        class="absolute right-4 top-4 z-30 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70">
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+                        class="absolute right-4 top-4 z-30 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70 md:h-9 md:w-9">
+                        <svg class="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
                             <path d="M18 6 6 18M6 6l12 12" />
                         </svg>
                     </button>
 
-                    <svg class="absolute right-20 top-9 z-10 h-20 w-24 text-[#3d5a90]/80 md:right-14 md:top-7 md:h-14 md:w-18" viewBox="0 0 96 72" fill="none" stroke="currentColor" stroke-width="5" aria-hidden="true">
+                    <svg class="absolute right-14 top-7 z-10 h-14 w-18 text-[#3d5a90]/80" viewBox="0 0 96 72" fill="none" stroke="currentColor" stroke-width="5" aria-hidden="true">
                         <path d="M18 12h54a14 14 0 0 1 14 14v14a14 14 0 0 1-14 14H41L20 65l5-11h-7A14 14 0 0 1 4 40V26a14 14 0 0 1 14-14Z" />
                         <path d="M31 34h.1M45 34h.1M59 34h.1" stroke-linecap="round" />
                     </svg>
 
-                    <div class="relative z-20 max-w-[16rem] md:max-w-[11rem]">
-                        <p id="consultationTitle" class="text-[3.4rem] font-black leading-[0.92] tracking-normal text-white md:text-[1.75rem]">KONSULTASI</p>
-                        <p class="mt-1 text-[4.2rem] font-black leading-[0.88] tracking-normal text-[#f4c20d] md:text-[2.3rem]">GRATIS</p>
-                        <p class="mt-6 max-w-[13rem] text-xl font-medium leading-8 text-white/90 md:mt-3 md:max-w-[10.5rem] md:text-xs md:leading-5">
+                    <div class="relative z-20 max-w-[11rem]">
+                        <p id="consultationTitle" class="text-[1.85rem] font-black leading-[0.92] tracking-normal text-white md:text-[1.75rem]">KONSULTASI</p>
+                        <p class="mt-1 text-[2.45rem] font-black leading-[0.88] tracking-normal text-[#f4c20d] md:text-[2.3rem]">GRATIS</p>
+                        <p class="mt-3 max-w-[10.5rem] text-xs font-medium leading-5 text-white/90">
                             Butuh info lebih lanjut? Kami siap membantu Anda!
                         </p>
                     </div>
 
-                    <div class="absolute bottom-0 right-[-30px] z-0 h-[240px] w-[285px] rounded-tl-full bg-[#f4c20d] md:right-[-20px] md:h-[132px] md:w-[170px]"></div>
+                    <div class="absolute bottom-0 right-[-20px] z-0 h-[132px] w-[170px] rounded-tl-full bg-[#f4c20d]"></div>
                     <img src="{{ asset('images/consultation-agents.png') }}"
                         alt="Tim konsultasi Arsantara Management"
-                        class="absolute bottom-0 right-[-74px] z-10 h-[330px] w-[320px] object-contain object-bottom md:right-[-34px] md:h-[190px] md:w-[200px]">
+                        class="absolute bottom-0 right-[-34px] z-10 h-[190px] w-[200px] object-contain object-bottom">
                 </div>
 
-                <div class="relative -mt-24 px-4 pb-4 md:mt-0 md:px-3 md:pb-3">
-                    <div class="w-[58%] space-y-0 overflow-hidden rounded-[1.45rem] bg-white/95 shadow-xl ring-1 ring-slate-200 md:-mt-4 md:w-full md:rounded-2xl">
-                        <div class="flex items-center gap-3 px-3 py-4 md:py-2.5">
-                            <span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#082b5c] text-white md:h-8 md:w-8">
-                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <div class="relative px-3 pb-3">
+                    <div class="-mt-4 w-full space-y-0 overflow-hidden rounded-2xl bg-white/95 shadow-xl ring-1 ring-slate-200">
+                        <div class="flex items-center gap-3 px-3 py-2.5">
+                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#082b5c] text-white">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <path d="M5 5.2C5 4.5 5.5 4 6.2 4h11.6c.7 0 1.2.5 1.2 1.2v7.1c0 .7-.5 1.2-1.2 1.2h-6.2l-4.2 3.2c-.4.3-1 .1-1-.5v-2.7h-.2c-.7 0-1.2-.5-1.2-1.2V5.2Zm4 3.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm3 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm3 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
                                 </svg>
                             </span>
                             <div class="min-w-0">
-                                <p class="text-[15px] font-black leading-tight text-[#081b43] md:text-[13px]">Punya pertanyaan?</p>
-                                <p class="mt-1 text-sm font-medium leading-tight text-slate-600 md:text-xs">Kami siap jawab</p>
+                                <p class="text-[13px] font-black leading-tight text-[#081b43]">Punya pertanyaan?</p>
+                                <p class="mt-1 text-xs font-medium leading-tight text-slate-600">Kami siap jawab</p>
                             </div>
                         </div>
 
                         <div class="h-px bg-slate-200"></div>
 
-                        <div class="flex items-center gap-3 px-3 py-4 md:py-2.5">
-                            <span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#082b5c] text-white md:h-8 md:w-8">
-                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                        <div class="flex items-center gap-3 px-3 py-2.5">
+                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#082b5c] text-white">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                     <path d="M7 4h10v16H7z" />
                                     <path d="M10 8h4M10 12h4M10 16h2" />
                                 </svg>
                             </span>
                             <div class="min-w-0">
-                                <p class="text-[15px] font-black leading-tight text-[#081b43] md:text-[13px]">Butuh saran terbaik?</p>
-                                <p class="mt-1 text-sm font-medium leading-tight text-slate-600 md:text-xs">Kami bantu carikan solusi</p>
+                                <p class="text-[13px] font-black leading-tight text-[#081b43]">Butuh saran terbaik?</p>
+                                <p class="mt-1 text-xs font-medium leading-tight text-slate-600">Kami bantu carikan solusi</p>
                             </div>
                         </div>
 
                         <div class="h-px bg-slate-200"></div>
 
-                        <div class="flex items-center gap-3 px-3 py-4 md:py-2.5">
-                            <span class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#082b5c] text-white md:h-8 md:w-8">
-                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <div class="flex items-center gap-3 px-3 py-2.5">
+                            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#082b5c] text-white">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <path d="M12 2.8 5 5.7v5.2c0 4.5 2.9 8.6 7 10.1 4.1-1.5 7-5.6 7-10.1V5.7l-7-2.9Zm3.7 7-4.3 4.3-2-2 1.3-1.3.7.7 3-3 1.3 1.3Z" />
                                 </svg>
                             </span>
                             <div class="min-w-0">
-                                <p class="text-[15px] font-black leading-tight text-[#081b43] md:text-[13px]">Aman & Terpercaya</p>
-                                <p class="mt-1 text-sm font-medium leading-tight text-slate-600 md:text-xs">Pelayanan cepat & ramah</p>
+                                <p class="text-[13px] font-black leading-tight text-[#081b43]">Aman & Terpercaya</p>
+                                <p class="mt-1 text-xs font-medium leading-tight text-slate-600">Pelayanan cepat & ramah</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="relative mt-[-10px] rounded-[1.65rem] bg-white p-4 pt-6 shadow-2xl ring-1 ring-slate-200 md:mt-3 md:rounded-2xl md:p-3">
-                        <div class="flex items-center gap-4 px-1 md:gap-3">
-                            <span class="inline-flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-2xl bg-[#f4c20d] text-[#08234c] md:h-14 md:w-14 md:rounded-xl">
-                                <svg class="h-11 w-11 md:h-8 md:w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.35" aria-hidden="true">
+                    <div class="relative mt-3 rounded-2xl bg-white p-3 shadow-2xl ring-1 ring-slate-200">
+                        <div class="flex items-center gap-3 px-1">
+                            <span class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#f4c20d] text-[#08234c]">
+                                <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.35" aria-hidden="true">
                                     <path d="M4 12a8 8 0 0 1 16 0" />
                                     <path d="M4 12v3a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2Zm16 0v3a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2Zm-7 7h2" />
                                     <path d="M17 17c0 1.1-.9 2-2 2" />
                                 </svg>
                             </span>
                             <div class="min-w-0">
-                                <p class="text-[1.55rem] font-black leading-[1.05] text-[#081b43] md:text-[15px]">Bingung atau hanya ingin tanya-tanya?</p>
-                                <p class="mt-2 text-lg font-medium leading-tight text-[#123264] md:mt-1 md:text-sm">Hubungi kami sekarang!</p>
+                                <p class="text-[15px] font-black leading-[1.05] text-[#081b43]">Bingung atau hanya ingin tanya-tanya?</p>
+                                <p class="mt-1 text-sm font-medium leading-tight text-[#123264]">Hubungi kami sekarang!</p>
                             </div>
                         </div>
 
@@ -319,17 +319,17 @@
                         </div>
 
                         <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer"
-                            class="mt-[-2px] flex min-h-[72px] w-full items-center justify-center gap-3 rounded-2xl bg-green-500 px-4 py-3 text-center text-white shadow-lg shadow-green-500/25 transition hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-200 md:mt-3 md:min-h-11 md:rounded-xl md:py-2">
-                            <svg class="h-11 w-11 shrink-0 md:h-7 md:w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            class="mt-3 flex min-h-11 w-full items-center justify-center gap-3 rounded-xl bg-green-500 px-4 py-2 text-center text-white shadow-lg shadow-green-500/25 transition hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-200">
+                            <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                 <path d="M12.1 3a8.7 8.7 0 0 0-7.5 13.1L3.5 21l5-1.3A8.7 8.7 0 1 0 12.1 3Zm0 15.7c-1.4 0-2.8-.4-4-1.2l-.3-.2-2.5.7.7-2.4-.2-.4a7 7 0 1 1 6.3 3.5Zm3.9-5.2c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.5.1-.2.2-.6.7-.7.9-.1.1-.3.2-.5.1a5.7 5.7 0 0 1-2.8-2.5c-.2-.3 0-.4.1-.6l.4-.4c.1-.2.1-.3.2-.5v-.4c-.1-.1-.5-1.2-.7-1.6-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.3 1 2.5c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.1 1.6.1.5-.1 1.3-.5 1.5-1 .2-.5.2-1 .2-1.1 0-.1-.2-.2-.4-.3Z" />
                             </svg>
                             <span class="leading-tight">
-                                <span class="block text-3xl font-black md:text-lg">HUBUNGI KAMI</span>
-                                <span class="block text-lg font-medium md:text-xs">via WhatsApp</span>
+                                <span class="block text-lg font-black">HUBUNGI KAMI</span>
+                                <span class="block text-xs font-medium">via WhatsApp</span>
                             </span>
                         </a>
 
-                        <div class="mt-5 grid grid-cols-2 divide-x divide-slate-200 text-center text-base font-semibold text-[#123264] md:mt-3 md:text-xs">
+                        <div class="mt-3 grid grid-cols-2 divide-x divide-slate-200 text-center text-xs font-semibold text-[#123264]">
                             <div class="flex items-center justify-center gap-2">
                                 <svg class="h-5 w-5 text-[#082b5c]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <path d="M12 2.8 5 5.7v5.2c0 4.5 2.9 8.6 7 10.1 4.1-1.5 7-5.6 7-10.1V5.7l-7-2.9Zm3.7 7-4.3 4.3-2-2 1.3-1.3.7.7 3-3 1.3 1.3Z" />
