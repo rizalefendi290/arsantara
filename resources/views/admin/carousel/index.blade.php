@@ -93,21 +93,37 @@
 
                 <div class="rounded border border-gray-200 p-3">
                     <p class="mb-2 text-sm font-semibold text-gray-800">Tombol Hero Slide Ini</p>
-                    <div class="grid grid-cols-1 gap-2 md:grid-cols-[1fr_1.4fr_auto]">
+                    <div class="grid grid-cols-1 gap-2 md:grid-cols-[1fr_1.4fr_auto_auto_auto]">
                         <input type="text" name="buttons[0][label]" placeholder="Label tombol 1, contoh: Hubungi Admin" class="border p-2 rounded text-sm">
                         <input type="text" name="buttons[0][url]" placeholder="Link tombol 1, contoh: https://wa.me/628..." class="border p-2 rounded text-sm">
                         <select name="buttons[0][variant]" class="border p-2 rounded text-sm">
                             <option value="primary">Utama</option>
                             <option value="secondary">Outline</option>
                         </select>
+                        <label class="rounded border p-2 text-xs text-gray-600">
+                            <span class="mb-1 block">Warna Tombol</span>
+                            <input type="color" name="buttons[0][background_color]" value="#f3bd12" class="h-8 w-full cursor-pointer rounded">
+                        </label>
+                        <label class="rounded border p-2 text-xs text-gray-600">
+                            <span class="mb-1 block">Warna Teks</span>
+                            <input type="color" name="buttons[0][text_color]" value="#08234c" class="h-8 w-full cursor-pointer rounded">
+                        </label>
                     </div>
-                    <div class="mt-2 grid grid-cols-1 gap-2 md:grid-cols-[1fr_1.4fr_auto]">
+                    <div class="mt-2 grid grid-cols-1 gap-2 md:grid-cols-[1fr_1.4fr_auto_auto_auto]">
                         <input type="text" name="buttons[1][label]" placeholder="Label tombol 2, contoh: Daftar sebagai Agen" class="border p-2 rounded text-sm">
                         <input type="text" name="buttons[1][url]" placeholder="Link tombol 2, contoh: /upgrade" class="border p-2 rounded text-sm">
                         <select name="buttons[1][variant]" class="border p-2 rounded text-sm">
                             <option value="secondary">Outline</option>
                             <option value="primary">Utama</option>
                         </select>
+                        <label class="rounded border p-2 text-xs text-gray-600">
+                            <span class="mb-1 block">Warna Tombol</span>
+                            <input type="color" name="buttons[1][background_color]" value="#ffffff" class="h-8 w-full cursor-pointer rounded">
+                        </label>
+                        <label class="rounded border p-2 text-xs text-gray-600">
+                            <span class="mb-1 block">Warna Teks</span>
+                            <input type="color" name="buttons[1][text_color]" value="#0f172a" class="h-8 w-full cursor-pointer rounded">
+                        </label>
                     </div>
                     <p class="mt-2 text-xs text-gray-500">Kosongkan jika slide ini tidak memakai tombol. Tiap slide bisa punya tombol berbeda.</p>
                 </div>
@@ -115,15 +131,15 @@
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <label class="rounded border p-2 text-sm">
                         <span class="mb-2 block text-gray-600">Warna Label</span>
-                        <input type="color" name="label_color" value="#dbeafe" class="h-10 w-full cursor-pointer rounded">
+                        <input type="color" name="label_color" value="#0f172a" class="h-10 w-full cursor-pointer rounded">
                     </label>
                     <label class="rounded border p-2 text-sm">
                         <span class="mb-2 block text-gray-600">Warna Judul</span>
-                        <input type="color" name="title_color" value="#ffffff" class="h-10 w-full cursor-pointer rounded">
+                        <input type="color" name="title_color" value="#0f172a" class="h-10 w-full cursor-pointer rounded">
                     </label>
                     <label class="rounded border p-2 text-sm">
                         <span class="mb-2 block text-gray-600">Warna Deskripsi</span>
-                        <input type="color" name="text_color" value="#e2e8f0" class="h-10 w-full cursor-pointer rounded">
+                        <input type="color" name="text_color" value="#1f2937" class="h-10 w-full cursor-pointer rounded">
                     </label>
                 </div>
                 <p class="text-xs text-gray-500">Pilih warna teks yang tetap terlihat jelas di atas gambar hero.</p>
@@ -209,6 +225,16 @@
                                 <option value="primary" {{ ($buttonOne['variant'] ?? 'primary') === 'primary' ? 'selected' : '' }}>Utama</option>
                                 <option value="secondary" {{ ($buttonOne['variant'] ?? 'primary') === 'secondary' ? 'selected' : '' }}>Outline</option>
                             </select>
+                            <div class="mb-2 grid grid-cols-2 gap-2">
+                                <label class="rounded border p-2 text-xs text-gray-600">
+                                    <span class="mb-1 block">Warna Tombol 1</span>
+                                    <input type="color" name="buttons[0][background_color]" value="{{ $buttonOne['background_color'] ?? '#f3bd12' }}" class="h-9 w-full cursor-pointer rounded">
+                                </label>
+                                <label class="rounded border p-2 text-xs text-gray-600">
+                                    <span class="mb-1 block">Warna Teks 1</span>
+                                    <input type="color" name="buttons[0][text_color]" value="{{ $buttonOne['text_color'] ?? '#08234c' }}" class="h-9 w-full cursor-pointer rounded">
+                                </label>
+                            </div>
 
                             <input type="text" name="buttons[1][label]" value="{{ $buttonTwo['label'] ?? '' }}" placeholder="Label tombol 2" class="mb-2 w-full border p-2 rounded text-sm">
                             <input type="text" name="buttons[1][url]" value="{{ $buttonTwo['url'] ?? '' }}" placeholder="Link tombol 2" class="mb-2 w-full border p-2 rounded text-sm">
@@ -216,20 +242,30 @@
                                 <option value="secondary" {{ ($buttonTwo['variant'] ?? 'secondary') === 'secondary' ? 'selected' : '' }}>Outline</option>
                                 <option value="primary" {{ ($buttonTwo['variant'] ?? 'secondary') === 'primary' ? 'selected' : '' }}>Utama</option>
                             </select>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <label class="rounded border p-2 text-xs text-gray-600">
+                                    <span class="mb-1 block">Warna Tombol 2</span>
+                                    <input type="color" name="buttons[1][background_color]" value="{{ $buttonTwo['background_color'] ?? '#ffffff' }}" class="h-9 w-full cursor-pointer rounded">
+                                </label>
+                                <label class="rounded border p-2 text-xs text-gray-600">
+                                    <span class="mb-1 block">Warna Teks 2</span>
+                                    <input type="color" name="buttons[1][text_color]" value="{{ $buttonTwo['text_color'] ?? '#0f172a' }}" class="h-9 w-full cursor-pointer rounded">
+                                </label>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
                             <label class="rounded border p-2 text-xs text-gray-600">
                                 <span class="mb-1 block">Warna Label</span>
-                                <input type="color" name="label_color" value="{{ $c->label_color ?: '#dbeafe' }}" class="h-9 w-full cursor-pointer rounded">
+                                <input type="color" name="label_color" value="{{ $c->label_color ?: '#0f172a' }}" class="h-9 w-full cursor-pointer rounded">
                             </label>
                             <label class="rounded border p-2 text-xs text-gray-600">
                                 <span class="mb-1 block">Warna Judul</span>
-                                <input type="color" name="title_color" value="{{ $c->title_color ?: '#ffffff' }}" class="h-9 w-full cursor-pointer rounded">
+                                <input type="color" name="title_color" value="{{ $c->title_color ?: '#0f172a' }}" class="h-9 w-full cursor-pointer rounded">
                             </label>
                             <label class="rounded border p-2 text-xs text-gray-600">
                                 <span class="mb-1 block">Warna Deskripsi</span>
-                                <input type="color" name="text_color" value="{{ $c->text_color ?: '#e2e8f0' }}" class="h-9 w-full cursor-pointer rounded">
+                                <input type="color" name="text_color" value="{{ $c->text_color ?: '#1f2937' }}" class="h-9 w-full cursor-pointer rounded">
                             </label>
                         </div>
                         <p class="text-xs text-gray-500">Warna ini hanya berlaku untuk teks hero di halaman yang dipilih.</p>

@@ -78,7 +78,7 @@
             </div>
 
             <div data-aos="fade-up" class="relative overflow-hidden rounded-2xl bg-slate-900 shadow-2xl">
-                <img src="{{ asset('images/thumbnail_pinjam_dana.png') }}"
+                <img src="{{ asset('images/pinjamdana2.jpeg') }}"
                     alt="Ajukan pinjam dana"
                     class="h-[520px] w-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent"></div>

@@ -8,6 +8,8 @@ use App\Models\MarketingTarget;
 use App\Models\SalesCommissionRule;
 use App\Models\User;
 use App\Services\SalesCommissionCalculator;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -31,11 +33,40 @@ class SalesManagementController extends Controller
             ->take(10)
             ->get();
 
-        $chart = (clone $approvedSales)
-            ->selectRaw('DATE(deal_date) as date, SUM(deal_price) as total')
+        $salesByDay = (clone $approvedSales)
+            ->selectRaw('DATE(deal_date) as date, SUM(deal_price) as total_sales, SUM(commission_total) as total_commission, COUNT(*) as total_closing')
             ->groupBy('date')
             ->orderBy('date')
-            ->get();
+            ->get()
+            ->keyBy('date');
+
+        $chartPeriod = CarbonPeriod::create(
+            Carbon::createFromFormat('Y-m', $month)->startOfMonth(),
+            Carbon::createFromFormat('Y-m', $month)->endOfMonth()
+        );
+
+        $salesChart = [
+            'labels' => [],
+            'sales' => [],
+            'commissions' => [],
+            'closings' => [],
+        ];
+
+        foreach ($chartPeriod as $date) {
+            $key = $date->toDateString();
+            $point = $salesByDay->get($key);
+
+            $salesChart['labels'][] = $date->format('d M');
+            $salesChart['sales'][] = (int) ($point->total_sales ?? 0);
+            $salesChart['commissions'][] = (int) ($point->total_commission ?? 0);
+            $salesChart['closings'][] = (int) ($point->total_closing ?? 0);
+        }
+
+        $rankingChart = [
+            'labels' => $ranking->pluck('marketing.name')->map(fn ($name) => $name ?: '-')->values()->all(),
+            'sales' => $ranking->pluck('total_sales')->map(fn ($value) => (int) $value)->values()->all(),
+            'commissions' => $ranking->pluck('total_commission')->map(fn ($value) => (int) $value)->values()->all(),
+        ];
 
         return view('admin.sales.dashboard', [
             'month' => $month,
@@ -50,7 +81,8 @@ class SalesManagementController extends Controller
                 'pending_sales' => MarketingSale::where('status', 'pending')->count(),
             ],
             'ranking' => $ranking,
-            'chart' => $chart,
+            'salesChart' => $salesChart,
+            'rankingChart' => $rankingChart,
         ]);
     }
 

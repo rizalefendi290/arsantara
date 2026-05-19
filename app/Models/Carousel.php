@@ -70,10 +70,22 @@ class Carousel extends Model
                 'label' => $slide->label ?: 'Arsantara',
                 'title' => $slide->title ?: 'Arsantara',
                 'text' => $slide->text ?: '',
-                'label_color' => $slide->label_color ?: '#dbeafe',
-                'title_color' => $slide->title_color ?: '#ffffff',
-                'text_color' => $slide->text_color ?: '#e2e8f0',
-                'buttons' => $slide->buttons ?: [],
+                'label_color' => $slide->label_color ?: '#0f172a',
+                'title_color' => $slide->title_color ?: '#0f172a',
+                'text_color' => $slide->text_color ?: '#1f2937',
+                'buttons' => collect($slide->buttons ?: [])
+                    ->map(function (array $button) {
+                        $variant = ($button['variant'] ?? 'primary') === 'secondary' ? 'secondary' : 'primary';
+
+                        return [
+                            'label' => $button['label'] ?? '',
+                            'url' => $button['url'] ?? '',
+                            'variant' => $variant,
+                            'background_color' => $button['background_color'] ?? ($variant === 'secondary' ? '#ffffff' : '#f3bd12'),
+                            'text_color' => $button['text_color'] ?? ($variant === 'secondary' ? '#0f172a' : '#08234c'),
+                        ];
+                    })
+                    ->all(),
             ]);
     }
 }

@@ -88,7 +88,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('admin/posts', PostController::class)->names('posts');
     Route::delete('/admin/post-image/{id}', [PostController::class, 'deleteImage'])->name('post-image.delete');
 
-    Route::get('/admin/carousel', [CarouselController::class, 'index'])->name('carousel.index');
+    Route::get('/admin/carousel', fn () => redirect(\App\Filament\Resources\CarouselResource::getUrl('index')))->name('carousel.index');
     Route::post('/admin/carousel', [CarouselController::class, 'store'])->name('carousel.store');
     Route::patch('/admin/carousel/{id}', [CarouselController::class, 'update'])->name('carousel.update');
     Route::delete('/admin/carousel/{id}', [CarouselController::class, 'destroy'])->name('carousel.delete');

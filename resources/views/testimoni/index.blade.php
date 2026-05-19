@@ -47,45 +47,45 @@
                 </div>
             @endif
 
-            <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div class="mx-auto mt-10 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse($testimonials as $item)
-                    <article class="relative overflow-hidden rounded-[1.75rem] bg-white p-6 shadow-2xl shadow-blue-950/10 ring-1 ring-blue-100/80">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
-                                <span class="text-5xl font-black leading-none">“</span>
+                    <article class="relative overflow-hidden rounded-2xl bg-white p-4 shadow-xl shadow-blue-950/10 ring-1 ring-blue-100/80 sm:p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-md shadow-blue-600/20">
+                                <span class="text-3xl font-black leading-none">&ldquo;</span>
                             </div>
 
-                            <div class="flex gap-1 text-[#f4c20d]">
+                            <div class="flex gap-0.5 text-[#f4c20d]">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <svg class="h-6 w-6 {{ $i <= $item->rating ? 'fill-current' : 'fill-none text-slate-300' }}" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24" aria-hidden="true">
+                                    <svg class="h-4 w-4 sm:h-5 sm:w-5 {{ $i <= $item->rating ? 'fill-current' : 'fill-none text-slate-300' }}" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24" aria-hidden="true">
                                         <path d="m12 3.5 2.6 5.26 5.8.84-4.2 4.1.99 5.78L12 16.75l-5.19 2.73.99-5.78-4.2-4.1 5.8-.84L12 3.5Z" stroke-linejoin="round" />
                                     </svg>
                                 @endfor
                             </div>
                         </div>
 
-                        <p class="mt-7 min-h-[10rem] text-base font-semibold leading-8 text-slate-700">
+                        <p class="mt-5 min-h-[4.5rem] text-sm font-semibold leading-6 text-slate-700 sm:min-h-[5.5rem]">
                             {{ $item->message }}
                         </p>
 
-                        <div class="mt-6 h-px bg-slate-200"></div>
+                        <div class="mt-5 h-px bg-slate-200"></div>
 
-                        <div class="mt-6 flex items-center gap-4">
+                        <div class="mt-5 flex items-center gap-3">
                             <img src="{{ $item->photo ? asset('storage/'.$item->photo) : 'https://ui-avatars.com/api/?name='.urlencode($item->name).'&background=2563eb&color=fff' }}"
-                                class="h-20 w-20 rounded-full object-cover ring-2 ring-blue-100"
+                                class="h-12 w-12 rounded-full object-cover ring-2 ring-blue-100 sm:h-14 sm:w-14"
                                 alt="{{ $item->name }}">
 
                             <div class="min-w-0">
-                                <h2 class="truncate text-xl font-black text-slate-950">{{ $item->name }}</h2>
-                                <p class="mt-1 flex items-center gap-2 text-sm font-semibold text-slate-500">
-                                    <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <h2 class="truncate text-base font-black text-slate-950 sm:text-lg">{{ $item->name }}</h2>
+                                <p class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                                    <svg class="h-3.5 w-3.5 shrink-0 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                                         <path d="M4 11.5 12 5l8 6.5" stroke-linecap="round" stroke-linejoin="round" />
                                         <path d="M6 11v8h12v-8" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                     {{ $item->job ?: 'Pengguna Arsantara' }}
                                 </p>
-                                <p class="mt-1 flex items-center gap-2 text-sm font-semibold text-slate-500">
-                                    <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <p class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                                    <svg class="h-3.5 w-3.5 shrink-0 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                                         <path d="M8 7V3m8 4V3M4 11h16M5 5h14v16H5z" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                     {{ $item->created_at->translatedFormat('d M Y') }}
@@ -93,7 +93,7 @@
                             </div>
                         </div>
 
-                        <div class="absolute inset-x-0 bottom-0 h-3 {{ $loop->iteration % 2 === 0 ? 'bg-blue-600' : 'bg-[#f4c20d]' }}"></div>
+                        <div class="absolute inset-x-0 bottom-0 h-2 {{ $loop->iteration % 2 === 0 ? 'bg-blue-600' : 'bg-[#f4c20d]' }}"></div>
                     </article>
                 @empty
                     <div class="col-span-full rounded-2xl border border-dashed border-blue-200 bg-white p-10 text-center text-slate-500">

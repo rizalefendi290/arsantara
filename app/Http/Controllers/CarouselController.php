@@ -54,6 +54,8 @@ class CarouselController extends Controller
             'buttons.*.label' => ['nullable', 'string', 'max:60'],
             'buttons.*.url' => ['nullable', 'string', 'max:2048'],
             'buttons.*.variant' => ['nullable', 'in:primary,secondary'],
+            'buttons.*.background_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'buttons.*.text_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'link_url' => ['nullable', 'string', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
@@ -69,9 +71,9 @@ class CarouselController extends Controller
                 'title' => $data['title'] ?? null,
                 'label' => $data['label'] ?? null,
                 'text' => $data['text'] ?? null,
-                'label_color' => $data['placement'] === 'hero' ? ($data['label_color'] ?? '#dbeafe') : null,
-                'title_color' => $data['placement'] === 'hero' ? ($data['title_color'] ?? '#ffffff') : null,
-                'text_color' => $data['placement'] === 'hero' ? ($data['text_color'] ?? '#e2e8f0') : null,
+                'label_color' => $data['placement'] === 'hero' ? ($data['label_color'] ?? '#0f172a') : null,
+                'title_color' => $data['placement'] === 'hero' ? ($data['title_color'] ?? '#0f172a') : null,
+                'text_color' => $data['placement'] === 'hero' ? ($data['text_color'] ?? '#1f2937') : null,
                 'buttons' => $data['placement'] === 'hero' ? $this->heroButtons($data['buttons'] ?? []) : null,
                 'link_url' => $data['placement'] === 'content' ? $this->normalizeLink($data['link_url'] ?? null) : null,
                 'sort_order' => $data['sort_order'] ?? 0,
@@ -100,6 +102,8 @@ class CarouselController extends Controller
             'buttons.*.label' => ['nullable', 'string', 'max:60'],
             'buttons.*.url' => ['nullable', 'string', 'max:2048'],
             'buttons.*.variant' => ['nullable', 'in:primary,secondary'],
+            'buttons.*.background_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'buttons.*.text_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'link_url' => ['nullable', 'string', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
@@ -111,9 +115,9 @@ class CarouselController extends Controller
             'title' => $data['title'] ?? null,
             'label' => $data['label'] ?? null,
             'text' => $data['text'] ?? null,
-            'label_color' => $data['placement'] === 'hero' ? ($data['label_color'] ?? '#dbeafe') : null,
-            'title_color' => $data['placement'] === 'hero' ? ($data['title_color'] ?? '#ffffff') : null,
-            'text_color' => $data['placement'] === 'hero' ? ($data['text_color'] ?? '#e2e8f0') : null,
+            'label_color' => $data['placement'] === 'hero' ? ($data['label_color'] ?? '#0f172a') : null,
+            'title_color' => $data['placement'] === 'hero' ? ($data['title_color'] ?? '#0f172a') : null,
+            'text_color' => $data['placement'] === 'hero' ? ($data['text_color'] ?? '#1f2937') : null,
             'buttons' => $data['placement'] === 'hero' ? $this->heroButtons($data['buttons'] ?? []) : null,
             'link_url' => $data['placement'] === 'content' ? $this->normalizeLink($data['link_url'] ?? null) : null,
             'sort_order' => $data['sort_order'] ?? 0,
@@ -151,10 +155,14 @@ class CarouselController extends Controller
                     return null;
                 }
 
+                $variant = ($button['variant'] ?? 'primary') === 'secondary' ? 'secondary' : 'primary';
+
                 return [
                     'label' => $label,
                     'url' => $url,
-                    'variant' => ($button['variant'] ?? 'primary') === 'secondary' ? 'secondary' : 'primary',
+                    'variant' => $variant,
+                    'background_color' => $button['background_color'] ?? ($variant === 'secondary' ? '#ffffff' : '#f3bd12'),
+                    'text_color' => $button['text_color'] ?? ($variant === 'secondary' ? '#0f172a' : '#08234c'),
                 ];
             })
             ->filter()

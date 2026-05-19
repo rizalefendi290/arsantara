@@ -31,92 +31,78 @@
 
     <!-- ================= STATISTIK ================= -->
     <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 xl:grid-cols-4">
+        @php
+            $metricCards = [
+                ['label' => 'Total Listing', 'value' => $totalListings, 'color' => 'text-blue-600', 'caption' => 'Semua produk yang tersimpan'],
+                ['label' => 'Total User', 'value' => $totalUsers, 'color' => 'text-emerald-600', 'caption' => 'Akun pengguna terdaftar'],
+                ['label' => 'Listing Aktif', 'value' => $listingStatusCounts['aktif'] ?? 0, 'color' => 'text-violet-600', 'caption' => 'Produk tampil ke publik'],
+                ['label' => 'Listing Pending', 'value' => $listingStatusCounts['pending'] ?? 0, 'color' => 'text-amber-600', 'caption' => 'Menunggu review admin'],
+            ];
+        @endphp
 
-        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
-            <p class="text-sm text-gray-500">Total Listing</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-blue-600">
-                    {{ $totalListings }}
-                </h2>
-                <div class="w-24 h-16">
-                    <canvas id="listingChart"></canvas>
+        @foreach($metricCards as $card)
+            <div class="p-5 bg-white shadow-sm ring-1 ring-gray-200 rounded-xl">
+                <p class="text-sm font-medium text-gray-500">{{ $card['label'] }}</p>
+                <h2 class="mt-3 text-3xl font-bold {{ $card['color'] }}">{{ number_format($card['value']) }}</h2>
+                <p class="mt-2 text-xs font-medium text-gray-500">{{ $card['caption'] }}</p>
+            </div>
+        @endforeach
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 mb-8 xl:grid-cols-3">
+        <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl xl:col-span-2">
+            <div class="flex flex-col gap-2 p-5 border-b md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">Tren Performa 14 Hari</h2>
+                    <p class="text-sm text-gray-500">Pengunjung unik, listing baru, dan user baru per hari.</p>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                    <span class="rounded-full bg-blue-50 px-3 py-1 text-blue-700">Pengunjung</span>
+                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-emerald-700">Listing</span>
+                    <span class="rounded-full bg-amber-50 px-3 py-1 text-amber-700">User</span>
+                </div>
+            </div>
+            <div class="h-80 p-5">
+                <canvas id="dashboardTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl">
+                <div class="p-5 border-b">
+                    <h2 class="text-lg font-bold text-gray-900">Pengunjung</h2>
+                    <p class="text-sm text-gray-500">Ringkasan kunjungan unik.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3 p-5">
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold text-gray-500">Hari ini</p>
+                        <p class="mt-1 text-2xl font-bold text-blue-600">{{ number_format($visitorStats['today']) }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold text-gray-500">Minggu ini</p>
+                        <p class="mt-1 text-2xl font-bold text-indigo-600">{{ number_format($visitorStats['week']) }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold text-gray-500">Bulan ini</p>
+                        <p class="mt-1 text-2xl font-bold text-orange-600">{{ number_format($visitorStats['month']) }}</p>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3">
+                        <p class="text-xs font-semibold text-gray-500">Total</p>
+                        <p class="mt-1 text-2xl font-bold text-gray-900">{{ number_format($visitorStats['total']) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl">
+                <div class="p-5 border-b">
+                    <h2 class="text-lg font-bold text-gray-900">Status Listing</h2>
+                    <p class="text-sm text-gray-500">Distribusi status produk.</p>
+                </div>
+                <div class="h-64 p-5">
+                    <canvas id="listingStatusChart"></canvas>
                 </div>
             </div>
         </div>
-
-        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
-            <p class="text-sm text-gray-500">Total User</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-green-600">
-                    {{ $totalUsers }}
-                </h2>
-                <canvas id="userChart" class="w-24 h-16"></canvas>
-            </div>
-        </div>
-
-        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
-            <p class="text-sm text-gray-500">Listing Aktif</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-purple-600">
-                    {{ $listingStatusCounts['aktif'] ?? 0 }}
-                </h2>
-                <canvas id="activeListingChart" class="w-24 h-16"></canvas>
-            </div>
-        </div>
-
-        <div class="p-5 transition bg-white shadow rounded-xl hover:shadow-lg">
-            <p class="text-sm text-gray-500">Listing Pending</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-yellow-600">
-                    {{ $listingStatusCounts['pending'] ?? 0 }}
-                </h2>
-                <canvas id="pendingListingChart" class="w-24 h-16"></canvas>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 xl:grid-cols-4">
-        <div class="p-5 bg-white shadow rounded-xl">
-            <p class="text-sm text-gray-500">Pengunjung Hari Ini</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-blue-600">
-                    {{ $visitorStats['today'] }}
-                </h2>
-                <canvas id="todayVisitorChart" class="w-24 h-16"></canvas>
-            </div>
-        </div>
-
-        <div class="p-5 bg-white shadow rounded-xl">
-            <p class="text-sm text-gray-500">Pengunjung Minggu Ini</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-indigo-600">
-                    {{ $visitorStats['week'] }}
-                </h2>
-                <canvas id="weekVisitorChart" class="w-24 h-16"></canvas>
-            </div>
-        </div>
-
-        <div class="p-5 bg-white shadow rounded-xl">
-            <p class="text-sm text-gray-500">Pengunjung Bulan Ini</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-orange-600">
-                    {{ $visitorStats['month'] }}
-                </h2>
-                <canvas id="monthVisitorChart" class="w-24 h-16"></canvas>
-            </div>
-        </div>
-
-        <div class="p-5 bg-white shadow rounded-xl">
-            <p class="text-sm text-gray-500">Total Pengunjung</p>
-            <div class="flex items-end justify-between">
-                <h2 class="text-3xl font-bold text-gray-900">
-                    {{ $visitorStats['total'] }}
-                </h2>
-                <canvas id="totalVisitorChart" class="w-24 h-16"></canvas>
-            </div>
-        </div>
-
     </div>
 
     <div class="mb-8 overflow-hidden bg-white shadow rounded-xl">
@@ -229,23 +215,15 @@
         </div>
     </div>
 
-    <div class="mb-8 overflow-hidden bg-white shadow rounded-xl">
-        <div class="p-4 border-b">
-            <h2 class="font-semibold text-gray-700">Pengunjung 7 Hari Terakhir</h2>
+    <div class="mb-8 overflow-hidden bg-white shadow-sm ring-1 ring-gray-200 rounded-xl">
+        <div class="flex flex-col gap-1 p-4 border-b md:flex-row md:items-center md:justify-between">
+            <div>
+                <h2 class="font-semibold text-gray-700">Listing per Kategori</h2>
+                <p class="text-sm text-gray-500">Perbandingan jumlah listing di setiap kategori.</p>
+            </div>
         </div>
-        <div class="grid grid-cols-1 gap-3 p-4 md:grid-cols-7">
-            @forelse($dailyVisitors as $day)
-                @php
-                    $height = max(18, min(120, ((int) $day->total) * 18));
-                @endphp
-                <div class="flex flex-col justify-end p-3 rounded-lg bg-gray-50 min-h-40">
-                    <div class="bg-blue-500 rounded-t" style="height: {{ $height }}px"></div>
-                    <p class="mt-2 font-bold text-center text-gray-900">{{ $day->total }}</p>
-                    <p class="text-xs text-center text-gray-500">{{ \Carbon\Carbon::parse($day->visit_date)->format('d M') }}</p>
-                </div>
-            @empty
-                <div class="p-6 text-center text-gray-400 md:col-span-7">Belum ada data pengunjung.</div>
-            @endforelse
+        <div class="h-80 p-5">
+            <canvas id="categoryListingChart"></canvas>
         </div>
     </div>
 
@@ -368,38 +346,175 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const listingCtx = document.getElementById('listingChart');
+const dashboardChartData = @json($dashboardChart);
+const listingStatusChartData = @json($listingStatusChart);
+const categoryChartData = {
+    labels: @json($categories->pluck('name')->values()),
+    data: @json($categories->pluck('listings_count')->values()),
+};
 
-new Chart(listingCtx, {
+const isDarkMode = () => document.documentElement.classList.contains('dark');
+const chartTextColor = () => isDarkMode() ? '#d1d5db' : '#4b5563';
+const chartGridColor = () => isDarkMode() ? 'rgba(255,255,255,0.08)' : 'rgba(148,163,184,0.22)';
+
+const sharedChartOptions = () => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            labels: {
+                color: chartTextColor(),
+                usePointStyle: true,
+                boxWidth: 8,
+                boxHeight: 8,
+            },
+        },
+        tooltip: {
+            backgroundColor: isDarkMode() ? '#111827' : '#ffffff',
+            titleColor: isDarkMode() ? '#f9fafb' : '#111827',
+            bodyColor: isDarkMode() ? '#d1d5db' : '#374151',
+            borderColor: isDarkMode() ? 'rgba(255,255,255,0.12)' : 'rgba(17,24,39,0.1)',
+            borderWidth: 1,
+            padding: 12,
+        },
+    },
+});
+
+const dashboardTrendChart = new Chart(document.getElementById('dashboardTrendChart'), {
     type: 'line',
     data: {
-        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-        datasets: [{
-            data: [3, 5, 4, 7, 6, 9, 12],
-            borderColor: '#2563eb',
-            backgroundColor: 'transparent',
-            borderWidth: 2,
-            tension: 0.4,
-            pointRadius: 0,
-        }]
+        labels: dashboardChartData.labels,
+        datasets: [
+            {
+                label: 'Pengunjung unik',
+                data: dashboardChartData.visitors,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                fill: true,
+                borderWidth: 3,
+                tension: 0.38,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+            },
+            {
+                label: 'Listing baru',
+                data: dashboardChartData.listings,
+                borderColor: '#059669',
+                backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                fill: false,
+                borderWidth: 2,
+                tension: 0.38,
+                pointRadius: 3,
+            },
+            {
+                label: 'User baru',
+                data: dashboardChartData.users,
+                borderColor: '#d97706',
+                backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                fill: false,
+                borderWidth: 2,
+                tension: 0.38,
+                pointRadius: 3,
+            },
+        ],
     },
     options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
+        ...sharedChartOptions(),
+        interaction: {
+            intersect: false,
+            mode: 'index',
         },
         scales: {
             x: {
-                display: false
+                ticks: { color: chartTextColor() },
+                grid: { color: chartGridColor() },
             },
             y: {
-                display: false
-            }
+                beginAtZero: true,
+                ticks: {
+                    color: chartTextColor(),
+                    precision: 0,
+                },
+                grid: { color: chartGridColor() },
+            },
+        },
+    },
+});
+
+const listingStatusChart = new Chart(document.getElementById('listingStatusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: listingStatusChartData.labels,
+        datasets: [{
+            data: listingStatusChartData.data,
+            backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'],
+            borderColor: isDarkMode() ? '#111827' : '#ffffff',
+            borderWidth: 3,
+        }],
+    },
+    options: {
+        ...sharedChartOptions(),
+        cutout: '68%',
+    },
+});
+
+const categoryListingChart = new Chart(document.getElementById('categoryListingChart'), {
+    type: 'bar',
+    data: {
+        labels: categoryChartData.labels,
+        datasets: [{
+            label: 'Jumlah listing',
+            data: categoryChartData.data,
+            backgroundColor: 'rgba(37, 99, 235, 0.82)',
+            borderRadius: 8,
+            maxBarThickness: 48,
+        }],
+    },
+    options: {
+        ...sharedChartOptions(),
+        scales: {
+            x: {
+                ticks: { color: chartTextColor() },
+                grid: { display: false },
+            },
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: chartTextColor(),
+                    precision: 0,
+                },
+                grid: { color: chartGridColor() },
+            },
+        },
+    },
+});
+
+function refreshChartTheme() {
+    [dashboardTrendChart, categoryListingChart].forEach((chart) => {
+        chart.options.plugins.legend.labels.color = chartTextColor();
+        chart.options.plugins.tooltip.backgroundColor = isDarkMode() ? '#111827' : '#ffffff';
+        chart.options.plugins.tooltip.titleColor = isDarkMode() ? '#f9fafb' : '#111827';
+        chart.options.plugins.tooltip.bodyColor = isDarkMode() ? '#d1d5db' : '#374151';
+        chart.options.plugins.tooltip.borderColor = isDarkMode() ? 'rgba(255,255,255,0.12)' : 'rgba(17,24,39,0.1)';
+        chart.options.scales.x.ticks.color = chartTextColor();
+        chart.options.scales.y.ticks.color = chartTextColor();
+        chart.options.scales.y.grid.color = chartGridColor();
+
+        if (chart.options.scales.x.grid) {
+            chart.options.scales.x.grid.color = chartGridColor();
         }
-    }
+
+        chart.update();
+    });
+
+    listingStatusChart.options.plugins.legend.labels.color = chartTextColor();
+    listingStatusChart.data.datasets[0].borderColor = isDarkMode() ? '#111827' : '#ffffff';
+    listingStatusChart.update();
+}
+
+new MutationObserver(refreshChartTheme).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
 });
 </script>
 @endsection

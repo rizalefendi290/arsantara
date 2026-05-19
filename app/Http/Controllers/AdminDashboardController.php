@@ -6,6 +6,7 @@ use App\Models\Listing;
 use App\Models\SiteVisit;
 use App\Models\User;
 use App\Models\Category;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,11 +34,39 @@ class AdminDashboardController extends Controller
             'total' => SiteVisit::distinct('session_id')->count('session_id'),
         ];
 
-        $dailyVisitors = SiteVisit::selectRaw('DATE(visited_at) as visit_date, COUNT(DISTINCT session_id) as total')
-            ->where('visited_at', '>=', now()->subDays(6)->startOfDay())
-            ->groupBy('visit_date')
-            ->orderBy('visit_date')
-            ->get();
+        $trendStart = now()->subDays(13)->startOfDay();
+        $trendPeriod = CarbonPeriod::create($trendStart, now()->startOfDay());
+
+        $visitorTrend = SiteVisit::selectRaw('DATE(visited_at) as date, COUNT(DISTINCT session_id) as total')
+            ->where('visited_at', '>=', $trendStart)
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        $listingTrend = Listing::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->where('created_at', '>=', $trendStart)
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        $userTrend = User::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->where('created_at', '>=', $trendStart)
+            ->groupBy('date')
+            ->pluck('total', 'date');
+
+        $dashboardChart = [
+            'labels' => [],
+            'visitors' => [],
+            'listings' => [],
+            'users' => [],
+        ];
+
+        foreach ($trendPeriod as $date) {
+            $key = $date->toDateString();
+
+            $dashboardChart['labels'][] = $date->format('d M');
+            $dashboardChart['visitors'][] = (int) ($visitorTrend[$key] ?? 0);
+            $dashboardChart['listings'][] = (int) ($listingTrend[$key] ?? 0);
+            $dashboardChart['users'][] = (int) ($userTrend[$key] ?? 0);
+        }
 
         $topListings = Listing::with(['images', 'category', 'user'])
             ->withCount('views')
@@ -58,6 +87,11 @@ class AdminDashboardController extends Controller
             ->groupBy('status')
             ->pluck('total', 'status');
 
+        $listingStatusChart = [
+            'labels' => $listingStatusCounts->keys()->map(fn ($status) => ucfirst($status))->values()->all(),
+            'data' => $listingStatusCounts->values()->all(),
+        ];
+
         $categories = Category::withCount('listings')
             ->orderBy('id')
             ->get();
@@ -69,11 +103,12 @@ class AdminDashboardController extends Controller
             'listings',
             'activeVisitors',
             'visitorStats',
-            'dailyVisitors',
             'topListings',
             'activeAgents',
             'listingStatusCounts',
-            'categories'
+            'categories',
+            'dashboardChart',
+            'listingStatusChart'
         ));
     }
 

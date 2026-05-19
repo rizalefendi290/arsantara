@@ -19,9 +19,9 @@
             'label' => 'Arsantara Management',
             'title' => 'Temukan pilihan terbaik dalam satu platform.',
             'text' => 'Jelajahi properti, kendaraan, dan layanan pembiayaan dengan tampilan yang mudah dipindai.',
-            'label_color' => '#dbeafe',
-            'title_color' => '#ffffff',
-            'text_color' => '#e2e8f0',
+            'label_color' => '#0f172a',
+            'title_color' => '#0f172a',
+            'text_color' => '#1f2937',
             'buttons' => [],
         ],
     ];
@@ -36,6 +36,8 @@
                     'label' => $button['label'],
                     'url' => $button['url'],
                     'variant' => ($button['variant'] ?? 'primary') === 'secondary' ? 'secondary' : 'primary',
+                    'background_color' => $button['background_color'] ?? (($button['variant'] ?? 'primary') === 'secondary' ? '#ffffff' : '#f3bd12'),
+                    'text_color' => $button['text_color'] ?? (($button['variant'] ?? 'primary') === 'secondary' ? '#0f172a' : '#08234c'),
                 ])
                 ->values()
                 ->all();
@@ -90,17 +92,17 @@
             @endif
 
             <p class="hero-carousel-label mb-4 inline-flex rounded-full border border-slate-950/10 bg-white/30 px-4 py-1 text-sm font-semibold uppercase text-slate-950 shadow-sm"
-                style="color: #0f172a;">
+                style="color: {{ $firstSlide['label_color'] }};">
                 {{ $firstSlide['label'] }}
             </p>
 
             <h1 class="hero-carousel-title max-w-[42rem] whitespace-normal break-words text-left text-[1.6rem] font-extrabold leading-tight [overflow-wrap:anywhere] sm:text-3xl md:max-w-[36rem] md:text-4xl xl:max-w-[42rem] xl:text-5xl"
-                style="color: #0f172a;">
+                style="color: {{ $firstSlide['title_color'] }};">
                 {{ $firstSlide['title'] }}
             </h1>
 
             <p class="hero-carousel-text mt-3 max-w-full whitespace-normal break-words text-left text-sm font-medium leading-6 text-slate-200 [overflow-wrap:anywhere] sm:max-w-xl sm:text-base md:leading-7"
-                style="color: #1f2937;">
+                style="color: {{ $firstSlide['text_color'] }};">
                 {{ $firstSlide['text'] }}
             </p>
 
@@ -110,7 +112,8 @@
                         @foreach($firstSlide['buttons'] as $button)
                             <a href="{{ $button['url'] }}"
                                 @if(Str::startsWith($button['url'], ['http://', 'https://'])) target="_blank" rel="noopener noreferrer" @endif
-                                class="{{ $heroActionClass($button['variant'] ?? 'primary') }}">
+                                class="{{ $heroActionClass($button['variant'] ?? 'primary') }}"
+                                style="background-color: {{ $button['background_color'] }}; color: {{ $button['text_color'] }};">
                                 {{ $button['label'] }}
                             </a>
                         @endforeach
@@ -200,17 +203,17 @@
                     if (slideData[index]) {
                         if (label) {
                             label.textContent = slideData[index].label;
-                            label.style.color = '#0f172a';
+                            label.style.color = slideData[index].label_color || '#0f172a';
                         }
 
                         if (title) {
                             title.textContent = slideData[index].title;
-                            title.style.color = '#0f172a';
+                            title.style.color = slideData[index].title_color || '#0f172a';
                         }
 
                         if (text) {
                             text.textContent = slideData[index].text;
-                            text.style.color = '#1f2937';
+                            text.style.color = slideData[index].text_color || '#1f2937';
                         }
 
                         if (actions) {
@@ -227,6 +230,8 @@
                                     link.href = button.url;
                                     link.textContent = button.label;
                                     link.className = actionClasses[button.variant] || actionClasses.primary;
+                                    link.style.backgroundColor = button.background_color || (button.variant === 'secondary' ? '#ffffff' : '#f3bd12');
+                                    link.style.color = button.text_color || (button.variant === 'secondary' ? '#0f172a' : '#08234c');
 
                                     if (/^https?:\/\//i.test(button.url)) {
                                         link.target = '_blank';
