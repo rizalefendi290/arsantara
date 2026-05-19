@@ -46,7 +46,7 @@ class AgentListingController extends Controller
 
         $shareUrl = route('listing.show', $listing->id);
 
-        return redirect()->route('agent.dashboard')
+        return redirect()->route($this->dashboardRouteName($request))
             ->with('success', 'Listing berhasil dikirim dan menunggu review admin.')
             ->with('share_url', $shareUrl)
             ->with('share_title', $listing->title)
@@ -90,7 +90,7 @@ class AgentListingController extends Controller
         $this->syncDetails($listing, $request);
         $this->storeImages($listing, $request, app(ImageWatermarkService::class));
 
-        return redirect()->route('agent.dashboard')
+        return redirect()->route($this->dashboardRouteName($request))
             ->with('success', 'Listing berhasil diperbarui dan kembali menunggu review admin.');
     }
 
@@ -104,7 +104,7 @@ class AgentListingController extends Controller
 
         $listing->delete();
 
-        return redirect()->route('agent.dashboard')
+        return redirect()->route($this->dashboardRouteName($request))
             ->with('success', 'Listing berhasil dihapus.');
     }
 
@@ -246,5 +246,10 @@ class AgentListingController extends Controller
     private function authorizeOwner(Request $request, Listing $listing): void
     {
         abort_unless($listing->user_id === $request->user()->id, 403);
+    }
+
+    private function dashboardRouteName(Request $request): string
+    {
+        return $request->user()->role === 'pemilik' ? 'owner.dashboard' : 'agent.dashboard';
     }
 }

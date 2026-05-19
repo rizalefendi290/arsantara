@@ -383,8 +383,24 @@
 
                 <div class="mb-4">
                     <label class="block text-sm mb-1">Password</label>
-                    <input type="password" name="password"
-                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" required>
+                    <div class="relative">
+                        <input id="login-modal-password" type="password" name="password"
+                            class="w-full border rounded-lg px-3 py-2 pr-11 focus:ring-2 focus:ring-blue-500" required>
+                        <button type="button" onclick="togglePasswordVisibility('login-modal-password', this)"
+                            class="absolute inset-y-0 right-3 inline-flex items-center text-gray-400 transition hover:text-blue-600 focus:outline-none"
+                            aria-label="Tampilkan password" aria-pressed="false">
+                            <svg data-eye-open class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <svg data-eye-closed class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m3 3 18 18" stroke-linecap="round" />
+                                <path d="M10.7 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-3.1 4.2" />
+                                <path d="M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.2-.9" />
+                                <path d="M9.9 9.9A3 3 0 0 0 14.1 14.1" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex justify-between items-center mb-4 text-sm">
@@ -393,7 +409,7 @@
                         Remember me
                     </label>
 
-                    <a href="#" class="text-blue-500 hover:underline">
+                    <a href="{{ route('password.request') }}" class="text-blue-500 hover:underline">
                         Lupa Password?
                     </a>
                 </div>
@@ -429,28 +445,72 @@
             <form id="register-form" method="POST" action="{{ route('register') }}" class="hidden">
                 @csrf
 
+                @if ($errors->register->any())
+                    <div class="mb-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        <p class="font-semibold">Pendaftaran belum berhasil.</p>
+                        <ul class="mt-2 list-disc space-y-1 pl-5">
+                            @foreach ($errors->register->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="mb-4">
                     <label class="block text-sm mb-1">Nama</label>
-                    <input type="text" name="name"
+                    <input type="text" name="name" value="{{ old('name') }}" autocomplete="name"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" required>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm mb-1">Email</label>
-                    <input type="email" name="email"
+                    <input type="email" name="email" value="{{ old('email') }}" autocomplete="email"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" required>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm mb-1">Password</label>
-                    <input type="password" name="password"
-                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" required>
+                    <div class="relative">
+                        <input id="register-modal-password" type="password" name="password" autocomplete="new-password"
+                            class="w-full border rounded-lg px-3 py-2 pr-11 focus:ring-2 focus:ring-blue-500" required>
+                        <button type="button" onclick="togglePasswordVisibility('register-modal-password', this)"
+                            class="absolute inset-y-0 right-3 inline-flex items-center text-gray-400 transition hover:text-blue-600 focus:outline-none"
+                            aria-label="Tampilkan password" aria-pressed="false">
+                            <svg data-eye-open class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <svg data-eye-closed class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m3 3 18 18" stroke-linecap="round" />
+                                <path d="M10.7 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-3.1 4.2" />
+                                <path d="M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.2-.9" />
+                                <path d="M9.9 9.9A3 3 0 0 0 14.1 14.1" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Minimal 8 karakter.</p>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm mb-1">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation"
-                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500" required>
+                    <div class="relative">
+                        <input id="register-modal-password-confirmation" type="password" name="password_confirmation" autocomplete="new-password"
+                            class="w-full border rounded-lg px-3 py-2 pr-11 focus:ring-2 focus:ring-blue-500" required>
+                        <button type="button" onclick="togglePasswordVisibility('register-modal-password-confirmation', this)"
+                            class="absolute inset-y-0 right-3 inline-flex items-center text-gray-400 transition hover:text-blue-600 focus:outline-none"
+                            aria-label="Tampilkan konfirmasi password" aria-pressed="false">
+                            <svg data-eye-open class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <svg data-eye-closed class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m3 3 18 18" stroke-linecap="round" />
+                                <path d="M10.7 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-3.1 4.2" />
+                                <path d="M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.2-.9" />
+                                <path d="M9.9 9.9A3 3 0 0 0 14.1 14.1" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <button type="submit"
@@ -514,6 +574,33 @@ function showLogin() {
     document.getElementById('login-form').classList.remove('hidden');
     document.getElementById('modal-title').innerText = 'Login';
 }
+
+function togglePasswordVisibility(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (!input) {
+        return;
+    }
+
+    const shouldShow = input.type === 'password';
+    input.type = shouldShow ? 'text' : 'password';
+    button.setAttribute('aria-pressed', shouldShow ? 'true' : 'false');
+    button.setAttribute('aria-label', shouldShow ? 'Sembunyikan password' : 'Tampilkan password');
+    button.querySelector('[data-eye-open]')?.classList.toggle('hidden', shouldShow);
+    button.querySelector('[data-eye-closed]')?.classList.toggle('hidden', !shouldShow);
+}
+
+@if ($errors->register->any() && ! request()->routeIs('register'))
+document.addEventListener('DOMContentLoaded', function () {
+    const loginModal = document.getElementById('login-modal');
+
+    if (loginModal) {
+        loginModal.classList.remove('hidden');
+        loginModal.setAttribute('aria-hidden', 'false');
+    }
+
+    showRegister();
+});
+@endif
 
 function openUpgradeModal(role) {
     const modal = document.getElementById('upgradeModal');

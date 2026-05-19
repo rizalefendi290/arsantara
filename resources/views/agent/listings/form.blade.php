@@ -13,20 +13,50 @@
     $motorcycleCategoryId = $categoryId(\App\Models\Category::MOTORCYCLE_SLUG);
     $commercialCategoryIds = $categories->whereIn('slug', \App\Models\Category::COMMERCIAL_PROPERTY_SLUGS)->pluck('id')->map(fn ($id) => (string) $id)->all();
     $carLikeCategoryIds = $categories->whereIn('slug', \App\Models\Category::CAR_LIKE_SLUGS)->pluck('id')->map(fn ($id) => (string) $id)->all();
+    $role = auth()->user()->role;
+    $roleLabel = [
+        'agen' => 'Agen',
+        'pemilik' => 'Pemilik Produk',
+    ][$role] ?? ucfirst($role);
+    $roleDescription = $role === 'pemilik'
+        ? 'Kelola produk milik Anda dan kirim listing untuk direview admin.'
+        : 'Tambahkan listing untuk ditinjau admin sebelum tampil di marketplace.';
+    $dashboardRoute = $role === 'pemilik' ? route('owner.dashboard') : route('agent.dashboard');
+    $rawPrice = old('price', $listing->price);
 @endphp
 
 <div class="max-w-5xl px-4 py-24 mx-auto">
-    <div class="flex flex-col gap-3 mb-6 md:flex-row md:items-center md:justify-between">
-        <div>
-            <p class="text-sm text-gray-500">Listing {{ ucfirst(auth()->user()->role) }}</p>
-            <h1 class="text-2xl font-bold text-gray-900 md:text-3xl">
-                {{ $isEdit ? 'Edit Listing' : 'Tambah Listing' }}
-            </h1>
-        </div>
+    <div class="mb-6 overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+        <div class="flex flex-col gap-5 bg-gradient-to-br from-blue-50 via-white to-white p-5 md:flex-row md:items-center md:justify-between md:p-6">
+            <div class="flex items-start gap-4">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 20V8l8-4 8 4v12" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M9 20v-6h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="mb-2 flex flex-wrap items-center gap-2">
+                        <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-blue-700">
+                            {{ $roleLabel }}
+                        </span>
+                        <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
+                            {{ $isEdit ? 'Edit Listing' : 'Listing Baru' }}
+                        </span>
+                    </div>
+                    <h1 class="text-2xl font-extrabold text-gray-950 md:text-3xl">
+                        {{ $isEdit ? 'Edit Listing' : 'Tambah Listing' }}
+                    </h1>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+                        {{ $roleDescription }}
+                    </p>
+                </div>
+            </div>
 
-        <a href="{{ route('agent.dashboard') }}" class="text-blue-600 hover:underline">
-            Kembali ke dashboard
-        </a>
+            <a href="{{ $dashboardRoute }}" class="inline-flex items-center justify-center rounded-xl border border-blue-100 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 shadow-sm transition hover:bg-blue-50">
+                Kembali ke dashboard
+            </a>
+        </div>
     </div>
 
     @if($errors->any())
@@ -66,8 +96,14 @@
 
                 <div>
                     <label class="block mb-1 font-medium">Harga</label>
-                    <input type="number" name="price" value="{{ old('price', $listing->price) }}"
-                        class="w-full p-2 border rounded" min="0" required>
+                    <div class="relative">
+                        <span class="pointer-events-none absolute inset-y-0 left-3 inline-flex items-center text-sm font-bold text-blue-700">Rp</span>
+                        <input type="text" id="price_display" value="{{ $rawPrice ? number_format((float) $rawPrice, 0, ',', '.') : '' }}"
+                            inputmode="numeric" autocomplete="off" placeholder="0"
+                            class="w-full rounded border p-2 pl-10" required>
+                        <input type="hidden" id="price" name="price" value="{{ $rawPrice }}">
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Contoh: Rp 250.000.000</p>
                 </div>
 
                 <div>
@@ -215,7 +251,7 @@
                     {{ $isEdit ? 'Update Listing' : 'Kirim Listing' }}
                 </button>
 
-                <a href="{{ route('agent.dashboard') }}" class="px-4 py-2 text-gray-800 bg-gray-100 rounded hover:bg-gray-200">
+                <a href="{{ $dashboardRoute }}" class="px-4 py-2 text-gray-800 bg-gray-100 rounded hover:bg-gray-200">
                     Batal
                 </a>
             </div>
@@ -254,6 +290,7 @@ document.getElementById('category').addEventListener('change', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
     toggleCategoryFields(document.getElementById('category').value);
+    initPriceFormatter();
 });
 
 function addImage() {
@@ -263,6 +300,43 @@ function addImage() {
     input.name = 'images[]';
     input.className = 'w-full border p-2 rounded mt-2';
     wrapper.appendChild(input);
+}
+
+function onlyDigits(value) {
+    return String(value || '').replace(/\D/g, '');
+}
+
+function formatRupiah(value) {
+    const digits = onlyDigits(value);
+
+    if (!digits) {
+        return '';
+    }
+
+    return new Intl.NumberFormat('id-ID').format(Number(digits));
+}
+
+function initPriceFormatter() {
+    const displayInput = document.getElementById('price_display');
+    const hiddenInput = document.getElementById('price');
+
+    if (!displayInput || !hiddenInput) {
+        return;
+    }
+
+    function syncPrice() {
+        const digits = onlyDigits(displayInput.value);
+        hiddenInput.value = digits;
+        displayInput.value = formatRupiah(digits);
+    }
+
+    displayInput.addEventListener('input', syncPrice);
+    displayInput.addEventListener('blur', syncPrice);
+    displayInput.closest('form')?.addEventListener('submit', function() {
+        hiddenInput.value = onlyDigits(displayInput.value);
+    });
+
+    syncPrice();
 }
 </script>
 @endsection

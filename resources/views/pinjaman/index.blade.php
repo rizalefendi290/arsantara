@@ -77,20 +77,13 @@
                 </div>
             </div>
 
-            <div data-aos="fade-up" class="relative overflow-hidden rounded-2xl bg-slate-900 shadow-2xl">
+            <a data-aos="fade-up" href="{{ $waUrl }}" target="_blank" rel="noopener"
+                aria-label="Hubungi admin Arsantara untuk mengajukan pinjaman dana"
+                class="group block overflow-hidden rounded-2xl bg-white shadow-2xl shadow-slate-900/15 ring-1 ring-blue-100 transition hover:-translate-y-1 hover:shadow-blue-900/20 focus:outline-none focus:ring-4 focus:ring-blue-200">
                 <img src="{{ asset('images/pinjamdana2.jpeg') }}"
-                    alt="Ajukan pinjam dana"
-                    class="h-[520px] w-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent"></div>
-                <div class="absolute bottom-0 p-6 text-white">
-                    <p class="text-sm font-semibold uppercase text-blue-200">Pengajuan Cepat</p>
-                    <h3 class="mt-2 text-3xl font-extrabold">Ajukan sekarang, lanjutkan di WhatsApp.</h3>
-                    <a href="{{ $waUrl }}" target="_blank"
-                        class="mt-5 inline-flex rounded-xl bg-green-500 px-5 py-3 font-bold text-white transition hover:bg-green-600">
-                        Hubungi Admin
-                    </a>
-                </div>
-            </div>
+                    alt="Ajukan pinjaman dana Arsantara melalui WhatsApp"
+                    class="aspect-square w-full object-contain">
+            </a>
         </div>
     </section>
 </main>

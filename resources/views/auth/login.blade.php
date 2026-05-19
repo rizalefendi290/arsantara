@@ -16,10 +16,26 @@
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <div class="relative mt-1">
+                <x-text-input id="password" class="block w-full pr-12"
+                                type="password"
+                                name="password"
+                                required autocomplete="current-password" />
+                <button type="button" onclick="togglePasswordVisibility('password', this)"
+                    class="absolute inset-y-0 right-3 inline-flex items-center text-gray-400 transition hover:text-indigo-600 focus:outline-none"
+                    aria-label="Tampilkan password" aria-pressed="false">
+                    <svg data-eye-open class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    <svg data-eye-closed class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 3 18 18" stroke-linecap="round" />
+                        <path d="M10.7 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-3.1 4.2" />
+                        <path d="M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.2-.9" />
+                        <path d="M9.9 9.9A3 3 0 0 0 14.1 14.1" />
+                    </svg>
+                </button>
+            </div>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -42,4 +58,22 @@
             </x-primary-button>
         </div>
     </form>
+
+    @push('scripts')
+        <script>
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (!input) {
+                return;
+            }
+
+            const shouldShow = input.type === 'password';
+            input.type = shouldShow ? 'text' : 'password';
+            button.setAttribute('aria-pressed', shouldShow ? 'true' : 'false');
+            button.setAttribute('aria-label', shouldShow ? 'Sembunyikan password' : 'Tampilkan password');
+            button.querySelector('[data-eye-open]')?.classList.toggle('hidden', shouldShow);
+            button.querySelector('[data-eye-closed]')?.classList.toggle('hidden', !shouldShow);
+        }
+        </script>
+    @endpush
 </x-guest-layout>
